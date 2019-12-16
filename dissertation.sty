@@ -1,0 +1,459 @@
+%!TEX root = dissertation.tex
+
+% Color setup
+\usepackage{color}
+\usepackage[dvipsnames,rgb,table]{xcolor}
+\usepackage[utf8x]{inputenc}
+\usepackage[linedheaders,parts,pdfspacing]{classicthesis}
+\usepackage{amsmath}
+%\usepackage{acronym}
+\usepackage{a4wide} % Setup for fullpage
+\usepackage{enumerate}
+\usepackage{paralist}
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{pdfcomment}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{pifont}
+\usepackage[xindy,order=letter,nomain,acronym]{glossaries}
+\usepackage{makeidx}
+%\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{mathrsfs}
+%\usepackage{lipsum}
+\usepackage{amsthm}
+%\usepackage{scrpage2}
+%\usepackage{times}
+%\usepackage{etex}
+%\usepackage{moresize}
+%\usepackage{imakeidx}
+%\usepackage{datatool}
+%\usepackage{glossaries}
+%\usepackage{nomencl}
+%\usepackage{etoolbox}
+%\usepackage{dtklogos}
+\usepackage{thmtools}
+
+
+%----------------- Using makeidx ----------------------------------------------%
+
+% own macro commands
+\providecommand{\keywords}[1]
+{
+  \small	
+  \textbf{{Keywords:}} #1
+}
+
+\providecommand{\keywordsPT}[1]
+{
+  \small	
+  \textbf{{Palavras-chave:}} #1
+}
+\newcommand{\uminho}[1]{
+     \href{http://www.uminho.pt}{#1}
+     \index{UM!University of Minho}}
+\newcommand{\UM}{
+	\uminho{\textsc{u.m.}}}
+\def\Bibtex{
+	\href{http://www.bibtex.org/}{Bib\TeX}
+	\index{\LaTeX!Tool!\texttt{bibtex}}}
+\def\LNCS{
+	\href{http://www.springer.com/computer/lncs?SGWID=0-164-0-0-0}{LNCS}
+	\index{LNCS!\uk{Lecture Notes in Computer Science}}}
+\def\Latex{
+	\href{http://www.latex-project.org/}{\LaTeX}
+	\index{\LaTeX}}
+\def\Makeindex{
+	\href{http://www.ctan.org/pkg/makeindex}{\texttt{makeindex}}
+	\index{\LaTeX!Tool!\texttt{makeindex}}}
+\newcommand{\tug}[1]{
+	\href{http://tug.org/}{#1}
+	\index{TeX!TeX Users Group (TUG)}}
+\newcommand{\TUG}{
+	\tug{TUG}}
+\newcommand{\conexp}[1]{
+	\href{http://sourceforge.net/projects/conexp}{#1}
+	\index{FCA!Tools!Conexp}}
+\newcommand{\mei}[1]{
+	\href{http://mei.di.uminho.pt}{#1}
+	\index{UM!Master courses!MEI}}
+\newcommand{\MEI}{
+	\mei{\includegraphics[width=0.05\textwidth]{img/mei-logo-03.jpg}}}
+%------------------------------------------------------------------------------%
+
+% Margin Setup
+\setlength\oddsidemargin{0.3in}
+\setlength\evensidemargin{-0.3in}
+\setlength\headsep{15pt}
+\setlength\footskip{30pt}
+
+%Line Spacing
+\usepackage{setspace}
+\onehalfspacing
+
+% layout settings
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\headfont}{\bfseries\fontsize{9}{11}\selectfont}
+\renewcommand{\pnumfont}{\bfseries\fontsize{9}{11}\selectfont}
+
+% Redefine section and description fonts to the normal font
+\renewcommand{\sectfont}{\normalfont\bfseries}
+\renewcommand{\descfont}{\normalfont\bfseries}
+
+% GraphicX package
+\usepackage{graphicx}
+
+% Defining extra colors
+\definecolor{dark-blue}{cmyk}{1.0,1.0,0.0,0.1}
+\definecolor{dark-green}{cmyk}{1.0,0,1.0,0.65}
+\definecolor{dark-red}{cmyk}{0,1.0,1.0,0.3}
+\definecolor{navy-blue}{cmyk}{1.0,1.0,0.0,0.5}
+\definecolor{grey}{rgb}{0.6,0.6,0.6}
+\definecolor{eng}{cmyk}{0.14,0.71,1,0.03}
+\definecolor{um}{cmyk}{0.25,1.00,1.00,0.22}
+\definecolor{lightGray}{gray}{0.92}
+\definecolor{verylightgray}{cmyk}{0,0,0,0.05}
+
+% Default UM logo colors
+\gdef\umc{um}
+\gdef\engc{eng}
+
+% UM_ENg Logo
+\def\UMEng[#1]#2{\begin{tikzpicture}[
+	% bars styling,
+	bar/.style={rectangle,fill=white,rounded corners=0.08cm,minimum width=0.16cm,inner sep=0pt},
+	umBig/.style={minimum height=0.74cm},
+	umSmall/.style={minimum height=0.48cm},
+	engBar/.style={minimum height=0.86cm},
+	umLogoPosition/.style={xshift=1.3cm,yshift=1.3cm},
+	engLogoPosition/.style={xshift=3.9cm,yshift=1.3cm}]
+	
+	% Uminho logo
+	\fill[fill=#1] (0,0) -- (2.6,0) -- (2.6,2.6) -- (0,2.6) -- cycle;
+	\foreach \i in {1,...,3}{
+		\node at (\i*120+30:0.45)[bar,umBig,umLogoPosition,rotate=\i*120-60]{};
+		\node at (\i*120+90:0.60)[bar,umSmall,umLogoPosition,rotate=\i*120]{};
+	}
+	% EngUminho logo
+	\fill[fill=#2] (2.6,0) -- (5.2,0) -- (5.2,2.6) -- (2.6,2.6) -- cycle;
+	\foreach \i in {1,...,5}
+		\node at (\i*72-90:0.74)[bar,engBar,engLogoPosition,rotate=\i*72-90]{};
+\end{tikzpicture}}
+
+% Wrap text around figures
+\usepackage{wrapfig}
+
+% Professional looking tables
+\usepackage{booktabs}
+
+%Caption formatting
+%\usepackage[small]{caption}
+\usepackage[font={small,bf}]{caption}
+
+% Source code inputing
+\usepackage{listings}
+\renewcommand{\lstlistlistingname}{List of Listings}
+
+% Settings for Listings
+\lstset{ %
+	language=Haskell,							% choose the language of the code
+	basicstyle=\footnotesize,		% the size of the fonts that are used for the code
+	keywordstyle=\bfseries,					% set the keyword style
+	keywords={},
+	%numbers=left,							% where to put the line-numbers
+	identifierstyle=\ttfamily,
+	numberstyle=\scriptsize,				% the size of the fonts that are used for the line-numbers
+	stepnumber=2,							% the step between two line-numbers. If it's 1 each line
+											% will be numbered
+	numbersep=5pt,							% how far the line-numbers are from the code
+	backgroundcolor=\color{lightGray},			% choose the background color. You must add \usepackage{color}
+	showspaces=false,						% show spaces adding particular underscores
+	showstringspaces=false,					% underline spaces within strings
+	showtabs=false,							% show tabs within strings adding particular underscores
+	frame=single,								% adds a frame around the code
+	framerule=0pt,
+	abovecaptionskip=.7em,
+	belowcaptionskip=.7em,
+	tabsize=2,								% sets default tabsize to 2 spaces
+	captionpos=b,							% sets the caption-position to bottom
+	breaklines=true,						% sets automatic line breaking
+	breakatwhitespace=false,				% sets if automatic breaks should only happen at whitespace
+	title=\lstname,							% show the filename of files included with \lstinputlisting;
+											% also try caption instead of title
+	escapeinside={\%*}{*)},					% if you want to add a comment within your code
+	morekeywords={*,...}                    % if you want to add more keywords to the set
+}
+
+% Setting up snippet environment
+\lstnewenvironment{snippet}[1][]
+    {\lstset{float=htpb,#1}}
+    {}
+
+% Arrow diagrams
+%\usepackage[all]{xy}  % de-comment if you need diagrams
+
+% Use dot within TeX
+%\usepackage{dot2texi}
+%\setoutputdir{dot/}
+%\usetikzlibrary{shapes,arrows}
+
+% Better looking bibliography references
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+
+% Getting things done in LaTeX
+\usepackage{todonotes}
+
+% Better list handling
+\usepackage{enumitem}
+
+% Hyperlinks and Bookmarks setup
+\usepackage{hyperref}
+\usepackage{bookmark}
+
+
+% Format table of contents
+\usepackage{tocloft}
+\renewcommand{\cftpartleader}{\cftdotfill{\cftnodots}} % for parts
+\renewcommand{\cftchapleader}{\cftdotfill{\cftnodots}} % for chapters
+\renewcommand{\cftsecleader}{\cftdotfill{\cftnodots}} % for sections
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftnodots}} % for subsections
+\renewcommand{\cftfigleader}{\cftdotfill{\cftnodots}} % for figures
+\renewcommand{\cfttableader}{\cftdotfill{\cftnodots}} % for tables
+
+
+% Create better looking section cross-reference links
+\usepackage[capitalise]{cleveref}
+
+\newcommand\fancyref[1]{ %
+  \hyperref[#1]{\cref*{#1}: \nameref*{#1}}
+}
+
+
+% Index of terms and acronyms
+%%\renewcommand{\glossarymark}[1]{\markboth{\MakeUppercase{#1}}{\MakeUppercase{#1}}}
+%%\renewcommand{\glsclearpage}{\cleardoublepage}
+%%\setlength{\glspagelistwidth}{\textwidth}
+%%\setlength{\glslistdottedwidth}{.75\hsize}
+%%\let\glsdoifexists\glsdoifexistsorwarn
+%%
+%%\newglossarystyle{dottedlocations}{%
+%%  \glossarystyle{list}%
+%%  \renewcommand*{\glossaryentryfield}[5]{%
+%%    \item[\glsentryitem{##1}\glstarget{##1}{##2}] \emph{##3}%
+%%      \unskip\leaders\hbox to 2.9mm{\hss.}\hfill##5}%
+%%  \renewcommand*{\glsgroupskip}{}%
+%%}
+%%
+%%\newglossarystyle{mylist}{%
+%%  \setglossarystyle{list}% base this style on the list style
+%%  \renewcommand*{\glossentry}[2]{%
+%%    \item[\glsentryitem{##1}\glstarget{##1}{\glossentryname{##1}}]
+%%  \glossentrydesc{##1}\glspostdescription\space see p.\space ##2}%
+%%}
+%%
+%%%\renewcommand{\glossentry}[1]{{\item#1}}
+%%%\renewcommand{\glsgroupskip}[1]{{#1}}
+%%%\renewcommand{\glsgroupheading}{}
+%%%\renewcommand{\glossarypostamble}{}
+%%
+\newcommand{\reminder}[1]{\fbox{{\color{blue} #1}}}
+
+\def\myear{\ifcase\month\or
+ January\or February\or March\or April\or May\or June\or
+ July\or August\or September\or October\or November\or December\fi
+ \space\number\year}
+
+\newenvironment{backcover}{\begin{titlepage}}{\end{titlepage}}
+
+\newenvironment{frontcover}{\begin{titlepage}}{\end{titlepage}}
+
+% Default Hyperlink and Bookmark settings
+\hypersetup{
+	bookmarksnumbered=true,
+	plainpages=false,					 	
+	%bookmarks=true,			% show bookmarks bar?
+	%pdfstartview={FitW},		% fits the width of the page to the window
+	unicode=true,				% non-Latin characters in Acrobat’s bookmarks
+	pdffitwindow=true,			% window fit to page when opened
+	pdfnewwindow=true,			% links in new window
+	colorlinks=true,				% false: boxed links; true: colored links
+	linkcolor=navy-blue,			% color of internal links
+	citecolor=dark-green,		% color of links to bibliography
+	filecolor=dark-red,			% color of file links
+	urlcolor=navy-blue			% color of external links
+	%pdfkeywords={\@keywords},	% list of keywords
+}
+
+
+\makeatletter
+
+% Override Metadata Settings
+\newcommand{\ummetadata}{
+\def\@producer{\@author\ @ \@department\ - \@school\ - \@university}
+\def\@documentsubject{\@subtitleA \@subtitleB}
+\def\@documenttitle{\@titleA \@titleB}
+
+\hypersetup{
+	pdftitle={\@documenttitle},				% title
+	pdfauthor={\@author},					% author
+	pdfsubject={\@documentsubject},			% subject of the document
+	pdfcreator={\@author},					% creator of the document
+	pdfproducer={\@producer},				% producer of the document
+}
+}
+
+% Extra commands
+\newcommand\ackname{Acknowledgements}
+\if@titlepage
+  \newenvironment{acknowledgements}{%
+      \titlepage
+      \null\vfil
+      \@beginparpenalty\@lowpenalty
+      \begin{center}%
+        \bfseries \ackname
+        \@endparpenalty\@M
+      \end{center}}%
+     {\par\vfil\null\endtitlepage}
+\else
+  \newenvironment{acknowledgements}{ %
+      \if@twocolumn
+        \section*{\ackname}%
+      \else
+        \small
+        \begin{center}%
+          {\bfseries \ackname\vspace{-.5em}\vspace{\z@}}%
+        \end{center}%
+        \quotation
+      \fi}
+      {\if@twocolumn\else\endquotation\fi}
+\fi
+\renewenvironment{description}% Taken from article.cls
+               {\list{}{\labelwidth\z@ \itemindent-\leftmargin\let\makelabel\descriptionlabel}}{\endlist}
+\renewcommand*\descriptionlabel[1]{
+	\hspace\labelsep\normalfont{\scriptsize\bfseries\uppercase{#1}\enspace}}
+\setlength{\labelsep}{.5em}% Also taken from article.cls
+
+
+% Thesis authoring
+\gdef\@supervisor{}
+\gdef\@cosupervisor{}
+\gdef\@titleA{}
+\gdef\@titleB{}
+\gdef\@subtitleA{}
+\gdef\@subtitleB{}
+
+% Default Department
+\gdef\@department{Departamento de Inform\'{a}tica}
+\gdef\@school{Escola de Engenharia}
+\gdef\@university{Universidade do Minho}
+\gdef\@masterdegree{Computer Science}
+
+% Authoring Macros
+\def\supervisor#1{\gdef\@supervisor{#1}}
+\def\cosupervisor#1{\gdef\@cosupervisor{#1}}
+\def\titleA#1{\gdef\@titleA{#1}}
+\def\titleB#1{\gdef\@titleB{#1}}
+\def\subtitleA#1{\gdef\@subtitleA{#1}}
+\def\subtitleB#1{\gdef\@subtitleB{#1}}
+\def\school#1{\gdef\@school{#1}}
+\def\department#1{\gdef\@department{#1}}
+\def\university#1{\gdef\@university{#1}}
+\def\masterdegree#1{\gdef\@masterdegree{#1}}
+
+% cover layout
+\newcommand{\printcover}{
+\def\withnewsgott##1{\fontfamily{phv}\fontseries{mc}\selectfont ##1}
+\def\optionalwithnewsgott##1{\ifnum\hide=1\relax\else\withnewsgott{##1}\fi}
+\def\withboldnewsgott##1{\fontfamily{phv}\fontseries{mc}\fontseries{b}\selectfont ##1}
+\def\optionalwithboldnewsgott##1{\ifnum\hide=1\relax\else\withboldnewsgott{##1}\fi}
+~\vskip-2cm\rule{4cm}{0pt}\begin{tabular}{l}
+\UMEng[\umc]{\engc}
+\\\withboldnewsgott{\@university}\rule{0pt}{1cm}
+\\\withnewsgott{\@school}
+\\\withnewsgott{\@department}
+\\\rule{0pt}{4cm}
+\\\withnewsgott{\Large\@author}
+\\\rule{0pt}{1em}
+\\\withboldnewsgott{\Large\@titleA}
+\\\withboldnewsgott{\Large\@titleB}
+\\\rule{0pt}{0.3cm}
+\\\withboldnewsgott{\large\@subtitleA}
+\\\withboldnewsgott{\large\@subtitleB}
+\\\rule{0pt}{4.2cm}
+\\\optionalwithnewsgott{\large Master dissertation}
+\\\optionalwithnewsgott{\large Master Degree in \@masterdegree}
+\\\rule{0pt}{6mm}
+\\\optionalwithnewsgott{\large Dissertation supervised by}
+\\\optionalwithboldnewsgott{\@supervisor}\rule{0pt}{4mm}
+\\\optionalwithboldnewsgott{\@cosupervisor}
+\\\rule{0pt}{2cm}
+\\\withnewsgott{{\small\@date}}
+\end{tabular}
+}
+
+% Dissertation  commands
+\newcommand{\@coverstyle}[2]{ \thispagestyle{empty} \pagecolor{#1} \textcolor{#2}}
+
+\newcommand{\umtitlepage}{
+	\begin{titlepage}
+		\gdef\umc{grey}\gdef\engc{lightgray}\gdef\hide{0}
+	 	\@coverstyle{white}{grey}\printcover
+		\end{titlepage}
+	\normalfont \rmfamily \cleardoublepage \pagenumbering{roman}
+}
+
+\newcommand{\umfrontcover}{
+	\begin{frontcover}
+%		\gdef\hide{1} \@coverstyle{grey}{white} \printcover
+		\gdef\hide{1} \@coverstyle{white}{black} \printcover
+	\end{frontcover}
+}
+
+\newcommand{\umbackcover}[1]{
+	\begin{backcover}
+%		\if@twoside \@coverstyle{grey}{white} \cleardoubleevenemptypage \fi
+		\if@twoside \@coverstyle{white}{black} \cleardoubleevenemptypage \fi
+%		\@coverstyle{grey}
+		\@coverstyle{white}{black}
+		{\fontfamily{phv}\fontseries{mc}\selectfont ~\vfill \noindent #1 \vfill ~}
+	\end{backcover}
+}
+
+\newcommand{\listofabbreviations}{
+	%\chapter*{List of Abbreviations}
+	\printglossary[type=\acronymtype]
+	\cleardoublepage
+}
+
+\newcommand{\umappendix}[1]{\appendix\renewcommand\chaptername{#1}}
+
+% Lemmas, etc..
+
+% Implicit commands whenever possible
+\let \original@tableofcontents \tableofcontents
+\renewcommand{\tableofcontents}{\original@tableofcontents \cleardoublepage}
+
+\let \original@listoffigures \listoffigures
+\renewcommand{\listoffigures}{\original@listoffigures \cleardoublepage}
+
+\let \original@listoftables \listoftables
+\renewcommand{\listoftables}{\original@listoftables\cleardoublepage}
+
+\let \original@lstlistoflistings \lstlistoflistings
+\renewcommand{\lstlistoflistings}{\original@lstlistoflistings\cleardoublepage}
+
+\newenvironment{abstracten}{\chapter*{Abstract}}{\cleardoublepage}
+\newenvironment{abstractpt}{\chapter*{Resumo}}{\cleardoublepage}
+
+\let\originalbibliography\bibliography
+\renewcommand{\bibliography}[1]{
+	\bookmarksetup{startatroot} % Ends last part.
+	\addtocontents{toc}{\bigskip} % Making the table of contents look good.
+	\cleardoublepage
+	\originalbibliography{#1}
+}
+
+\makeatother

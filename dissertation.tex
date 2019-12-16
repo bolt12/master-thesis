@@ -1,0 +1,1405 @@
+% example for dissertation.sty
+\documentclass[
+  % Replace oneside by twoside if you are printing your thesis on both sides
+  % of the paper, leave as is for single sided prints or for viewing on screen.
+  oneside,
+  %twoside,
+  11pt, a4paper,
+  footinclude=true,
+  headinclude=true,
+  cleardoublepage=empty
+]{scrbook}
+
+\usepackage{dissertation}
+ 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+ 
+\theoremstyle{definition}
+\newtheorem{example}{Example}[definition]
+ 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+
+% ACRONYMS -----------------------------------------------------
+
+%import the necessary package with some options
+%\usepackage[acronym,nonumberlist,nomain]{glossaries}
+
+%enable the following to avoid links from the acronym usage to the list
+%\glsdisablehyper
+
+%displays the first use of an acronym in italic
+\defglsdisplayfirst[\acronymtype]{\emph{#1#4}}
+
+%the style of the Glossary
+\glossarystyle{listgroup}
+
+% set the name for the acronym entries page
+\renewcommand{\glossaryname}{Acronyms}
+
+%this shall be the last thing in the acronym configuration!!
+\makeglossaries
+
+
+% here are the acronym entries
+\newacronym{miei}{MIEI}{Integrated Masters in Computer Engineering}
+\newacronym{di}{DI}{Informatics Department}
+\newacronym{um}{UM}{University of Minho}
+\newacronym{fp}{FP}{Functional Programming}
+\newacronym{ct}{CT}{Category Theory}
+\newacronym{cs}{CS}{Computer Science}
+\newacronym{pfp}{PFP}{Probabilistic Functional Programming}
+\newacronym{aop}{AoP}{Algebra of Programming}
+\newacronym{laop}{LAoP}{Linear Algebra of Programming}
+\newacronym{saf}{SAF}{Selective Applicative Functors}
+\newacronym{edsl}{eDSL}{Embedded domain specific language}
+\newacronym{ppl}{PPL}{Probabilistic Programming Language}
+\newacronym{gadt}{GADT}{Generalised Algebraic Datatype}
+\newacronym{ghc}{GHC}{Glasgow Haskell Compiler}
+
+% these could go in an acronyms.tex file, and loaded with:
+% \loadglsentries[\acronymtype]{Parts/Definitions/acronyms}
+% when using this, you may want to remove 'nomain' from the package options
+
+%% **MORE INFO** %%
+
+%to add the acronyms list add the following where you want to print it:
+%\printglossary[type=\acronymtype]
+%\clearpage
+%\thispagestyle{empty}
+
+%to use an acronym:
+%\gls{qps}
+
+% compile the thesis in command line with the following command sequence:
+% pdlatex dissertation.tex
+% makeglossaries dissertation
+% bibtex dissertation
+% pdlatex dissertation.tex
+% pdlatex dissertation.tex
+
+% ----------------------------------------------------------------
+
+% Title
+\titleA{Selective Applicative Functors}
+\titleB{\& Probabilities} % (if any)
+%\subtitleA{First Part of Subtitle}
+%\subtitleB{Second part of Subtitle} % (if any)
+
+% Author
+\author{Armando João Isaías Ferreira dos Santos}
+
+% Supervisor(s)
+\supervisor{José Nuno Oliveira}
+\cosupervisor{Andrey Mokhov}
+
+% University (uncomment if you need to change default values)
+% \def\school{Escola de Engenharia}
+% \def\department{Departamento de Inform\'{a}tica}
+% \def\university{Universidade do Minho}
+% \def\masterdegree{Computer Science}
+
+% Date
+\date{\myear} % change to text if date is not today
+
+% Keywords
+%\keywords{master thesis, functional programming, probabilistic programming, monads, applicatives, selective applicative functor, haskell}
+
+% Glossaries & Acronyms
+%\makeglossaries  %  either use this ...
+%\makeindex	   % ... or this
+
+% Define Acronyms
+%\input{sec/acronyms}
+%\glsaddall[types={\acronymtype}]
+
+
+
+\ummetadata % add metadata to the document (author, publisher, ...)
+
+\begin{document}
+	% Cover page ---------------------------------------
+	\umfrontcover	
+	\umtitlepage
+	
+	% Add acknowledgements ----------------------------
+	\chapter*{Acknowledgements}
+	Write acknowledgements here
+
+
+	% Add abstracts (en,pt) ---------------------------
+	\chapter*{Abstract}
+	
+	\vskip0.5cm
+    \keywords{master thesis, functional programming, probabilistic programming, monads, applicatives, selective applicative functor, haskell}
+	
+	\cleardoublepage
+	\chapter*{Resumo}
+	
+	\vskip0.5cm
+    \keywordsPT{dissertação de mestrado, programação funcional, programação probabilística, mónadas, aplicativos, funtores aplicativos seletivos, haskell}
+    
+	% Summary Lists ------------------------------------
+	\tableofcontents
+	\listoffigures
+	\listoftables
+	\lstlistoflistings
+	%\listofabbreviations
+    \renewcommand{\listtheoremname}{List of theorems and definitions}
+    \listoftheorems[ignoreall,show={theorem,definition}]
+	\printglossary[type=\acronymtype]
+	\clearpage
+	\thispagestyle{empty}
+
+	
+	\pagenumbering{arabic}
+	
+	% CHAPTER - Introduction -------------------------
+	\chapter{Introduction}
+        This dissertation describes the work developed in the context of the course \gls{miei} held at \gls{di}, \gls{um}.
+        
+        The document is structured in the following way: this chapter provides the context, motivation and goals of this dissertation and present what is aimed to achieve; this chapter presents all the state of the art related with the subject of this dissertation, and related work which this work will be built upon; the chapter \ref{ch-background} introduces some of the needed background to topics covered; the chapter \ref{ch-problem} explains in more detail the problem and its challenges and what will be the methodology of work for finding the solution.
+		
+    \section{Context}\label{sec-context}
+    
+    Monads were introduced in functional programming by \cite{1995_wadler_monads} as a general and powerful approach for describing effectful (or impure) computations while still using pure functions. The key ingredient of the monad abstraction is the \textit{bind} operator. This operator leads to an approach to composing effectful computations which is inherently sequential. This intrinsic nature of monads can be used for conditional effect execution. However, sometimes, given the strength of this abstraction it is desirable to benefit from properties induced by weaker laws and this is not possible with monadic effect composition alone.
+
+    Applicative functors (\cite{mcbride2008applicative}) can be used for composing statically known collections of effectful computations, as long as these computations are independent from each other. However, this kind of functor can only take two effectful computations and, independently (i.e. in parallel), compute their values and return their composition.
+
+    Until now there wasn't an abstraction that would require all effects to be declared statically but provide a way to select which of the effects to execute dynamically. The Selective Applicative Functor abstraction solves this issue \cite{andrey2019selective}.
+
+    In the field of \gls{pfp}, monads are used to describe events (probabilistic computations) that depend on others (\cite{erwig_kollmansberger_2006}). Better than monads, which are inherently sequential, selective functors, provide a better abstraction for describing conditional probabilistic computations. This type of functors proved to be a very helpful abstraction in the fields of static analysis (at Jane Street) and speculative execution (at Facebook), and achieved great results without compromising the naturality of the adopted code style (\cite{andrey2019selective}).
+    
+    Arrows (\cite{Hughes:2000:GMA:347238.347246}), are more generic than monads and were designed to abstract the structure of more complex patterns that the monad interface couldn't support. The most common example is the \cite{swiestra&duponcheel} parsing library that took advantage of static analysis to improve its performance. This example couldn't be optimised using the Monad interface given its sequential nature. Having \gls{ct} as a foundation, the Arrow abstraction, made its way to the \gls{fp} ecossystem in order to mitigate the limitation of the powerful Monad.
+    
+    There are reasons to believe that adopting the selective abstraction, one can close the gap that once was only filled by the Arrow (\cite{Hughes:2000:GMA:347238.347246}) abstraction. On one hand, the generality of the Arrow interface allows us to overcome some of the structural limitation that refrains from implementing a more strong abstraction and compose several different combinators to obtain more expressiveness. On the other hand, languages like Haskell, which incorporate many of these abstractions out of the box, make code written in Arrow style convoluted and unnatural, regarding the Arrow interface, which makes it difficult to refactor.
+    
+    \section{Motivation and Goals}\label{sec-moti-goals}
+    
+	    The rise of complex topics like, machine learning, deep learning, quantum computing and software engineering in general are stimulating major advancements and discoveries. To cope with this complexity, mathematics always had a main role, either by formalising the underlying theory, either by providing robust and sound abstractions to deal with the heavy machinery. But what do these topics have in common? They all deal, in some way, with probabilities. 
+	    
+	    There is one very famous mathematical abstraction that made its way into the day-to-day of several science and engineering domains and if we look close enough we can see it on these emerging topics, the \emph{Monad}.
+	    
+	    Programming languages are the most used tool to work with complex topics because they provide a way to automate, abstract and reason about tasks. There are programming languages, specially functional programming languages, that work more closely to the mathematical level and are based in concepts like referential transparency and purity. With this being said, since \gls{cs} intersects many of these fields, functional programming languages try to incorporate many useful mathematical abstractions while still providing a way to automate the travail.
+	    
+	    However, not all of the abstractions useful in \gls{cs} come from mathematics, explicitly. There are several abstractions that were meant to factor out some kind of ubiquitous behaviour or to provide a sound and robust framework where one could reason about the code and provide a more efficient solution. The \gls{saf} is such an abstraction.
+	    
+	    Probabilistic programming allow programmers to model probabilistic events and predict or calculate results with a certain degree of uncertainty. Specifically \gls{pfp} manipulates and manages probabilities in an abstract, high-level way, abstracting away all the convoluted notation and complex mathematical formulas. Probabilistic Programming research is primarily focused on developing optimisations to inference and sampling algorithms in order to make code run faster while preserving the posterior probabilities. There are innumerous strategies and techniques and, using static analysis to do it is one of them (\cite{bernstein2019static}).
+    
+        The goal of this work is to study, evaluate and compare ways of describing and implementing probabilistic computations using the so-called \emph{selective abstraction} and how the benefits of doing so can improve the \gls{pfp} ecossystem. This will be accomplished by proposing an appropriate set of case studies and, ultimately, developing a Haskell library that provides an efficient encoding of probabilities, taking advantage of the selective applicative abstraction. By exploring how getting rid of the intrinsic sequential nature of the monads (\cite{Scibior:2015:PPP:2887747.2804317}) in favour of the speculative execution of the selective functors, this work aims to answer the following research question:
+        \begin{quote}
+        "Can the \texttt{select} operator be implemented more efficiently than the \texttt{bind} operator?"
+        \end{quote}
+
+	% CHAPTER - State of the Art ---------------------
+    % \chapter{State of the art}\label{ch-state-art}
+		
+	\section{State of the art}\label{sec-state-art}
+	    In the context of this thesis, abstractions can be seen from two prisms:
+	    \begin{itemize}
+	        \item The programming languages prism;
+	        \item The underlying mathematical theory prism.
+	    \end{itemize}{}
+	    
+	    Through these two points of view, we observe fundamentally the same thing, the only difference is that the programming languages prism makes us see something more concrete, i.e. brings us down the level of abstraction. That is why normally a lot of abstractions tend to be associated with patterns and interfaces that programmers, for being so frequent, want to generalise.
+	    
+	    With this being said, a recurrent problem in research is when authors try to explain mathematical abstractions by going down to a comfortable, intuitive and easy to relate level (\cite{DBLP:journals/corr/abs-1803-10195}). However, in \gls{cs} the level might be so low that the necessity of using such abstractions may be doubted. In \gls{cs} mathematical abstractions are useful ways of generalising and organising patterns that are too repetitive or have much in common. Thanks to a lot of work on topics like abstract algebra or \gls{ct}, these abstractions automatically become powerful reasoning tools. In this regard, finding an abstraction with mathematical structure it's \emph{halfway} to a more correct development.
+	    
+	    This section presents widely used mathematical abstractions that made its way in programming languages and how they are useful to work with probabilities in the so called probabilistic programming environment. How the most recent work by \cite{andrey2019selective} relates to abstractions and the way it can be used to provide a more efficient abstraction than \emph{monads} will also be addressed. Given the scope of this thesis and aiming to explore interesting ways of thinking about probability distributions, every time an abstraction is introduced will also be presented a concrete instance of it in the probabilistic setting.
+	    
+	    \subsection{Hierarchy of abstractions}
+	    
+	    Commonly, the purpose of abstraction is to generalise a certain behaviour. There is a field of mathematics that is responsible for exploring all kinds of abstraction and their relations - abstract algebra. Like every other algebra, this one studies the way of building more complex abstractions by combining simpler ones. If we think of abstractions as layers we can pretty much obtain the heritage mechanism that is so fond of Object Oriented Programming (\cite{Liskov:1987:KAD:62139.62141}).
+	    
+	    A hierarchy of abstractions aims to hide information and manage complexity. The highest level has the least information and lowest complexity, and along the lower layers the complexity goes up as well as its power and capabilities. In the context of this thesis it's a nice exercise to see the abstractions presented in the next sections as the mapping to the corresponding probability theory features and how the underlying levels translate to more complex ones.
+	    
+	    \subsection{Functors}
+	    
+	        \subsubsection{What are functors}
+	        
+	            Functors originate from \gls{ct} as morphisms between categories (\cite{Awodey:2010:CT:2060081}). Functors abstract a common pattern in programming and provide the ability to map a function inside some kind of structure. Since functors must preserve structure they are a powerful reasoning tool in programming.
+	            
+	            \begin{lstlisting}[mathescape, language=Haskell, caption={Functor laws},captionpos=b]
+	                class Functor f where
+	                    fmap :: (a -> b) -> f a -> f b
+	                    -- fmap id = id
+	                    -- fmap f . fmap g = fmap (f . g)
+	            \end{lstlisting}{}
+	            
+	        \subsubsection{Probabilistically speaking}
+	        
+	           There are a lot of analogies to explain what the type \texttt{f a} above means. The easiest one to understand is to see \texttt{f} as a container, then people can instantiate \texttt{f} to a concrete type like a list (\texttt{[ ]}).
+	           
+	           Probabilistically speaking, \texttt{f a} can be read as "Distribution of a's" and \texttt{fmap} (the factored out pattern) as the action of mapping a function through all the values of a distribution without changing their probabilities. As we'll see in section \ref{s-2-2} there are multiple ways of combining probabilities however, given the properties of a functor, it's only possible to map functions inside it while preserving its structure. This being said, the probability functor can be casually seen as only being capable to express $P(A)$ in probability theory (\cite{jtobin}).
+	
+	    \subsection{Applicative functors}
+	    
+	        \subsubsection{What are applicative functors}
+	        
+	            Applicative functors have their origin in a ubiquitous programming pattern. Most functional programming languages separate pure computations from effectful ones. Effectful computations can be seen as every computation that performs side effects or runs in a given context. \cite{mcbride2008applicative}, while working with the Haskell functional programming language, found that the pattern of applying pure functions to effectful computations popped out very frequently in a wide range of fields. The pattern consisted, mostly on
+	            \begin{inparaenum}
+                  \item embedding a pure computation in the current context while maintaining its semantics, i.e. lifting a value into an "effect free" context,\label{p-1} and then
+                  \item combining the results of the computations, i.e. \emph{applying} a pure computation to effectful ones.\label{p-2}
+                \end{inparaenum}
+	             To abstract this pattern all it takes is a way to factor out \ref{p-1} and \ref{p-2}.
+	             
+	            \begin{lstlisting}[mathescape, language=Haskell, caption={Applicative laws},captionpos=b]
+	                class Functor f => Applicative f where
+	                    pure :: a -> f a
+	                    (<*>) :: f (a -> b) -> f a -$>$ f b
+	                    -- pure id <*> u == u
+	                    -- pure f <*> pure x == pure (f x)
+	                    -- u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
+	                    -- u <*> pure y = pure ($\mbox{\textdollar}$ y) <*> u
+	            \end{lstlisting}{}
+	            
+	            It's important to note that for \texttt{f} to be an applicative it first needs to be a functor, this is the same to say that every applicative is a functor. This hierarchy can be seen as going down one layer of abstraction, empowering a functor \texttt{f} with more capabilities if it respects the applicative laws.
+	            
+	            Applicatives are an interesting case where they were not inspired in any mathematical abstraction, however \cite{mcbride2008applicative} make the correspondence with the categorical structure of the applicative functors and its identity opened ground for a lot of fascinating research (\cite{Paterson:2012:CAF:2368298.2368321}, \cite{Cooper:2008:EFA:1485346.1485361}, \cite{DBLP:journals/corr/CapriottiK14}).
+	        
+	        \subsubsection{Probabilistically speaking}
+	            
+	            Regarding the laws of the applicative functor we see that they pretty much define what is the intended semantic regarding sequencing effects. The last one, called the \emph{Interchange Law} (\cite{mcbride2008applicative}), clearly says that when evaluating the application of an effectful function to a pure argument, the order in which we evaluate the function and its argument \emph{doesn't matter}. However, if both of the computations are effectful the order \emph{does matter}, but a computation cannot depend on values returned by prior computations, i.e. the result of the applicative action can depend on earlier values but the effects can not. In other words, the computations can be run \emph{independently} from each other (\cite{Cooper:2008:EFA:1485346.1485361}, \cite{Marlow:2014:NFA:2692915.2628144}, \cite{Marlow:2016:DHD:3241625.2976007}, \cite{andrey2019selective}).
+	            
+	            So, if \texttt{f a} represents a distribution then \texttt{pure} can be seen as the embedding of a given value \texttt{a} in the probabilistic context with 100\% chance, and \texttt{(\textless*\textgreater)} as the action responsible of combining two \emph{independent} distributions, calculating their joint probability. This being said, the probability applicative functor can be casually seen as being able to express $P(A, B) = P(A)P(B)$, i.e. statistical independence (\cite{jtobin}).
+	    
+	    \subsection{Monads}
+	    
+	        \subsubsection{What are monads}
+	        
+	            Before being introduced in the context of programming languages Monads already were frequently used in algebraic topology by \cite{godement1958topologie} and \gls{ct} by \cite{maclane:71}. Monads were used in this areas because they were able to embed a given value into another structured object and because they were able to express a lot of different constructions in a single structure (\cite{DBLP:journals/corr/abs-1803-10195}). A proof of the flexibility and usefulness of Monads is its application in programming: \cite{Moggi:1991:NCM:116981.116984} introduced monads in order to be capable of reasoning about effectful programs and \cite{1995_wadler_monads} used them to implement effectful programs in Haskell. Although they are not the same, the mathematical monad and the programming language monad are related, fruit of the prism from each one is observed.
+	            
+	            \begin{definition}{A monad in a category $\mathscr{C}$ is defined as a triple $(T,\eta, \mu)$ where $T : \mathscr{C} \rightarrow \mathscr{C}$ is a functor; $\eta : Id_\mathscr{C} \rightarrow T$ and $\mu : T^2 \rightarrow T$ are natural transformations, such that:}
+	                \begin{align*}
+	                    &\mu_A \cdot T\mu_A = \mu_A \cdot \mu_{TA} \\
+	                    &\mu_A \cdot \mu_{TA} = id_{TA} = \mu_A \cdot T\mu_A
+	                \end{align*}{}
+	            \end{definition}
+	            
+	            In programming two alternative, but equivalent definitions for monads come up. If a functor is seen as a type constructor and natural transformations as functions:
+	            
+	            \begin{lstlisting}[mathescape, language=Haskell, caption={Monad laws and definition in terms of \texttt{unit} and \texttt{join}},captionpos=b]
+	                class Applicative m => Monad m where
+	                    unit :: a -> m a
+	                    join :: m (m a) -> m a
+	                    -- join $\cdot$ join = join $\cdot$ fmap join
+	                    -- join $\cdot$ unit = id = join $\cdot$ fmap unit
+	                    -- fmap f $\cdot$ join = join $\cdot$ fmap (fmap f)
+	                    -- fmap f $\cdot$ unit = unit $\cdot$ f
+	            \end{lstlisting}{}
+	            
+	            \begin{lstlisting}[mathescape, language=Haskell, caption={Monad laws and definition in terms of \texttt{unit} and \texttt{bind}},captionpos=b]
+	                class Applicative m => Monad m where
+	                    unit :: a -> m a
+	                    (>>=) :: m a -> (a -> m b) -> m b
+	                    -- unit a >>= f = unit (f a)
+	                    -- m >>= unit = m
+	                    -- (m >>= f) >>= g = m >>= (\x -> f x >>= g)
+	            \end{lstlisting}{}
+	            
+	            As we can see both definitions once again highlight the hierarchy of abstractions where every monad is an applicative, and consequently a functor. These two definitions are related by the following law:
+	            
+	            \begin{lstlisting}[mathescape, language=Haskell, caption={Relation between \texttt{join} and \texttt{bind}},captionpos=b]
+	                    m >>= f = join (fmap f m) 
+	            \end{lstlisting}{}
+	            
+	            If monads are so versatile what type of pattern do they abstract? Intuitively, monads abstract the idea of "taking some uninteresting object and turn it into something with more structure" (\cite{DBLP:journals/corr/abs-1803-10195}). This idea can be explained by using some of several known metaphors:
+	            
+	            \begin{itemize}
+	                \item Monads as \emph{containers}: Visualising it as a box to represent the type \texttt{m a}, the \texttt{unit} operation takes a value and wraps it in a box and the \texttt{join} operation takes a box of boxes and wraps it into a single box. This metaphor however, is not so good at giving intuition for \texttt{bind ($>>=$)} but it can be seen as a combination of \texttt{fmap} and \texttt{join}.
+	                
+	                \item Monads as \emph{computations}: Visualising \texttt{m a} as a computation, \texttt{a $\rightarrow$ m b} represents computations that depend on previous values so, \texttt{bind} lets us combine two computations emulating the sequential, imperative programming paradigm and \texttt{unit} represents a computation that does nothing.
+	            \end{itemize}{}
+	            
+	            Brought to programming languages, monads are used to encode different notions of computations and its structure allows us to reuse a lot of code. However they are also useful for sequencing effect with the aid of syntactic sugar (\cite{wiki:xxx}).
+	        
+	        \subsubsection{Probabilistically speaking}
+	            
+	            It's more rewarding to look at probability distributions as a probabilistic computation or event. Given this, by observing the type of \texttt{bind} we can infer that it let us combine an event \texttt{m a} with another that depends on the previous value \texttt{a $\rightarrow m b$} (\cite{erwig_kollmansberger_2006}). In other words, \texttt{bind} very much encapsulates the notion of conditional probabilities. What happens in a conditional probability calculation $P(B|A)$ is that $A$ becomes the sample space and $A$ and $B$ will only occur a fraction $P(A \cap B)$ of the time. Making the bridge with the type signature of \texttt{($>>=$)} : \texttt{m a} represents the new sample space $A$ and \texttt{$a \rightarrow m b$} the fraction where $A$ and $B$ occur. This being said, the probability monad can be usually seen as being able to express $P(B|A) = \frac{P(B \cap A)}{P(A)}$. 
+	            
+	            The observation that probability distributions form a monad is not new. Thanks to the work of \cite{giry1982} and following the hierarchy of abstractions, we see that it is indeed possible to talk about probabilities with respect to the weaker structures mentioned in the other sections (\cite{jtobin}, \cite{Scibior19}).
+	            
+	    \subsection{Arrows}
+	    
+	        \subsubsection{What are arrows}
+	        
+    	        Most of the abstractions described until now are based on \gls{ct}. The reason for this is because \gls{ct} can be seen as the "theory of everything", a framework where a lot of mathematical structures fit in. So, how can such an abstract theory be so useful in programming? Because computer scientists value abstraction! When designing an interface it is meant to reveal as little as possible about the implementation details and it should be possible to switch the implementation with an alternative one, i.e. other \emph{instances} of the same \emph{concept}. It's the generality of a monad that is so valuable and it's thanks to the generality of \gls{ct} that makes it so useful in programming.
+    	        
+    	        This being said, Arrows, introduced by \cite{Hughes:2000:GMA:347238.347246} and inspired by the ubiquity of \gls{ct}, aim to abstract how to build and structure more generic combinator libraries by suggesting the following type-class:
+    	        
+                \begin{lstlisting}[mathescape, language=Haskell, caption={Arrow type-class},captionpos=b]
+                    class Arrow a where
+                        arr :: (b -> c) -> a b c
+                        (>>>) :: a b c -> a c d -> a b d
+                        first :: a b c -> a (b, d) (c, d)
+    	        \end{lstlisting}{}
+    	       
+    	       As one can note, Arrows make the dependence on an input explicit and abstract the structure of a given output type. This is why it is said that Arrows generalise monads.
+    	       
+    	       Due to the fact that there are many more arrow combinators than monadic ones, a larger set of laws are required and the reader is remitted to \cite{Hughes:2000:GMA:347238.347246} paper for more information about them. However, a brief explanation of the three combinators is given: \texttt{arr} can be seen as doing the same as \texttt{return} does for monads, it lifts pure functions to computations; \texttt{($>>>$)} is analogous to \texttt{($>>=$)}, it is the left-to-right composition of arrows; and \texttt{first} comes from the limitation that Arrows can not express binary arrow functions, so this operator converts an arrow from $b$ to $c$ into an arrow of pairs, that applies its argument to the first component and leaves the other unchanged.
+    	       
+    	       An astute reader can see how Arrows try to encode the notion of a category and indeed the associativity law of \texttt{($>>>$)} is one of the laws of this type-class. Moreover, if one thinks about how, for any monad a function of type $a \rightarrow m b$ is an Kleisli arrow (\cite{Awodey:2010:CT:2060081}), we can define the arrow combinators as follows:
+    	        
+                \begin{lstlisting}[mathescape, language=Haskell, caption={Arrow type-class},captionpos=b]
+                    newtype Kleisli m a b = K (a -> m b)
+                
+                    instance Arrow (Kleisli m) where
+                        arr f = K (\b -> return (f b))
+                        K f >>> K g = K (\b -> f b >>= g)
+                        first (K f) = K (\(b, d) -> f b >>= \c -> return (c, d))
+                \end{lstlisting}{}
+                
+                This shows that Arrows in fact generalise monads. Nevertheless there's still one question that goes unanswered - why generalise monads if they serve the same purpose of providing a common structure to generic programming libraries? \cite{Hughes:2000:GMA:347238.347246} saw in the example of \cite{swiestra&duponcheel} a limitation on the monadic interface and argues that the advantage of the Arrow interface is that it has a wider class of implementations. Thus, simpler libraries based on abstract data types that aren't monads, can be given an arrow interface.
+                
+                It seems that Arrows are more expressive than the abstractions seen in the previous sections, but what \emph{are} their relation with them? Fortunately, \cite{Lindley:2011:IOA:1953652.1954016} established the relative order of strength of Applicative $\rightarrow$ Arrow $\rightarrow$ Monad, in contrast to the putative order of Arrow $\rightarrow$ Applicative $\rightarrow$ Monad. Furthermore, given the right restrictions, Arrows are isomorphic to both Applicatives and Monads being able to "slide" between the layers of this hierarchy of abstractions.
+    	        
+    	        \subsubsection{Probabilistically speaking}
+    	        
+    	        As seen, Arrows allow us to categorically reason about a particular structure and benefit from all the combinators that its interface offers. However, Arrows find themselves between Applicatives and Monads with respect to their strength, therefore do not express any extra special capabilities. Nevertheless, due to their generality, Arrows are able to offer either of the two abstractions' (Applicative and Monad) capabilities, provided that their laws are verified.
+    	        
+    	        In fact, Monads are able to express the minimum structure to represent arbitrary probability distributions (\cite{jtobin}). However, there are cases where it becomes hard to reason about probability distributions using only the monadic interface (\cite{Oliveira2016KeepDC}). Arrows come into play regarding this problem, allowing the so called \gls{laop} (\cite{Macedo2012MatricesAA}) as it will be seen in section \ref{sec-current-work}.
+    	        
+	    \subsection{Selective applicative functors}
+	    
+	        \subsubsection{What are selective applicative functors}
+	       
+	            Such as Applicatives, \gls{saf} did not originate in any mathematical construction, but rather from a limitation of the interfaces in the hierarchy of abstractions established so far.
+	            
+	            Allied to a specific research domain, like build systems and static analysis, \cite{andrey2019selective} saw the following limitations:
+	            
+	            \begin{itemize}
+	                \item Applicative functors, allow effects to be statically declared which makes it possible to perform static analysis. However, they only permit combining independent effects leaving static analysis of conditional effects aside;
+	                \item Monads, allow combining conditional effect, but can only do it dynamically which makes static analysis impossible.
+	            \end{itemize}{}
+	            
+	            With this being said, \cite{andrey2019selective} developed an interface (abstraction) which allows to get the best of both worlds, the \gls{saf}.
+	            
+	            \begin{lstlisting}[mathescape, language=Haskell, label={lst:saf}, caption={Selective Applicative Functor laws},captionpos=b]
+	                class Applicative f => Selective f where
+	                    select :: f (Either a b) -> f (a -> b) -> f b
+	                    -- x <*? pure id = either id id <$\mbox{\textdollar}$> x
+	                    -- pure x <*? (y *> z) = (pure x <*? y) *> (pure x <*? z)
+	                    -- x <*? (y <*? z) = (f <$\mbox{\textdollar}$> x) <*? (g <$\mbox{\textdollar}$> y) <*? (h <$\mbox{\textdollar}$> z)
+                      -- where
+                      --     f x = Right <$\mbox{\textdollar}$> x
+                      --     g y = \a -> bimap (,a) ($\mbox{\textdollar}$a) y
+                      --     h z = uncurry z
+	            \end{lstlisting}{}
+	            
+	            As we can observe, \gls{saf} find themselves between Applicatives and Monads and only provide one operator, \texttt{select}. By parametricity (\cite{Wadler:1989:TF:99370.99404}), it is possible to understand that this operator runs an effect \texttt{f (Either a b)} which returns one of two values, \texttt{a} or \texttt{b}. In the case of the return value be of type \texttt{a}, the second effect must be run, in order to apply the function $a \rightarrow b$ and obtain the \texttt{f b} value. In the case of the return value be of type \texttt{b}, then the second computation can be \emph{skipped}.
+	            
+	            The laws presented in the listing above characterise \gls{saf} insofar as the former indicates that the \texttt{select} operator should not duplicate any effect associated with \texttt{x} and the second indicates that \texttt{select} should not add any computation when the first one is pure, which allows it to be distributed.
+	            
+	            It is worth noting that there isn't any law that forces \gls{saf} to discard the second computation, in particular \texttt{pure (Right x) $<$*$?$ y = pure x}, nor it exists a law that forces the return value of $f (a \rightarrow b)$ to be applied to the value obtained by the first computation, in particular \texttt{pure (Left x) $<$*$?$ y = (\$x) $<$\$$>$ y}. The reason for this is simple: it allows instances of \gls{saf} that are useful to perform static analysis and, in the same way as Applicative functors do not restrict the order of execution of two independent effects, the \texttt{select} operator becomes more expressive.
+	            
+	            With this in mind, it is possible to see how \gls{saf} solve the limitation of Applicatives and Monads in the context of static analysis, allowing over-approximation and under-approximation of effects in a circuit with conditional branches. Nonetheless, \gls{saf} are useful not only in static contexts, but also in dynamic ones, benefiting from speculative execution (\cite{andrey2019selective}).
+	            
+	            From a theoretic point of view, \gls{saf} can be seen as the composition of an Applicative functor \texttt{f} with the \texttt{Either} monad. Even though this formalisation has not been studied by \cite{andrey2019selective}, it's important to address the relation between \gls{saf} and Arrows. Taking advantage of the first sentence of this paragraph, we can infer that, as every \gls{saf} is an instance of Applicative, every Applicative functor is also an instance of Selective. Moreover, as it is pointed by \cite{andrey2019selective}, it's possible to implement a specialised version of the \texttt{bind ($>>$=)} operator for any \emph{enumerable} data type, i.e. the capacity of \emph{selecting} an infinite number of cases makes \gls{saf}s equivalent to Monads (\cite{gist_2019}). It seems that, like Arrows, given the right conditions, \gls{saf} are also able to "slide" between Applicatives and Monads. As a matter of fact, \cite{Hughes:2000:GMA:347238.347246} had already come up with an interface that extended Arrows with conditional capabilities, the \texttt{ArrowChoice} type-class.
+	            
+	            But if there was already an abstraction capable of expressing the same as \gls{saf}s why did they arise? Arrows are more general and powerful than \gls{saf}s and could be used to solve the static analysis and speculative execution examples presented by \cite{andrey2019selective}. In fact, the build system DUNE (\cite{dune_2018}), is an example of the successful application of Arrows. However, adding the ability of performing static analysis or speculative execution in a codebase that isn't written using the Arrow abstraction, becomes more complicated than only defining an instance for \gls{saf} in just a couple of lines. Given this, \gls{saf}s are a just good enough solution for providing the ability of static analysis of conditional effects and speculative execution without relying in the more powerful and intrusive Arrow abstraction.
+	            
+	    \section{Related work}\label{sec-related-work}
+        
+        \subsection{Exhaustive probability distribution encoding}
+        
+        Over the past few years, the field of probabilistic programming has been primarily concerned with extending languages by offering probabilistic expressions as primitives and serving as practical tools for Bayesian modelling and inference (\cite{erwig_kollmansberger_2006}). As a result, several languages were created to respond to emerging limitations. Despite the observation that probability distributions form a monad isn't new, it was not until later that its sequential and compositional nature was explored by \cite{Ramsey:2002:SLC:565816.503288}, \cite{Goodman:2013:PPP:2480359.2429117} and \cite{Gordon:2013:MPB:2429069.2429119}.
+        
+        \cite {erwig_kollmansberger_2006} were the first to define distributions as monads by designing a probability and simulation library based on this concept. \cite{kidd2007build}, the following year, inspired by the work of \cite{Ramsey:2002:SLC:565816.503288}, introduced a modular way of probability monad construction and showed the power of using monads as an abstraction. Given this, he was able to, through a set of different monads, offer ways to calculate probabilities and explore their compositionality, from discrete distributions to sampling algorithms.
+                
+         \cite {erwig_kollmansberger_2006}, in their library, used the non-deterministic monad to represent distributions, resulting in an exhaustive approach capable of calculating the exact probabilities of any event. However, common examples of probabilistic programming grow the sample space exponentially and make it impossible to calculate the entire distribution. Despite \cite{larsen2011memory} 's efforts to improve the performance of this library, his approach was still limited to exhaustively calculating all possible outcomes.
+                
+         Apart from the asymptotic poor performance of the \cite{erwig_kollmansberger_2006} library, the use of the non-deterministic monad means that its sequential nature does not allow for further optimisations. It was with these two limitations in mind that many probabilistic programming systems were proposed.
+        
+        \subsection{Embedded domain specific languages}
+        
+        \gls{ppl}s usually extend an existing programming language. The choice of the base language may depend on many factors such as paradigm, popularity and performance. There are many probabilistic programming languages ​​with different trade-offs (\cite{Scibior:2015:PPP:2887747.2804317}) and many of them are limited to ensure that the model has certain properties in order to make inference fast. The type of approach followed by these programming languages, such as BUGS (\cite{gilks1994language}) and Infer.NET (\cite{minkainfer}), simplify writing inference algorithms for the price of reduced expressiveness.
+        
+        The more generic approach, known as universal probabilistic programming, allows the user to specify any type of model that has a computable prior. The pioneering language was Church (\cite{goodman2012church}), a sub-dialect of Scheme. Other examples of probabilistic programming languages include Venture and Anglican (\cite{mansinghka2014venture}, \cite{tolpin2015probabilistic}) both also Scheme sub-dialects. These universal languages are much more expressive, however, implementing inference algorithms in these is much more difficult.
+                
+        \cite{Scibior:2015:PPP:2887747.2804317} shows that the Haskell functional language is an excellent alternative to the above mentioned languages, ​with regard to Bayesian modelling and development of inference algorithms. Just as \cite{erwig_kollmansberger_2006}, \cite{Scibior:2015:PPP:2887747.2804317} use monads and develop a practical probabilistic programming library whose performance is competitive with that of the Anglican language. In order to achieve the desired performance, a less accurate than the exhaustive approach to calculating probabilities was used: sampling. This work by \cite{Scibior:2015:PPP:2887747.2804317}, also elaborated in his doctoral dissertation (\cite{Scibior19}), kept on, giving rise to a more modular extension of the library presented in its previous work, in order to separate modelling with inference (\cite{scibior2018functional}). Despite the results obtained, both solutions suffer from the fact that they use only monads to construct probability distributions, and since monads are inherently sequential they are not able to exploit parallelism in the sampling of two independent variables.
+                
+        \cite{jtobin} contributes to the investigation of embedded probabilistic programming languages, which have the advantage of benefiting from various features for free such as parser, compiler and host language library ecosystem. More than that, \cite{jtobin} studies the functorial and applicative nature of the Giry monad and highlights its various capabilities by mapping them to the probabilistic setting. It uses free monads, a novel technique for embedding a statically typed probabilistic programming language into a purely functional language, obtaining a syntax based on the Giry monad, and uses free applicative functors to be able to express statistical independence and explore its parallel nature. Notwithstanding the progress and studies shown, \cite{jtobin} does not cope with the latest abstraction of \gls{saf} nor fills the gap on how they fit into a probabilistic context in order to benefit from their properties.
+        
+    \section{Summary}\label{sec-summary}
+    
+    The discrete probability distribution is a particular representation of probability distributions. A distribution is represented by a sampling space, i.e. an enumeration of both the support and associated probability mass at any point.
+    
+    Discrete distributions are also instances of the Functor type-class, which means that you can take advantage of the \texttt{fmap} operator to map all values (the distribution domain) to others while keeping the distribution structure intact, i.e. maintaining the probabilities of each value.
+        
+    The Applicative instance lets you apply pure functions to distributions. By taking advantage of the Applicative properties and laws, it is possible, for example, to combine two distributions to calculate their joint probability, if we know that they are independent from each other.
+        
+    The Monad instance lets you chain distributions, giving the possibility of expressing the calculation of conditioned probability. As far as probabilistic programming is concerned, the monadic interface allows the programmer to benefit from syntactic sugar making it easier for him to write imperative style code.
+    
+    The most prevalent abstractions in \gls{fp} were analysed in order to understand the motivation and theory behind these and in which way do they relate to the probabilistic setting. It is concluded that the mathematical theoretic foundations are transversal to all abstractions seen and, in particular, \gls{ct} is ubiquitous in programming and \gls{cs} in general. There are cases where the need for abstraction comes from more practical contexts and a systematic and disciplinary study, recurring to sound mathematical frameworks, leads to the design of a correct and efficient solution.
+    
+    Given this, what type of probabilistic interpretations or benefits are possible to achieve with \gls{saf} concerns the scope of this dissertation. After a detailed analysis and interpretation of the different abstractions found in the \gls{fp} ecosystem, it is possible to outline several starting points in order to try and achieve the main goal of this thesis: proving that the \gls{saf} abstraction is useful in providing a more efficient solution than Monads to encode probabilities. The ability of static analysis and speculative execution of \gls{saf}s can prove to be very useful in optimising certain libraries, as was the case of the Haxl library (\cite{Marlow:2014:NFA:2692915.2628144}, \cite{andrey2019selective}). On the other hand, the adoption of a less strong abstraction than the monadic one, but (infinitely) as expressive as this one, may prove to be of value in mitigating the performance constraints that the monadic interface imposes because of being inherently sequential.
+    
+    At this point the reader already has all the background knowledge necessary to understand the scope of this master's dissertation and to be able to relate all the concepts that will eventually be addressed in the future. Nevertheless, this chapter will serve as a reference if any future reasoning needs to be made clear.
+    
+    At the same time as the different key topics were introduced, it was made known the state of the art that belongs to each one, culminating in the presentation of the related and existing work in the area of functional probabilistic programming and how this dissertation stands out from the rest.          
+    
+    \chapter{Background}\label{ch-background}
+    
+        \section{Path to Probabilistic Programming}\label{s-2-2}
+    
+        This section shines a light through the path of probabilities and their foundations, all the way through statistics, culminating with its use in probabilistic programming. The objective is to give a good background refreshment and intuition to the reader in order to eliminate the need of resorting to heavy books.
+        
+        I will draw on the great work of \cite{CaseBerg:01} and \cite{RePEc:bes:amstat:v:59:y:2005:m:august:p:276-276} to explain the next topics.
+         
+        \subsection{Set theory}
+        
+            The field of probability theory is the base in which all statistics was built, giving means to model populations, experiences, or almost everything else. Through these models, statisticians are able to draw inference about populations, inferences based on examination of only a part of the whole.
+            
+            Just as statistics was built upon the foundations of probability theory, probability theory was built upon set theory. One of the main objectives of a statistician is to obtain conclusions about a population of objects by conducting an experiment, for which he needs to first identify all possible outcomes, the \emph{sample space}.
+            
+            \begin{definition}{}
+                The set $S$ of all possible outcomes of an experience is called the \emph{sample space}.
+            \end{definition}
+            
+            The next step, after the sample space is defined, will be to consider the collection of possible outcomes of an experience.
+            
+            \begin{definition}{}
+                An \emph{event} $E$, is any collection of possible results of an experience, i.e. any subset of $S$ ($E \subseteq S$).
+            \end{definition}
+            
+            As the reader ought to know, there are several elementary operations on sets (or events):
+            
+            \vskip0.2cm
+            \textbf{Union:} The union of two events, $A \cup B$, is the set of elements that belong to either $A$ or $B$, or both:
+            
+            \begin{equation}
+                A \cup B = \{x : x \in A\ or\ x \in B\}
+            \end{equation}{}
+            
+            \textbf{Intersection:} The intersection of two events, $A \cap B$, is the set of elements that belong to both $A$ and $B$:
+            
+            \begin{equation}
+                A \cup B = \{x : x \in A\ and\ x \in B\}
+            \end{equation}{}
+            
+            \textbf{Complementation:} The complement of an event $A$, $A^c$, is the set of all elements that are not in $A$:
+            
+            \begin{equation}
+                A^c = \{x : x \notin A \}
+            \end{equation}{}
+            
+            This elementary operations can be combined and behave much like numbers:
+            
+            \begin{theorem}{}
+            \begin{align*}
+                &1.\ Commutativity && A \cup B = B \cup A \\
+                &                  && A \cap B = B \cap A \\
+                &2.\ Associativity && A \cup (B \cup C) = (A \cup B) \cup C \\
+                &                  && A \cap (B \cap C) = (A \cap B) \cap C \\
+                &3.\ Distributive\ Laws && A \cap (B \cup C) = (A \cap B) \cup (A \cap C) \\
+                &                       && A \cup (B \cap C) = (A \cup B) \cap (A \cup C) \\
+                &3.\ DeMorgan's\ Laws && (A \cup B)^c = A^c \cap B^c \\
+                &                     && (A \cap B)^c = A^c \cup B^c
+            \end{align*}{}
+            \end{theorem}
+            
+            I remit the reader to \cite{CaseBerg:01} for the proofs of these properties.
+        
+        \subsection{Basic probabilities and distributions}
+        
+            Probabilities come up a lot often in our daily lives. They are not only of use to statisticians, a good understanding of probability theory allows us to assess correct probabilities to everyday tasks and to benefit from the wise choices that are made because of them. Probability theory is also useful in the fields of science and engineering, for example the design of a nuclear reactor must be such that the escape of radioactivity into the environment is an extremely rare event. So, using probability theory as a tool to deal with uncertainties, the reactor can be designed to ensure that an unacceptable amount of radiation will escape once in a billion years.
+            
+            \subsubsection{What are probabilities}
+            
+                When an experience is made, its realisation results on an outcome that is a subset of the sample space. If the experiment is repeated multiple times the result might vary in each repetition, or not. This "frequency of occurrence" can be seen as a \emph{probability}. If the result of an experience can be described probabilistically its half way there to analyse the experience statistically. However, this "frequency of occurrence" is just one of the many interpretations of what is a probability. Another possible interpretation is a more subjective one, which is the one where a probability is the belief of a chance of an event occurring.
+                
+                For each event $A$ in the sample space $S$ we want to associate with $A$ a number between $[0, 1]$, this number will be called the probability of $A$, denoted $P(A)$. The domain of $P$, intuitively is the set of all subsets of $S$, this set is called a \emph{sigma algebra}, denoted by $\mathscr{B}$.%
+                
+                \begin{definition}{A collection of subsets of S is a sigma algebra, $\mathscr{B}$ if it satisfies the following properties:}
+                \begin{align*}
+                    &1.\ \emptyset \in \mathscr{B}\ \text{(the empty set is an element of $\mathscr{B}$)}\\
+                    &2.\ \text{If}\ A \in \mathscr{B}\ \text{, then}\ A^c \in \mathscr{B}\  \text{($\mathscr{B}$ is closed under complementation)}\\
+                    &3.\ \text{If}\ A_1, A_2, ... \in \mathscr{B}\ \text{, then}\ \bigcup_{i=1}^{\infty} A_i \ \in \mathscr{B}\ \text{($\mathscr{B}$ is closed under countable unions)}
+                \end{align*}{}
+                \end{definition}{}
+                
+                \begin{example}{(Sigma algebras)}
+                    If $S$ has $n$ elements, then $\mathscr{B}$ has $2^n$ elements. For example, if $S = \{1,2,3\}$, then $\mathscr{B}$ is the collection of $2^3 = 8$ sets:
+                    \begin{align*}
+                        &\{1\}\quad \{1,2\}\quad \{1,2,3\} \\
+                        &\{2\}\quad \{1,3\}\quad \{\emptyset\} \\
+                        &\{3\}\quad \{2,3\}
+                    \end{align*}{}
+                    
+                    If $S$ is uncountable ($S = (-\infty, +\infty)$), then $\mathscr{B}$ is the the set that contains all sets of the form:
+                    \begin{align*}
+                       [a, b]\quad [a, b)\quad (a, b]\quad (a, b) 
+                    \end{align*}{}
+                \end{example}{}
+                
+                Given this, we can now define $P(\cdot)$ as a function from $\mathscr{B} \rightarrow [0,1]$, this probability measure must assign to each event $A$, a probability $P(A)$ and abide the following properties:
+                
+                \begin{definition}{Given a sample space $S$ and an associated sigma algebra $\mathscr{B}$, a probability function $P$ satisfies:}
+                \begin{align*}
+                & 1.\ P(A) \in [0, 1]\ \text{, for all}\ A \in \mathscr{B} \\
+                & 2.\ P(\emptyset) = 0\ \text{(i.e. if $A$ is the empty set, then $P(A) = 0$)} \\
+                & 3.\ P(S) = 1\ \text{(i.e. if $A$ is the entire sample space, then $P(A) = 1$)} \\
+                & 4.\ \text{$P$ is \emph{countably additive}, meaning that if, $A_1$, $A_2$, ...} \\ 
+                & \quad \text{is a finite or countable sequence of \emph{disjoint} events, then:}\\
+                & \qquad\qquad P(A_1 \cup A_2 \cup ....) = P(A_1) + P(A_2) + \text{...} 
+                \end{align*}{}
+                \end{definition}{}
+                
+                This properties satisfy the Axioms of Probability (or the Kolmogorov Axioms), and every function that satisfies them is called a probability function. The first 3 axioms are pretty intuitive and easy to understand, however, the fourth one is more subtle and is an implication of the third Kolmogorov Axiom, called the \emph{Axiom of Countable Additivity} which says that we can calculate probabilities of complicated events by adding up the probabilities of smaller events, provided those smaller events are disjoint and together contain the entire complicated event.
+        
+        \subsubsection{Calculus of probabilities}
+            
+            From the Axioms of Probabilities we can build up many properties of the probability function. Properties are quite useful for calculations of more complex probabilities. The additivity property automatically implies certain basic properties that are true for any probability model at all.
+            
+            Taking a look at $A$ and $A^c$ we can see that they are always disjoint, and their union is the entire sample space: $A \cup A^c = S$. By the additivity property we have $P(A \cup A^c) = P(A) + P(A^c) = P(S)$, and since we know $P(S) = 1$ , then $P(A \cup A^c) = 1$ or:
+            \begin{align}
+                P(A^c) = 1 - P(A)
+            \end{align}{}
+            
+            In other words, the probability of an event not happening is equal to one minus the probability of an event happening.
+            
+            We can already see how this property can be useful, and in fact there are a lot others that follow from other properties.
+            
+            \begin{theorem}{Let $A_1$, $A_2$, ... be events that form a partition of the sample space $S$. Let $B$ be any event, then:}
+                \begin{align*}
+                    P(B) = P(A_1 \cap B) + P(A_2 \cap B) + ...
+                \end{align*}{}
+            \end{theorem}
+            
+            \begin{theorem}{Let $A$ and $B$ be two events such that $B \subseteq A$. Then:}\label{2-1-3}
+                \begin{align*}
+                    P(A) = P(B) + P(A \cap B^c)
+                \end{align*}{}
+            \end{theorem}
+            
+            And since we always have $P(A \cap B^c) \geq 0$, we can conclude:
+            \begin{corollary}{(Monotonicity) Let $A$ and $B$ be two events such that $B \subseteq A$. Then:}
+                \begin{align*}
+                    P(A) \geq P(B)
+                \end{align*}{}
+            \end{corollary}
+            
+            And rearranging \ref{2-1-3} we obtain:
+            \begin{corollary}{Let $A$ and $B$ be two events such that $B \subseteq A$. Then:}
+                \begin{align*}
+                    P(A \cap B^c) = P(A) - P(B)
+                \end{align*}{}
+            \end{corollary}
+            
+            More generally, if the $B \subseteq A$ constraint is lifted, we have the following property:
+            \begin{theorem}{(Principle of inclusion–exclusion, two-event version) Let $A$ and $B$ be two events. Then:}\label{2-1-4}
+                \begin{align}\label{t-2-1-4}
+                    P(A \cup B) = P(A) + P(B) - P(A \cap B)
+                \end{align}{}
+            \end{theorem}
+            
+            Property \ref{2-1-4} gives an useful inequality for the probability of an intersection. Since $P(A \cup B) \leq 1$, we have from \ref{t-2-1-4}, after some rearranging:
+            \begin{align}\label{al-6}
+                P(A \cap B) \geq P(A) + P(B) - 1
+            \end{align}{}
+            
+            This inequality is a special case of what is known to be \emph{Bonferroni's Inequality}.
+            Given this, we can affirm that probabilities always satisfy the basic properties of total probability, subadditivity, and monotonicity. And once again I remit the reader to check the proofs in \cite{CaseBerg:01} or \cite{RePEc:bes:amstat:v:59:y:2005:m:august:p:276-276}.
+            
+        \subsubsection{Counting and enumerating outcomes}
+        
+        Counting methods are used to build assessments of probabilities to finite sample spaces. Counting problems, in general, appear to be complicated, and frequently there are a lot of constraints to take into account. One form of solving this problem is to break the problem into several easy to count tasks and use some combination rules.
+        
+        \begin{theorem}{(Fundamental Theorem of Counting)}\label{t-2-1-5}
+            If a job consists in $k$ tasks, in which the \emph{i}-th task can be done in $n_i$ ways, $i = 1,...,k$, then the whole job can be done in $n_1 \times n_2 \times ... \times n_k$ ways.
+        \end{theorem}{}
+        
+        Although theorem \ref{t-2-1-5} is a good place to start exist situations where, usually, there are more aspects to consider. In a lottery, the first number can be chosen in 44 ways and the second in 43 ways, making a total of $44 \times 43 = 1892$ ways. However, if the player could pick the same number twice then the first two numbers could be picked in $44 \times 44 = 1936$ ways. This distinction is between counting \emph{with replacement} and counting \emph{without replacement}. There is a second very important aspect in any counting problem: whether or not the \emph{order} of the tasks is important. Taking these considerations into account, its possible to construct a $2 \times 2$ table of possibilities.
+        
+        Back to the lottery example, we can express all the ways a player can pick 6 numbers out of 44, under the four possible case:
+        
+        \begin{itemize}
+            \item \emph{ordered, without replacement} - Following \ref{t-2-1-5} the first number can be picked in 44 ways, the second in 43, etc. So, there are:
+            \begin{align*}
+                44 \times 43 \times 42 \times 41 \times 40 \times 39 = \frac{44!}{38!} = 5082517440
+            \end{align*}{}
+            \item \emph{ordered, with replacement} - Each number can be picked in 44 ways, so:
+            \begin{align*}
+                44 \times 44 \times 44 \times 44 \times 44 \times 44 = 44^6 = 7256313856
+            \end{align*}{}
+            \item \emph{unordered, without replacement} - Since we know how many ways we can pick the numbers if the order is taken into account, then we just need to divide the redundant orderings. Following \ref{t-2-1-5}, 6 numbers can be rearranged in $6!$, so:
+            \begin{align*}
+                \frac{44 \times 43 \times 42 \times 41 \times 40 \times 39}{6 \times 5 \times 4 \times 3 \times 2 \times 1} = \frac{44!}{6!38!} = 7059052
+            \end{align*}{}
+        \end{itemize}{}
+        
+        This last form of counting is so frequent that there is a special notation for it:
+        
+        \begin{definition}{For non-negative numbers, $n$ and $r$, where $n \geq r$, the symbol $\binom{n}{r}$, read \emph{$n$ choose $r$}, as:}
+            \begin{align*}
+                \binom{n}{r} = \frac{n!}{r!(n-r)!}
+            \end{align*}{}
+        \end{definition}{}
+       \begin{itemize}
+            \item \emph{unordered, with replacement} - This is the most difficult case to count. To count this case, it's easier to think of placing 6 markers into 44 boxes. Someone noticed (\cite{feller-vol-2}) that all we need to keep track of is the arrangement of the markers and the walls of the boxes. Therefore, we have 43 (walls) $+$ 6 markers $=$ 49 objects which can be combined in $49!$ ways. We still need to divide the redundant orderings, so: 
+            \begin{align*}
+                \frac{49!}{6!43!} = 13983816
+            \end{align*}{}
+        \end{itemize}{}
+        
+        We can summarise these situations in the following table:
+        \begin{table}[h]
+            \centering
+            \resizebox{0.6\textwidth}{!}{%
+            \begin{tabular}{@{}ccc@{}}
+            \toprule
+            \multicolumn{1}{l}{} & Without replacement & With replacement \\ \midrule
+            Ordered & $\frac{n!}{(n-r!)}$ & $n^r$ \\
+            Unordered & $\binom{n}{r}$ & $\binom{n+r-1}{r}$ \\ \bottomrule
+            \end{tabular}%
+            }
+            \caption{Number of possible arrangements of size $r$ from $n$ objects}
+            \label{tab:my-table}
+        \end{table}
+        
+        This counting techniques are useful when the sample space is finite and all outcomes in $S$ are equally probable. With this being said, the probability of an event can be calculated counting the number of its possible outcomes. For $S = \{S_1, ..., S_n\}$ saying that all the elements are equally probable means $P(\{s_i\} = \frac{1}{N}$. From the Axiom of Countable Additivity, for any event $A$:
+        
+        \begin{align*}
+            P(A) = \frac{\text{\# of elements in $A$}}{\text{\# of elements in $S$}}
+        \end{align*}{}
+        
+        \subsubsection{Conditional probability and independence}
+        
+        Every probabilities dealt with until now were unconditional. There are several situations where it is desirable to \emph{update the sample space based on new information}, that is to calculate conditional probabilities.
+        
+        \begin{definition}{If $A$ and $B$ are events in S, and $P(B) > 0$, then the conditional probability of $A$ given $B$, is:}\label{d-2-1-6}
+            \begin{align*}
+                P(A|B) = \frac{P(A \cap B)}{P(B)}
+            \end{align*}{}
+        \end{definition}{}
+        
+        It is worth noting that what happens in a conditional probability calculation is that $B$ becomes the sample space ($P(B|B) = 1$). The intuition is that the event $B$ will occur a fraction $P(B)$ of the time and, both $A$ and $B$ will occur a fraction $P(A \cap B)$ of the time; so the ration $P(A \cap B)/P(B)$ gives the \emph{proportion} of times when $B$ occurs, $A$ also occurs.
+        
+        Rearranging \ref{d-2-1-6} gives a useful way to calculate intersections:
+        \begin{align}\label{a-7}
+           P(A \cap B) = P(A|B)P(B) 
+        \end{align}{}
+        
+        By symmetry of \ref{a-7} and equating both right-hand sides of the symmetry equations we get:
+        
+        \begin{theorem}{(Bayes' Theorem) Let $A$ and $B$ be two events with positive probabilities each:}\label{t-bayes}
+            \begin{align*}
+                P(A|B) = P(B|A)\frac{P(A)}{P(B)}
+            \end{align*}{}
+        \end{theorem}{}
+        
+        There might be cases where an event $B$ does not have any impact on the probability of other event $A$: $P(A|B) = P(A)$. If this holds then by using Bayes' rule \ref{t-bayes}:
+        
+        \begin{align*}
+            P(B|A) = P(A|B)\frac{P(B)}{P(A)} = P(A)\frac{P(B)}{P(A)} = P(B)
+        \end{align*}{}
+        
+        \subsubsection{Distribution functions}
+        
+        \subsection{Statistical and Bayesian inference}
+        
+        \subsection{Probabilistic programming}
+        
+    \section{(Linear) Algebra of Programming}
+    
+	% CHAPTER - Problem and Challenges ---------------
+	\chapter{The problem and its challenges}\label{ch-problem}
+	
+	\section{Probabilistic interpretation of Selective Functors}
+	
+	In section \ref{sec-state-art} was presented the most well-known abstractions in functional programming as well as a probabilistic interpretation of them and how this translates into the context of probabilistic programming. The analysis of how the Giry monad (\cite{giry1982}) is a Functor and an Applicative made by \cite{jtobin} brings us closer to a possible probabilistic interpretation of \gls{saf}, observation induced by the hierarchy of abstractions. In addition, the relationship between \gls{saf} and Arrows made by \cite{andrey2019selective} and the fact that \gls{ct} was instrumental in Arrows design and semantics has prompted the challenge of also finding how can Arrows' fundamentals and generality be useful in finding the answer to what the probabilistic interpretation of \gls{saf} is.
+
+    Thus, the problem is to find the probabilistic interpretation of Arrows and its context in the probabilistic programming. This being said, it is thought that due to the mentioned equivalence, it will be possible to reuse much of their interpretation and to be one step closer of finding the answer to the problem presented in the following section.
+
+	\section{Inefficient probability encodings}
+	
+	Roughly, there are two ways to model probabilistic distributions. In light of the work mentioned in the \ref{sec-related-work} section, it is possible to opt for an extensive representation of a distribution, where all chance-value pairs are stored and any manipulation done in the structure is done for all of these. This approach has the advantage that it is possible to get the exact probability of any type of event, however it has the disadvantage that any minimally complex problem can lead to an explosion of states within the distribution which greatly affects performance. With this in mind, another, less exhaustive way to model probabilities is that instead of always calculating the exact probabilities for all values, they are calculated using less accurate but faster and more efficient inference algorithms.
+
+    Modelling a simple program that calculates the probability that a particular event will occur in $N$ throws of a die using the exhaustive approach quickly becomes unfeasible for a relatively small $N$. Modelling a complex, critical program that calculates the likelihood of two planes crashing using a non-exhaustive approach can lead to dangerous situations if the accuracy of the results is not desired one. It is this trade-off that is usually explored in probabilistic programming research and depends largely on the type of encoding that is done on distributions.
+
+    The problem then is to develop an  encoding that is able to minimise the gap between the two most popular approaches to encoding probabilistic distributions, finding one that takes advantage of the Selective Functors abstraction and benefits from its static analysis or speculative execution properties.
+	
+	\section{Research methodology}\label{sec-approach}
+	
+	Given the problems and its challenges presented above, the research plan consists in tackling each one by order. The reason for this is due to the fact that some of the issues are dependent from other ones and it is not possible to achieve them without responding to the others first.
+	
+	With this being said, regarding the problem of finding the probabilistic interpretation of \gls{saf}s a type safe matrix representation and manipulation library is being developed in Haskell in order to encode the basic \gls{laop} combinators. This library will be important to help building intuition and exploring the functorial, applicative and monadic structure of probability distributions represented as matrices. It will also implement the Arrow type-class since this instance is tightly related with the \gls{saf} abstraction. If one is capable of implementing such a library, one can obtain the \texttt{ArrowChoice} type-class implementation and extract the practical intuition behind the \texttt{select} operator and what type of properties and benefits can we expect to obtain from such an abstraction.
+	
+	After getting a grasp over the probabilistic capabilities of the \gls{saf}s a study will be conducted in order to figure out in which of the two possible approaches can the \gls{saf} be more impactful, and how to get the most out of it, either by reutilising the former type safe \gls{laop} library or by contributing to an already established one like PFP from \cite{erwig_kollmansberger_2006} or monad-bayes from \cite{scibior2018functional}. A set of case studies will be used in order to benchmark the changes made.
+	
+	With this being said, the following research plan is to be followed:
+	
+	% Please add the following required packages to your document preamble:
+    % \usepackage{graphicx}
+    \begin{table}[h]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|l|c|c|l|l|l|l|l|l|l|}
+    \hline
+    \multicolumn{1}{|c|}{Task} & \multicolumn{1}{c|}{Oct} & Nov & Dec & \multicolumn{1}{c|}{Jan} & \multicolumn{1}{c|}{Feb} & \multicolumn{1}{c|}{Mar} & \multicolumn{1}{c|}{Apr} & \multicolumn{1}{c|}{May} & \multicolumn{1}{c|}{Jun} & \multicolumn{1}{c|}{Jul} \\ \hline
+    Implement the library &  & \multicolumn{1}{l|}{} & \ding{53} & \multicolumn{1}{c|}{\ding{53}} & & &  &  &  &  \\ \hline
+    Encode probabilistic computations using Selective Functors & & & & \ding{53} & \ding{53}  &  &  &  &  &  \\ \hline
+    Study and analyse case studies & & & & & \ding{53} & \ding{53} &  &  &  &  \\ \hline
+    Case studies / benchmarking &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} &  & \multicolumn{1}{c|}{\ding{53}} & \multicolumn{1}{c|}{\ding{53}} & \multicolumn{1}{c|}{\ding{53}} &  &  &  \\ \hline
+    Write the dissertation &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} &  &  &  & \multicolumn{1}{c|}{\ding{53}} & \multicolumn{1}{c|}{\ding{53}} & \multicolumn{1}{c|}{\ding{53}} & \multicolumn{1}{c|}{\ding{53}} \\ \hline
+    \end{tabular}%
+    }
+    \end{table}
+	
+	% CHAPTER - Conclusion/Future Work --------------
+	\chapter{Prospect of Future work}\label{ch-conclusion}
+	
+	This chapter gives a detailed overview of the current work and what are the prospects for the future.
+		
+	\section{Current work}\label{sec-current-work}
+	
+	    \subsection{Probabilistic interpretation of Arrows}
+	    
+	        The \gls{aop} (\cite{Bird:1997:AP:248932}) is known as the discipline of programming from specification in a calculational and point-free manner and as a case where the use of \gls{ct} offers an economy on definitions and proofs of correction. \cite{Bird:1997:AP:248932} show how \gls{ct} can be used to define the basic building blocks of datatypes found in \gls{fp} and program derivation. The lesson from \gls{aop}, where functions are treated as a special case of relations, is that by changing the category (from $Fun$ to $Rel$) the expressive power increases. Relations are essentially non-deterministic and are capable of specifying a wider variety of problems by making rich operators, like converse and division, universally available. Other reasons to this change are that more structure is revealed, opportunities for generalisation are unveiled and the arrangement of particular proofs become simpler. "Keep the definition, change category" is a slogan that well summarises the lesson that \cite{Bird:1997:AP:248932} pass and emphasises the gradual compositionality as seen in the case of relational algebra.
+	        
+	        So how is it possible to take advantage of this lesson in a probabilistic context? \cite{Oliveira2016KeepDC} guide us in the direction of \gls{laop} inspired by the work of \cite{Macedo2012MatricesAA} and \cite{oliveira2012towards}. \gls{laop} generalises relations and functions treating them as Boolean matrices and in turn consider these as \emph{arrows}. If instead of seeing matrices of only $0's$ and $1's$, we restrict them to being left-stochastic, where the values of each column sum to 1, it would be possible to express innumerous probabilistic extensions to standard \gls{aop} combinators and would help keeping the convoluted probability notation under control.
+	        
+	        Given this, probabilistically speaking, left-stochastic matrices are seen as \emph{Arrows} and can be written as $n \xrightarrow{M} m$ to denote that matrix $M$ is of type $n \longrightarrow m$ ($n$ columns, $m$ rows). Using this notation matrix multiplication can be seen as arrow composition, therefore forming the category of matrices, where objects are numeric dimensions and morphisms are the matrices themselves. Since all arrows represent left-stochastic matrices, a simple distribution $P(A)$ can be seen of a matrix of type $1 \longrightarrow m$, which represents a left-stochastic column vector. Statistical independence $P(B|A) = P(A)P(B)$ can be calculated by the probabilistic pairing, also known as the Khatri-Rao matrix product (\cite{Macedo2012MatricesAA}, \cite{murta2013calculating}). Objects in the category of matrices can be generalised to arbitrary denumerable types ($A$, $B$). By performing this generalisation, probabilistic functions $A \xrightarrow{f} \mathscr{D}B$ are viewed as matrices of type $A \longrightarrow B$, enabling us to express conditional probability calculation $P(B|A)$ in the form of probabilistic function application. It's worth noting that by only using the monadic interface it would only be possible to reason about conditional probabilities by recurring to the \texttt{bind ($>>=$)} operator, which convolutes probabilistic reasoning. However, by adopting the \gls{laop} transition, probabilistic function (Kleisli) composition becomes simply matrix composition (\cite{oliveira2012towards}).
+	        
+	        This probabilistic interpretation of Arrows puts the research for the probabilistic interpretation of \gls{saf} one step closer. By using what was learned until now it should be possible to encode matrices around sound mathematical abstractions and take advantage of what best they have to offer. What's \gls{saf}'s take on the linear approach to the \gls{aop} and how will it fit in the probabilistic setting is the answer that it's hoped to find.
+	    
+	    \subsection{Type safe Linear Algebra of Programming matrix library}
+	    
+	    Inspired by the \gls{laop} and trying to find a probabilistic interpretation for \gls{saf}, we tried to design a data structure that represents a matrix. The \gls{laop} discipline has an inductive approach to calculating the various combiners that characterise it, because it is based on the \texttt{Junc} and \texttt{Split} biproducts. Thus, trying to arrive at a strongly typed data type capable of inferring the dimensions of the matrices, a \gls{gadt} was used which, taking advantage of the TypeLits library, was designed as follows:
+	    
+        \begin{lstlisting}[language=Haskell, caption={Inductive matrix definition},captionpos=b]
+            data Matrix e (c :: Nat) (r :: Nat) where
+                Junc :: (ValidDimensions m p, ValidDimensions n p) 
+                     => Matrix e m p 
+                     -> Matrix e n p 
+                     -> Matrix e (m + n) p
+                Split :: (ValidDimensions p m, ValidDimensions p n) 
+                      => Matrix e p m 
+                      -> Matrix e p n 
+                      -> Matrix e p (m + n)
+                One :: e -> Matrix e 1 1
+        \end{lstlisting}{}
+        
+        Where \texttt{ValidDimensions} is a constraint that ensures dimensions are greater than 0. This inductive data type based on the \gls{laop} biproduct approach, can represent any type of matrix and infer dimensions correctly. However, it does cause some difficulties in implementing certain construction and manipulation functions, since \gls{ghc} has difficulties in correctly inferring the right types. A simple example, such as matrix transposition is easily implemented, but another, such as the point-wise addition of two matrices becomes impossible since two matrices with the same dimensions internally can be represented with a different combination of \texttt{Junc} and \ texttt{Split}s. One solution to this problem would be to find a way to ensure that all matrices were built according to a convention (either \texttt{Junc} of \texttt{Split}s or \texttt {Split} of \texttt{Junc}s) however, \gls{ghc} 's type system could not be sure that the matrices actually followed such a convention and made pattern matching impossible in some cases.
+	    
+	    In order to get around this difficulty and try to achieve a probabilistic interpretation / intuition of \gls{saf}, the developed library is now just a wrapper around a matrix data type of an existing library. The library of choice was \texttt{HMatrix} (\cite{hmatrix}) as it is more active and used by industry and the community in general.
+	    
+        \begin{lstlisting}[language=Haskell, label={lst:m-type-2}, caption={Type safe wrapper around HMatrix},captionpos=b]
+        newtype Matrix e (c :: Nat) (r :: Nat) = M {unMatrix :: HM.Matrix e}
+        \end{lstlisting}{}
+        
+        With this solution it was possible to implement several LAoP combinators. Note that with this approach one is at the mercy of the implementation used by the host library and the possibility of obtaining a structure that benefits from the properties of \gls{saf}s is lost yet, this solution makes a possible answer closer. As stated in the previous subsection, representing distributions as stochastic arrays and these, in turn, as arrows, enables us to implement the Arrow instance in the data type shown in listing \ref{lst:m-type-2}. Moreover, as explained in the section \ref{sec-state-art}, probability distributions are able to satisfy Functor, Applicative, and Monad instances but, due to some constraints necessary for compile-time type checking to be performed, it is not possible to implement instances for the spoken interfaces however, it is possible to implement a constrainted version of the functions that are equivalent to the operators of each, as shown in the listing below:
+        
+        \begin{lstlisting}[language=Haskell, caption={Interface equivalent function implementations},captionpos=b]
+            -- | Functor instance
+            fmapColumns :: forall b e a r . 
+                        ( ... )
+                        => Matrix e a r
+                        -> Matrix e b r
+            fmapRows :: forall b e a c . 
+                     ( ... )
+                     => Matrix e c a 
+                     -> Matrix e c b
+                     
+            -- | Applicative instance
+            fromLists :: forall e c r . 
+                      ( ... ) 
+                      => [[e]] 
+                      -> Matrix e c r
+            khatri :: forall e m p q .
+                   ( ... )
+                   => Matrix e m p 
+                   -> Matrix e m q
+                   -> Matrix e m (p * q)
+
+            -- | Monad instance
+            comp :: ( ... )
+                 => Matrix e p m
+                 -> Matrix e n p 
+                 -> Matrix e n m
+
+            -- | Arrow instance
+            fromF :: forall c r a b e . 
+                  ( ... ) 
+                  => (a -> b) 
+                  -> Matrix e c r
+        \end{lstlisting}{}
+        
+        For the Functor instance it's offered the possibility to map any of the dimensions to others. For the Applicative instance, the Khatri Rao product is offered, taking advantage of the monoidal nature that characterises this abstraction. In the case of Monads, matrix composition is the equivalent operation of \texttt{bind} as seen in the previous subsection. Finally for the Arrow instance, the fundamental operation is to transform (lift) a function into its matrix representation. It should be noted that all of these operators have associated constraints which, for reasons of space saving have been omitted however, in appendix \ref{appendix-a} you can see the full implementation.
+        
+        Having said that, having an LAoP implementation that is still in a proof of concept phase is possible to model simple probabilistic problems like the classic Monty Hall problem:
+        
+        \begin{lstlisting}[language=Haskell, caption={LAoP Monty Hall Problem},captionpos=b]
+        type Dist a = forall m . Matrix Double 1 m
+        
+        -- Monty Hall Problem
+        data Outcome = Win | Lose
+            deriving (Bounded, Enum, Eq, Show)
+        
+        switch :: Outcome -> Outcome
+        switch Win = Lose
+        switch Lose = Win
+        
+        firstChoice :: Dist Outcome
+        firstChoice = col [1/3, 2/3]
+        
+        secondChoice :: Matrix Double 2 2
+        secondChoice = fromF switch 
+
+        main :: IO ()
+        main = do 
+            print (p1 `comp` secondChoice `comp` firstChoice :: Matrix Double 1 1)
+            
+        {- 
+        Output:
+        (1><1)
+        [ 0.6666666666666666 ]
+        -}
+        \end{lstlisting}{}
+        
+        \subsection{Probabilistic Interpretation of Selective Functors}
+        
+        In the most recent work by \cite{andrey2019selective} \gls{saf}s are said to provide the missing counterpart for \texttt{ArrowChoice} in the functor hierarchy as demonstrated by the following instance:
+        
+        \begin{lstlisting}[language=Haskell, label={lst:safm}, caption={Selective ArrowMonad instance},captionpos=b]
+        instance ArrowChoice a => Selective (ArrowMonad a) where
+            select (ArrowMonad x) y = ArrowMonad $ x >>> (toArrow y ||| returnA)
+            
+        toArrow :: Arrow a => ArrowMonad a (i -> o) -> a i o
+        toArrow (ArrowMonad f) = arr (\x -> ((), x)) >>> first f >>> arr (uncurry ($))
+        \end{lstlisting}{}
+	    
+	    This instance highlights the relationship of Arrows with \gls{saf}s. Given the results shown in the previous subsection, it is possible to use an implementation similar to that shown in listing \ref{lst:safm} and similarly obtain a Selective instance for the data type \texttt{Matrix} (\ref{lst:m-type-2}). Although, because of constraints imposed on the types of the matrix dimensions, it is not possible to implement an official instance. It is possible to write the \texttt{select} operator at the expense of operators equivalent to those used above:
+	    
+        \begin{lstlisting}[language=Haskell, label={lst:safm}, caption={LAoP Selective instance},captionpos=b]
+        select :: ( ... ) => Matrix e n (m1 + m2) -> (a -> b) -> Matrix e n m2
+        select m y = (fromF y ||| id) `comp` m
+            
+        -- (|||) :: ( ... ) => Matrix e m p -> Matrix e n p -> Matrix e (m + n) p
+        \end{lstlisting}{}
+        
+        As interesting as the relationship between Arrows and \gls{saf}s is, and it has been possible to write an instance for the same interface analogously, this tells us little or nothing about its semantics. It is more or less clear that some kind of conditional is expressed but it is difficult to imagine their application and interaction with the other combiners. In order to try to come up with a more concrete explanation, the following type diagram was designed:
+        
+        \vskip0.2cm
+        
+        \begin{center}
+        \begin{tikzcd}
+                                                       &  & b                                        &  &                                                     \\
+a \arrow[rr, "i_1"] \arrow[rru, "fromF\ y", bend left] &  & a + b \arrow[u, "{[ fromF\ y\ |\ id]}"'] &  & b \arrow[ll, "i_2"'] \arrow[llu, "id"', bend right] \\
+                                                       &  & c \arrow[u, "m"']                        &  &                                                    
+        \end{tikzcd}
+        \end{center}
+        
+        A more detailed observation:
+        
+        \begin{center}
+        \begin{tikzcd}
+                                                                   &  & b                                                                                      &  &                                                                \\
+a \arrow[rr, "i_1"', bend left] \arrow[rru, "fromF\ y", bend left] &  & a + b \arrow[u, "{[ fromF\ y\ |\ id]}"'] \arrow[ll, "\pi_1"] \arrow[rr, "\pi_2"']      &  & b \arrow[ll, "i_2", bend right] \arrow[llu, "id"', bend right] \\
+                                                                   &  & c \arrow[u, "{m = [\frac{F}{G}]}"'] \arrow[llu, "F", dashed] \arrow[rru, "G"', dashed] &  &                                                               
+        \end{tikzcd}
+        \end{center}{}
+        
+        Generalising:
+        
+        \begin{center}
+        \begin{tikzcd}
+                                                            &  & b                                                                                           &  &                                                               \\
+a \arrow[rr, "i_1"', bend left] \arrow[rru, "A", bend left] &  & a + b \arrow[u, "{[A|B]}"'] \arrow[ll, "\pi_1", bend left] \arrow[rr, "\pi_2"', bend right] &  & b \arrow[ll, "i_2", bend right] \arrow[llu, "B"', bend right] \\
+                                                            &  & c \arrow[u, "{[\frac{C}{D}]}"'] \arrow[llu, "C", bend left] \arrow[rru, "D"', bend right]   &  &                                                              
+        \end{tikzcd}
+        \end{center}{}
+        
+        This last diagram is the same as seen by \cite{Macedo2012MatricesAA} and defines exactly the biproducts \texttt{Junc} and \texttt{Split}. This diagram highlights several properties of this biproduct such as the famous divide-and-conquer law $[A|B] \cdot [\frac{C}{D}] = A \cdot C + B \cdot D$.
+        
+        Another known combiner of the \gls{aop} discipline is McCarthy's conditional (\cite{Bird:1997:AP:248932}), whose probabilistic version was studied by \cite{oliveira2012towards}, has the following diagram:
+        
+        \begin{center}\label{dig-mccarthy}
+        \begin{tikzcd}
+  &  & A \arrow[d, "i_1"'] \arrow[lld, "f"']   &                    \\
+B &  & A + A \arrow[ll, "{[f|g]}" description] & A \arrow[l, "p?"'] \\
+  &  & A \arrow[u, "i_2"] \arrow[llu, "g"]     &                   
+        \end{tikzcd}
+        \end{center}{}
+        
+        This probabilistic version of \emph{if-then-else} is denoted by $p \rightarrow f,g$, where $p?$ is the predicate defined by the correflexive matrix:
+        
+        \begin{center}
+        \begin{tikzcd}
+A + A &  & {A\ =\ [\frac{\Phi_p}{\Phi_{-p}}]} \arrow[ll, "p?"']
+        \end{tikzcd}
+        \end{center}{}
+        
+        Looking closely at the diagram one can see some resemblance to what you get from definition \ref{lst:safm}, and indeed McCarthy's conditional exploits the same conditional nature that is intrinsic to \gls{saf}.
+        
+        What can we then conclude as the probabilistic interpretation of \gls{saf}s? So far, we can conclude that if we view \texttt{f} (\ref{lst:saf}) as a distribution, the \texttt {select} operator, in probabilistic programming, has the ability to condition the random variable and branch out the program in two different ways. This operator, although of a more generic type than McCarthy's conditional, expresses the divide-and-conquer law present in block-matrix calculus and is capable of exploiting parallelism, indicating that this abstraction does indeed become useful not only in terms of the reasoning power it offers, but also in terms of the performance gains that are theoretically achievable.
+        
+	\section{Prospect for future work}
+	
+	The aim is to further explore the probabilistic interpretation of \gls{saf}, namely to expand knowledge about their static analysis capabilities and how they can become useful in developing a more efficient solution of \gls{pfp}, develop relevant case studies where it is evident that a proof of concept that encompasses all the features of \gls{saf} is actually better than using monads everywhere.
+	
+	To better illustrate future prospects, lets imagine that we already have a Haskell probabilistic programming library with an interface similar to that of \cite{erwig_kollmansberger_2006}. With this it is possible to model a simple board game where, in each turn, two dice are thrown and, if the value of the two dice is equal, the face of a third dice is placed equal to the others, otherwise it is thrown the third die and one piece moves the number of squares equal to the sum of all the dice. This logic can be encoded according to a monadic interface as follows:
+	
+    \begin{lstlisting}[language=Haskell, caption={Monadic dice throw},captionpos=b]
+    die = uniform [1..6]
+    
+    throw = do
+        first <- die
+        second <- die
+        if (first == second)
+            then return (first + first + first)
+            else do
+                third <- die
+                return (first + second + third)
+    \end{lstlisting}{}
+    
+    Looking at the code presented above we easily identify forms of optimisation that simply are not possible due to the use of monads. The most obvious example of this limitation is that the two dice are thrown one after the other when they could very well be thrown in parallel. By lowering the level of abstraction, it is possible to take advantage of applicatives, in return for a less readable notation:
+			
+    \begin{lstlisting}[language=Haskell, caption={Applicative dice throw},captionpos=b]
+    die = uniform [1..6]
+                
+    condition first second = if (first == second)
+                                then return (first + first + first)
+                                else return (\third -> first + second + third) <*> die
+                                
+    throw = condition . (,) <$> die <*> die
+    \end{lstlisting}{}
+    
+    Now both dice throws are done in parallel but there is still the possibility of a third throw. In the example above the third throw is only computed if the condition is not met but, in a more complex case, where the \texttt{die} distribution is much more demanding (slow) and the probability of the condition not being met is higher, it would be desirable to optimise the code so that the condition check function is done in parallel with the die throw and, assuming the condition check is faster, if the condition returns the truth value, the distribution computation would be abandoned, otherwise it would take less time to compute. This speculative execution cannot be achieved with monads or applicatives, and is only possible with the help of \gls{saf} by taking advantage of the \texttt{select} operator:
+    
+    \begin{lstlisting}[language=Haskell, caption={Selective dice throw},captionpos=b]
+    die = uniform [1..6]
+    
+    firstPhase = ((condS (uncurry (==)) ((3*) . fst) id) . (,) <$> die <*> die)
+    secondPhase = ((\(first, second) third -> first + second + third) <*> die)
+                
+    throw = firstPhase <*? secondPhase
+    \end{lstlisting}{}
+    
+    Where \texttt{condS} is a function that represents the same diagram as \ref{dig-mccarthy} and \texttt{select = $<$*?}.
+    
+    As we can see the initial program is now much more compact, efficient and readable. Thanks to the hierarchy of abstractions we were able to refactor the code and compose the most suitable abstractions for the problem in hands obtaining, almost effortlessly a correct and semantically equivalent solution.
+    
+    Exploring case studies like this one and how one and how the capabilities of \gls{saf} can helps us achieve better solutions compared to the monolithic monad is the primarily focus regarding the future work.
+    
+	\bookmarksetup{startatroot} % Ends last part.
+	\addtocontents{toc}{\bigskip} % Making the table of contents look good.
+	%\cleardoublepage
+
+	%- Bibliography (needs bibtex) -%
+	\bibliography{dissertation}
+
+	% Index of terms (needs  makeindex) -------------
+	%\printindex
+	
+	
+	% APPENDIX --------------------------------------
+	\umappendix{Appendix}
+	
+	% Add appendix chapters
+	\chapter{Type safe LAoP Matrix library}\label{appendix-a}
+	
+    \begin{lstlisting}[language=Haskell, caption={Matrix.Internal},captionpos=b]
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NoStarIsType #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
+
+module Matrix.Internal
+  ( Matrix (..),
+    NonZero,
+    ValidDimensions,
+    KnownDimensions,
+    fromLists,
+    toLists,
+    toList,
+    columns,
+    rows,
+    matrix,
+    tr,
+    row,
+    col,
+    fmapRows,
+    fmapColumns,
+    ident,
+    zeros,
+    ones,
+    diag,
+    (|||),
+    (===),
+    i1,
+    i2,
+    p1,
+    p2,
+    (-|-),
+    (><),
+    kp1,
+    kp2,
+    khatri,
+    selectM,
+    comp,
+    fromF,
+  )
+where
+
+import Control.DeepSeq
+import Data.Binary
+import qualified Data.List as L
+import Data.Proxy
+import Foreign.Storable
+import GHC.TypeLits
+import qualified Numeric.LinearAlgebra as LA
+import qualified Numeric.LinearAlgebra.Data as HM
+
+-- | The 'Matrix' type is a type safe wrapper around the
+-- 'Numeric.LinearAlgebra.Data.Matrix' data type.
+newtype Matrix e (c :: Nat) (r :: Nat) = M {unMatrix :: HM.Matrix e}
+
+deriving instance (LA.Container HM.Matrix e) => Eq (Matrix e c r)
+
+deriving instance (LA.Container HM.Vector e, Fractional e, Fractional (HM.Vector e), Num (HM.Matrix e)) => Fractional (Matrix e c r)
+
+deriving instance (Floating e, LA.Container HM.Vector e, Floating (HM.Vector e), Fractional (HM.Matrix e)) => Floating (Matrix e c r)
+
+deriving instance (LA.Container HM.Matrix e, Num e, Num (HM.Vector e)) => Num (Matrix e c r)
+
+deriving instance (Read e, LA.Element e) => Read (Matrix e c r)
+
+deriving instance (Binary (HM.Vector e), LA.Element e) => Binary (Matrix e c r)
+
+deriving instance (Storable e, NFData e) => NFData (Matrix e c r)
+
+instance (Show e, LA.Element e) => Show (Matrix e c r) where
+  show (M m) = show m
+
+type NonZero (n :: Nat) = (CmpNat n 0 ~ 'GT)
+
+type ValidDimensions (n :: Nat) (m :: Nat) = (NonZero n, NonZero m)
+
+type KnownDimensions (n :: Nat) (m :: Nat) = (KnownNat n, KnownNat m)
+
+-------------------------------------------------------------------------------
+--    CONVERTER FUNCTIONS
+-------------------------------------------------------------------------------
+
+-- | Matrix converter function. It builds a matrix from
+-- a list of lists @[[e]]@ (considered as rows).
+fromLists :: forall e c r. (LA.Element e, KnownDimensions c r) => [[e]] -> Matrix e c r
+fromLists [] = error "Wrong list dimensions"
+fromLists l@(h : _) =
+  let ccols = fromInteger $ natVal (Proxy :: Proxy c)
+      rrows = fromInteger $ natVal (Proxy :: Proxy r)
+      lrows = length l
+      lcols = length h
+   in if rrows /= lrows || ccols /= lcols
+        then error "Wrong list dimensions"
+        else M . HM.fromLists $ l
+
+-- | Matrix converter function. It builds a list of lists from
+-- a 'Matrix'.
+--
+-- Inverse of 'fromLists'.
+toLists :: (LA.Element e) => Matrix e c r -> [[e]]
+toLists = HM.toLists . unMatrix
+
+-- | Matrix converter function. It builds a list of elements from
+-- a 'Matrix'.
+toList :: (LA.Element e) => Matrix e c r -> [e]
+toList = concat . toLists
+
+-- | Matrix converter function. It builds a matrix from a function.
+fromF :: forall c r a b e. (Enum a, Enum b, Eq b, Num e, Ord e, LA.Element e, KnownNat c, KnownNat r) => (a -> b) -> Matrix e c r
+fromF f =
+  let ccols = fromInteger $ natVal (Proxy :: Proxy c)
+      rrows = fromInteger $ natVal (Proxy :: Proxy r)
+      elementsA = take ccols $ map toEnum [0 ..]
+      elementsB = take rrows $ map toEnum [0 ..]
+      combinations = (,) <$> elementsA <*> elementsB
+      combAp = map snd . L.sort . map (\(a, b) -> if f a == b then ((fromEnum a, fromEnum b), 1) else ((fromEnum a, fromEnum b), 0)) $ combinations
+      mList = buildList combAp rrows
+   in tr $ fromLists mList
+  where
+    buildList [] _ = []
+    buildList l r = take r l : buildList (drop r l) r
+
+-------------------------------------------------------------------------------
+--    DIMENSIONS FUNCTIONS
+-------------------------------------------------------------------------------
+
+-- | Obtain the number of columns of a matrix
+columns :: forall e c r. KnownNat c => Matrix e c r -> Integer
+columns _ = natVal (Proxy :: Proxy c)
+
+-- | Obtain the number of rows of a matrix
+rows :: forall e c r. KnownNat r => Matrix e c r -> Integer
+rows _ = natVal (Proxy :: Proxy r)
+
+fmapColumns :: forall b e a r. (Storable e, LA.Element e, KnownNat b) => Matrix e a r -> Matrix e b r
+fmapColumns =
+  let cols = fromInteger $ natVal (Proxy :: Proxy b)
+   in M . HM.reshape cols . HM.fromList . toList
+
+fmapRows :: forall b e a c. (Storable e, LA.Element e, KnownDimensions c b) => Matrix e c a -> Matrix e c b
+fmapRows =
+  let rows = fromInteger $ natVal (Proxy :: Proxy b)
+   in tr . M . HM.reshape rows . HM.fromList . toList
+
+-------------------------------------------------------------------------------
+--    MISC FUNCTIONS
+-------------------------------------------------------------------------------
+
+-- | Create a matrix.
+matrix :: forall e c r. (KnownDimensions c r, Storable e) => [e] -> Matrix e c r
+matrix l =
+  let m = (reshape @e @c) . HM.fromList $ l
+      mcols = HM.cols (unMatrix m)
+      mrows = HM.rows (unMatrix m)
+      ccols = fromInteger $ natVal (Proxy :: Proxy c)
+      rrows = fromInteger $ natVal (Proxy :: Proxy r)
+   in if mcols /= ccols || mrows /= rrows
+        then error "Wrong list dimensions"
+        else m
+
+-- | Matrix transpose
+tr :: forall e c r. (LA.Element e, KnownDimensions c r) => Matrix e c r -> Matrix e r c
+tr = fromLists . L.transpose . toLists
+
+-- | Create a row vector matrix.
+row :: (Storable e, LA.Element e, KnownNat c) => [e] -> Matrix e c 1
+row = asRow . HM.fromList
+
+-- | Create a column vector matrix.
+col :: (Storable e) => [e] -> Matrix e 1 r
+col = asColumn . HM.fromList
+
+-- | Creates the identity matrix of given dimension.
+ident :: forall e c. (Num e, LA.Element e, KnownNat c) => Matrix e c c
+ident =
+  let c = fromInteger $ natVal (Proxy :: Proxy c)
+   in M . HM.ident $ c
+
+-- | Zero Matrix polymorphic definition
+zeros :: forall e c r. (KnownDimensions c r, Num e, LA.Container HM.Vector e) => Matrix e c r
+zeros =
+  let ccols = fromInteger $ natVal (Proxy :: Proxy c)
+      rrows = fromInteger $ natVal (Proxy :: Proxy r)
+   in M $ HM.konst 0 (rrows, ccols)
+
+-- | One Matrix polymorphic definition
+ones :: forall e c r. (KnownDimensions c r, Num e, LA.Container HM.Vector e) => Matrix e c r
+ones =
+  let ccols = fromInteger $ natVal (Proxy :: Proxy c)
+      rrows = fromInteger $ natVal (Proxy :: Proxy r)
+   in M $ HM.konst 1 (rrows, ccols)
+
+-- | Creates a square matrix with a given diagonal.
+diag :: forall e c. (Num e, LA.Element e, KnownNat c) => [e] -> Matrix e c c
+diag l =
+  let c = fromInteger $ natVal (Proxy :: Proxy c)
+      dims = length l
+   in if c /= dims
+        then error "Wrong list dimensions"
+        else M . HM.diag . HM.fromList $ l
+
+-------------------------------------------------------------------------------
+--    BLOCK MATRIX FUNCTIONS (BIPRODUCT)
+-------------------------------------------------------------------------------
+
+-- | Matrix block algebra 'Junc' operator
+(|||) :: (LA.Element e, ValidDimensions n m, NonZero p) => Matrix e m p -> Matrix e n p -> Matrix e (m + n) p
+(|||) a b = M $ HM.fromBlocks [[unMatrix a, unMatrix b]]
+
+infixl 3 |||
+
+-- | Matrix block algebra 'Split' operator
+(===) :: (LA.Element e, ValidDimensions n m, NonZero p) => Matrix e p m -> Matrix e p n -> Matrix e p (m + n)
+(===) a b = M $ HM.fromBlocks [[unMatrix a], [unMatrix b]]
+
+infixl 2 ===
+
+-- | Matrix 'Junc' left injection matrix definition
+i1 :: (Num e, ValidDimensions n m, KnownDimensions n m, LA.Element e, LA.Container HM.Vector e) => Matrix e m (m + n)
+i1 = ident === zeros
+
+-- | Matrix 'Junc' right injection matrix definition
+i2 :: (Num e, ValidDimensions n m, KnownDimensions n m, LA.Element e, LA.Container HM.Vector e) => Matrix e n (m + n)
+i2 = zeros === ident
+
+-- | Matrix 'Split' left projection matrix definition
+p1 :: (Num e, ValidDimensions n m, KnownDimensions n m, KnownNat (m + n), LA.Element e, LA.Container HM.Vector e) => Matrix e (m + n) m
+p1 = tr i1
+
+-- | Matrix 'Split' right projection matrix definition
+p2 :: (Num e, ValidDimensions n m, KnownDimensions n m, KnownNat (m + n), LA.Element e, LA.Container HM.Vector e) => Matrix e (m + n) n
+p2 = tr i2
+
+-------------------------------------------------------------------------------
+--    MATRIX BIPRODUCT FUNCTORS
+-------------------------------------------------------------------------------
+
+-- | Matrix coproduct bifunctor
+(-|-) ::
+  forall e n m j k.
+  ( ValidDimensions n m,
+    ValidDimensions k j,
+    NonZero (k + j),
+    LA.Element e,
+    LA.Numeric e,
+    KnownDimensions k j
+  ) =>
+  Matrix e n k ->
+  Matrix e m j ->
+  Matrix e (n + m) (k + j)
+(-|-) a b = (i1 `comp` a) ||| (i2 `comp` b)
+
+infixl 5 -|-
+
+-- | Kronecker product of two matrices
+(><) :: LA.Product e => Matrix e m p -> Matrix e n q -> Matrix e (m * n) (p * q)
+(><) (M a) (M b) = M . LA.kronecker a $ b
+
+infixl 4 ><
+
+-------------------------------------------------------------------------------
+--    MATRIX SELECTVIE EQUIVALENT FUNCTION
+-------------------------------------------------------------------------------
+
+selectM ::
+  ( LA.Numeric e,
+    Enum a,
+    Enum b,
+    Ord e,
+    Eq b,
+    KnownDimensions m1 m2,
+    ValidDimensions m1 m2
+  ) =>
+  Matrix e n (m1 + m2) -> (a -> b) -> Matrix e n m2
+selectM m y = (fromF y ||| ident) `comp` m
+
+-------------------------------------------------------------------------------
+--    MATRIX COMPOSITION, KHATRI RAO FUNCTIONS
+-------------------------------------------------------------------------------
+
+-- | Matrix - Matrix multiplication aka Matrix composition
+comp :: LA.Numeric e => Matrix e p m -> Matrix e n p -> Matrix e n m
+comp (M a) (M b) = M . (LA.<>) a $ b
+
+-- | Khatri Rao product left projection (inductive definition)
+class KhatriP1 e (m :: Nat) (k :: Nat) where
+  kp1 :: Matrix e (m * k) m
+
+instance
+  {-# OVERLAPPING #-}
+  ( KnownNat k,
+    Num e,
+    LA.Numeric e,
+    LA.Container HM.Vector e
+  ) =>
+  KhatriP1 e 1 k
+  where
+  kp1 = ones @e @k @1
+
+instance
+  {-# OVERLAPPABLE #-}
+  ( ValidDimensions m k,
+    KnownNat k,
+    KnownNat ((m - 1) * k),
+    KnownNat (m - 1),
+    Num e,
+    LA.Numeric e,
+    LA.Container HM.Vector e,
+    (1 + (m - 1)) ~ m,
+    (k + ((m - 1) * k)) ~ (m * k),
+    NonZero ((m - 1) * k),
+    NonZero (m - 1),
+    KhatriP1 e (m - 1) k
+  ) =>
+  KhatriP1 e m k
+  where
+  kp1 = ones @e @k @1 -|- kp1 @e @(m - 1) @k
+
+-- | Khatri Rao product right projection (inductive definition)
+class KhatriP2 e (k :: Nat) (m :: Nat) where
+  kp2 :: Matrix e (m * k) k
+
+instance
+  {-# OVERLAPPING #-}
+  ( Num e,
+    LA.Element e,
+    KnownNat k
+  ) =>
+  KhatriP2 e k 1
+  where
+  kp2 = ident @e @k
+
+instance
+  {-# OVERLAPPABLE #-}
+  ( (k + ((m - 1) * k)) ~ (m * k),
+    ValidDimensions m k,
+    NonZero ((m - 1) * k),
+    LA.Element e,
+    Num e,
+    KnownNat k,
+    KhatriP2 e k (m - 1)
+  ) =>
+  KhatriP2 e k m
+  where
+  kp2 = ident @e @k ||| kp2 @e @k @(m - 1)
+
+-- | Khatri Rao product of two matrices (Pairing)
+khatri ::
+  forall e m p q.
+  ( KnownDimensions p (p * q),
+    KnownNat q,
+    Num e,
+    Num (HM.Vector e),
+    LA.Numeric e,
+    LA.Container HM.Vector e,
+    KhatriP1 e p q,
+    KhatriP2 e q p
+  ) =>
+  Matrix e m p ->
+  Matrix e m q ->
+  Matrix e m (p * q)
+khatri a b = (tr (kp1 @e @p @q) `comp` a) * (tr (kp2 @e @q @p) `comp` b)
+
+-------------------------------------------------------------------------------
+--    AUXILIARY FUNCTIONS
+-------------------------------------------------------------------------------
+
+-- | Creates a matrix from a vector by grouping the elements in rows
+-- with the desired number of columns.
+reshape :: forall e c r. (Storable e, KnownNat c) => HM.Vector e -> Matrix e c r
+reshape v =
+  let cols = fromInteger $ natVal (Proxy :: Proxy c)
+   in M $ HM.reshape cols v
+
+-- | Creates a 1-column matrix from a vector.
+asColumn :: forall e r. (Storable e) => HM.Vector e -> Matrix e 1 r
+asColumn = reshape @e @1
+
+-- | Creates a 1-vector matrix from a vector.
+asRow :: (Storable e, LA.Element e, KnownNat c) => HM.Vector e -> Matrix e c 1
+asRow = tr . asColumn
+    \end{lstlisting}
+
+	% Back Cover -------------------------------------------
+	\umbackcover{
+	NB: place here information about funding, FCT project, etc in which the work is framed. Leave empty otherwise.
+	}
+
+
+\end{document}
