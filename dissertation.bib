@@ -155,72 +155,6 @@
   publisher={Cambridge University Press}
 }
 
- ACM DL Logo Check out the beta version of the next ACM DL
-There is no fork: an abstraction for efficient, concurrent, and concise data access
-Full Text: 	PDFPDF
-Authors: 	Simon Marlow 	Facebook, London, United Kingdom
-	Louis Brandy 	Facebook, Menlo Park, CA, USA
-	Jonathan Coens 	Facebook, Menlo Park, CA, USA
-	Jon Purdy 	Facebook, Menlo Park, CA, USA
-	
-There is no fork: an abstraction for efficient, concurrent, and concise data access 	Published by ACM 2014 Article
-
-This Article is Open AccessOpen Access
-Bibliometrics Data  Bibliometrics
-· Citation Count: 12
-· Downloads (cumulative): 827
-· Downloads (12 Months): 79
-· Downloads (6 Weeks): 12
-
-Published in:
-Cover Image
-Cover Image
- 
-· Proceeding
-ICFP '14 Proceedings of the 19th ACM SIGPLAN international conference on Functional programming
-Pages 325-337
-
-Gothenburg, Sweden — September 01 - 06, 2014
-ACM New York, NY, USA ©2014
-table of contents ISBN: 978-1-4503-2873-9 doi>10.1145/2628136.2628144
-· Newsletter
-ACM SIGPLAN Notices - ICFP '14
-Volume 49 Issue 9, September 2014
-Pages 325-337
-ACM New York, NY, USA
-table of contents doi>10.1145/2692915.2628144
-
-	
-Tools and Resources
-
-    Buy this Article
-    (PRINT)
-    Recommend the ACM DL
-    to your organization
-    Request Permissions
-    TOC Service: Spacer Image reserves space for checkmark when TOC Service is updated
-
-        Toc Alert via EmailEmail Toc Alert via EmailRSS 
-    Save to Binder
-    Export Formats:
-        BibTeX EndNote ACM Ref 
-    Upcoming Conference:
-        ICFP '20 
-
-Share:
-Author Tags Expand Author Tags
-Contact The DL Team Contact Us | Switch to single page view (no tabs)
-
-We describe a new programming idiom for concurrency, based on Applicative Functors, where concurrency is implicit in the Applicative <*> operator. The result is that concurrent programs can be written in a natural applicative style, and they retain a high degree of clarity and modularity while executing with maximal concurrency. This idiom is particularly useful for programming against external data sources, where the application code is written without the use of explicit concurrency constructs, while the implementation is able to batch together multiple requests for data from the same source, and fetch data from multiple sources concurrently. Our abstraction uses a cache to ensure that multiple requests for the same data return the same result, which frees the programmer from having to arrange to fetch data only once, which in turn leads to greater modularity.
-
-While it is generally applicable, our technique was designed with a particular application in mind: an internal service at Facebook that identifies particular types of content and takes actions based on it. Our application has a large body of business logic that fetches data from several different external sources. The framework described in this paper enables the business logic to execute efficiently by automatically fetching data concurrently; we present some preliminary results.
-
-Powered by The ACM Guide to Computing Literature
-
-The ACM Digital Library is published by the Association for Computing Machinery. Copyright © 2019 ACM, Inc.
-Terms of Usage   Privacy Policy   Code of Ethics   Contact Us
-BibTeX | EndNote | ACM Ref
-
 @article{Marlow:2014:NFA:2692915.2628144,
  author = {Marlow, Simon and Brandy, Louis and Coens, Jonathan and Purdy, Jon},
  title = {There is No Fork: An Abstraction for Efficient, Concurrent, and Concise Data Access},
@@ -682,4 +616,14 @@ url = {https://EconPapers.repec.org/RePEc:bes:amstat:v:59:y:2005:m:august:p:276-
   author={Erwig, Martin and Kollmansberger, Steve}, 
   year={2006}, 
   pages={21–34}
+}
+
+@misc{Armando2020,
+  author = {Armando Santos},
+  title = {Selective Functors \& Probabilistic Programming},
+  year = {2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/bolt12/master-thesis}},
+  commit = {e1159abed522ff28f7df3559f0cf40a781de7e04}
 }
