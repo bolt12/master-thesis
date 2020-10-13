@@ -754,7 +754,7 @@ m & n \arrow[l, "A"'] & q \arrow[l, "B"'] \arrow[ll, "C = A \cdot B", bend left]
             
             \subsubsection{Identity} The identity matrix as type $n \leftarrow n$. For every object $n$ in the matrix category there must be a morphism of this type, which will be denoted by $n \xleftarrow{id_n} n$
             
-            \subsubsection{Transposed Matrix} The transposition operator changes the matrix shape by swapping rows with columns. Type-wise, this means converting an arrow of type $n \xleftarrow{A} m$ into an arrow of type $m \xleftarrow{A^\circ} n$.
+             \subsubsection{Transposed Matrix} The transposition operator changes the matrix shape by swapping rows with columns. Type-wise, this means converting an arrow of type $n \xleftarrow{A} m$ into an arrow of type $m \xleftarrow{A^\circ} n$.
             
             \subsubsection{Bilinearity} Given two matrices it is possible to add them up entry-wise, leading to $A + B$, where $0$ is the neutral matrix (filled with $0$'s). This unit matrix works exactly as one is expecting with respect to matrix composition:
             
@@ -1700,7 +1700,7 @@ tag f = kr f id
         
         Note the role of the $tag$ operation, which for functions amounts to \texttt{tag f x = (f x, x)}, that is, the output of $f$ is paired with its input. Combinator \texttt{compose} iterates this operation across compositions so as to get an account of all inputs and outputs, as is usual in Bayesian networks.\footnote{This generic combinator is inspired in the \emph{left tagging} relational operator of \cite{Bu01}.} 
         
-        Let \texttt{wet :: Matrix Prob () G}, \texttt{dry :: Matrix Prob () G}, \texttt{no :: Matrix Prob () R} (and so on) be the \emph{points} of the data types involved in the model. Also remember projections \texttt{fstM} and \texttt{sndM}, introduced in Listing \ref{lst:api}.
+        Let \texttt{wet :: Matrix Prob () G}, \texttt{dry :: Matrix Prob () G}, \texttt{no :: Matrix Prob () R} (and so on) be the \emph{points} of the data types involved in the model. Also projections \texttt{fstM} and \texttt{sndM} are used to obtain the first and second components of the paired matrices, respectively.
         Evaluating the overall probability of the grass being wet is given by
         the scalar\footnote{Recall that scalars are matrices of type \ensuremath{\mathrm{()}\to
         \mathrm{()}}.} 
@@ -1736,7 +1736,7 @@ rain :: Dist R
 rain = categorical [(No, 0.8), (Yes, 0.2)]
         \end{lstlisting}{}
         
-        In the last section we saw the importance of the \texttt{tag} and \texttt{compose} combinators. They allowed us to compose distribution matrices and calculate their joint probability easily. By using our \gls{edsl}, we are only allowed to use \glspl{saf} capabilities, which means we do not have the required monadic capacity to iterate the equivalent \texttt{tag} combinator below, across compositions, in order to get distribution computation of the whole state.
+        In the last section we saw the importance of the \texttt{tag} and \texttt{compose} combinators. They allowed us to compose distribution matrices and calculate their joint probability easily. By using our \gls{edsl}, we are only allowed to use \glspl{saf} capabilities, which means we do not have the required monadic capacity to iterate the equivalent \texttt{tag} combinator, across compositions, in order to get distribution computation of the whole state. As we can see below we obtain a nested  \texttt{Dist} type which makes it awkward to deal with.
         
         \begin{lstlisting}[language=Haskell, caption={\texttt{tag} combinator}, captionpos=b]
 class Functor f => Strong f where
@@ -1755,7 +1755,7 @@ stateS :: Dist (Dist (Dist (G, (S, R))))
 stateS = fmap (tag grass) . tag sprinkler <$> rain
         \end{lstlisting}{}
         
-        We can however, take advantage of the fact that the data types used in our model are \texttt{Enum}, \texttt{Bounded}, \texttt{Eq} and thus use the (\textit{inneficient}) \texttt{bindS} function in order to compose the probabilistic functions and obtain the desired state distribution.
+        We can instead, take advantage of the fact that the data types used in our model are \texttt{Enum}, \texttt{Bounded}, \texttt{Eq}, i.e. countable, and thus use the (\textit{inneficient}) \texttt{bindS} function in order to compose the probabilistic functions and obtain the desired state distribution.
         
         \begin{lstlisting}[language=Haskell, caption={State distribution}, captionpos=b]
 state :: Dist (G, (S, R))
@@ -1897,8 +1897,8 @@ pg3 =
 	\chapter{Conclusions and future work}\label{ch-conclusion}
 	
 	    \section{Conclusions}
-	
-	 
+	        In this master thesis, we searched for a way to use \glspl{saf} in functional probabilistic programming, in particular to explore how this abstraction could be applied in a more efficient manner than the monadic \texttt{bind}. In order to do that, it was important to understand what these functors' probabilistic meaning was and what they could bring to the table. It is also important to consider what existing solutions and methods exist, and their drawbacks. We centered on the general theory of \gls{laop} when searching for answers to the probabilistic sense, and studied the structure of stochastic matrices, where we found that \glspl{saf} is capable of conditioning random variables and branching a program in two different ways. We realised that, through this prism, \glspl{saf} generalises the already known McCarthy conditional and, theoretically, allows for parallel execution of conditional probability calculations by means of the divide-and-conquer block-matrix algebra law. A programming library of typed inductive block-matrices has been implemented in Haskell to demonstrate how the findings of the research can be applied in practice, and a number of examples and benchmarks have been made available, demonstrating that the theoretical gains are indeed valid. However, the use of matrices in probabilistic programming has its drawbacks, namely in relation to programs where the sample space has an explosion of potential states. Sampling of the probability distributions should be done in these cases. However, existing solutions rely heavily on the use of monads that are inherently sequential, leaving behind any possibility of parallel sampling wherever possible. In order to solve this problem, a small probabilistic programming \gls{edsl} has been developed using the free \gls{saf} construction. Using this method, we push the end-user to use selective combinators wherever possible, so that the compiler can be sure to take advantage of the capabilities of this abstraction. The crucial insight that made it possible was to realise that the problem of sampling could be reduced to a concurrent external data access problem. Knowing this, it was possible to implement a solution close to the Haxl system and use it in our \gls{edsl}. The findings were positive compared to the previous sequential version. In view of this, it can be inferred that, due to the nature of \glspl{saf}, it was possible to use static analysis and speculative execution to write the \texttt{select} operator more efficiently than the monadic \texttt{bind}.
+	        
 	    \section{Future work}
     
 	\bookmarksetup{startatroot} % Ends last part.
