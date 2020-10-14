@@ -48,6 +48,7 @@
 
 @article{minkainfer,
   title={Infer .NET 2.3, Nov. 2009},
+  year={2009},
   author={Minka, T and Winn, J and Guiver, J and Kannan, A},
   journal={Software available from http://research. microsoft. com/infernet}
 }
@@ -215,7 +216,7 @@
  keywords = {applicative functors, arrows, idioms, monads},
 } 
 
-@misc{hmatrix, title={HMatrix: Numeric Linear Algebra}, url={http://hackage.haskell.org/package/hmatrix-0.20.0.0}, journal={Hackage}} 
+@misc{hmatrix, title={HMatrix: Numeric Linear Algebra}, author={Ruiz, Alberto}, year={2019}, url={http://hackage.haskell.org/package/hmatrix-0.20.0.0}, journal={Hackage}} 
 
 @article{bernstein2019static,
   title={Static Analysis for Probabilistic Programs},
@@ -224,15 +225,20 @@
   year={2019}
 }
 
-@inproceedings{swiestra&duponcheel,
-author = {Swierstra, S. and Duponcheel, Luc},
-year = {2001},
-month = {07},
-pages = {},
-title = {Deterministic, Error-Correcting Combinator Parsers},
-volume = {1129},
-journal = {LNCS},
-doi = {10.1007/3-540-61628-4_7}
+@InProceedings{swiestra&duponcheel,
+author="Swierstra, S. Doaitse
+and Duponcheel, Luc",
+editor="Launchbury, John
+and Meijer, Erik
+and Sheard, Tim",
+title="Deterministic, error-correcting combinator parsers",
+booktitle="Advanced Functional Programming",
+year="1996",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="184--207",
+abstract="We show how error-correcting, deterministic, combinator parsers can be constructed for grammars which have the LL(1) property. The normal disadvantages of conventional combinator parsers, such as their lack of speed and their poor error reporting, are remedied. Parsers constructed with these combinators are implicitly specialised for the grammar they describe. Because of this property the combinators act as a parser generator for LL(1) grammars. The techniques used to construct the combinators illustrate how partial parametrisation and careful ordering of computations can be used to achieve implicit partial evaluation in a lazy language.",
+isbn="978-3-540-70639-7"
 }
 
 @article{Hughes:2000:GMA:347238.347246,
@@ -400,7 +406,7 @@ doi = {10.1007/3-540-61628-4_7}
  address = {Upper Saddle River, NJ, USA},
 }
 
-@inproceedings{Macedo2012MatricesAA,
+@misc{Macedo2012MatricesAA,
   title={Matrices as arrows: why categories of matrices matter},
   author={Hugo Daniel Macedo},
   year={2012}
@@ -618,12 +624,22 @@ url = {https://EconPapers.repec.org/RePEc:bes:amstat:v:59:y:2005:m:august:p:276-
   pages={21–34}
 }
 
-@incollection{gordon2014probabilistic,
-  title={Probabilistic programming},
-  author={Gordon, Andrew D and Henzinger, Thomas A and Nori, Aditya V and Rajamani, Sriram K},
-  booktitle={Proceedings of the on Future of Software Engineering},
-  pages={167--181},
-  year={2014}
+@inproceedings{gordon2014probabilistic,
+author = {Gordon, Andrew D. and Henzinger, Thomas A. and Nori, Aditya V. and Rajamani, Sriram K.},
+title = {Probabilistic Programming},
+year = {2014},
+isbn = {9781450328654},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2593882.2593900},
+doi = {10.1145/2593882.2593900},
+abstract = { Probabilistic programs are usual functional or imperative programs with two added constructs: (1) the ability to draw values at random from distributions, and (2) the ability to condition values of variables in a program via observations. Models from diverse application areas such as computer vision, coding theory, cryptographic protocols, biology and reliability analysis can be written as probabilistic programs.  Probabilistic inference is the problem of computing an explicit representation of the probability distribution implicitly specified by a probabilistic program. Depending on the application, the desired output from inference may vary---we may want to estimate the expected value of some function f with respect to the distribution, or the mode of the distribution, or simply a set of samples drawn from the distribution.  In this paper, we describe connections this research area called ``Probabilistic Programming" has with programming languages and software engineering, and this includes language design, and the static and dynamic analysis of programs. We survey current state of the art and speculate on promising directions for future research. },
+booktitle = {Future of Software Engineering Proceedings},
+pages = {167–181},
+numpages = {15},
+keywords = {Machine learning, Probabilistic programming, Program analysis},
+location = {Hyderabad, India},
+series = {FOSE 2014}
 }
 
 @book{anderson1999lapack,
@@ -665,16 +681,22 @@ url = {https://EconPapers.repec.org/RePEc:bes:amstat:v:59:y:2005:m:august:p:276-
   commit = {e1159abed522ff28f7df3559f0cf40a781de7e04}
 }
 
-@inproceedings{Claessen1999FunctionalPA,
-  title={Functional Pearls: A Poor Man's Concurrency Monad},
-  author={K. Claessen},
-  year={1999}
+@article{Claessen1999FunctionalPA,
+  title={A poor man's concurrency monad},
+  author={Claessen, Koen},
+  journal={Journal of Functional Programming},
+  volume={9},
+  number={3},
+  pages={313--323},
+  year={1999},
+  publisher={Cambridge University Press}
 }
 
-@inproceedings{Scholz1995ACM,
-  title={A concurrency monad based on constructor primitives: or, being first-class is not enough},
-  author={E. Scholz},
-  year={1995}
+@misc{Scholz1995ACM,
+author = {Scholz, Enno},
+year = {1995},
+title = {A concurrency monad based on constructor primitives},
+howpublished = "http://dx.doi.org/10.17169/refubium-22616",
 }
 
 @article{samet1984quadtree,

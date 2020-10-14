@@ -47,6 +47,10 @@
 \def\msplit#1#2{\left[\begin{array}{c}#1\\\hline#2\end{array}\right]} % Split
 \def\meither#1#2{\left[\begin{array}{c|c}{#1}&{#2}\end{array}\right]} % either
 \def\matfour#1#2#3#4{\begin{bmatrix} \left.\begin{matrix} \dfrac{#1}{#3} \end{matrix}\ \right|\ \begin{matrix} \dfrac{#2}{#4} \end{matrix}\end{bmatrix}}
+%------
+\def\grantsponsor#1#2#3{#2}
+\newcommand\grantnum[3][]{#3%
+  \def\@tempa{#1}\ifx\@tempa\@empty\else\fi}
 %---------------------------
 
 % ACRONYMS -----------------------------------------------------
@@ -153,7 +157,6 @@
 	% Add acknowledgements ----------------------------
 	\chapter*{Acknowledgements}
 	Acknowledgements to be written here. %Agradecer ao prof. Andrey
-
 
 	% Add abstracts (en,pt) ---------------------------
 	\chapter*{Abstract}
@@ -1864,7 +1867,7 @@ pg3 =
     
     \begin{figure}[H]
         \centering
-        \includegraphics{img/no-delay.pdf}
+        \includegraphics[width=\linewidth]{img/no-delay.pdf}
         \caption{Benchmarks results (No delay)}
         \label{fig:no-delay}
     \end{figure}
@@ -1877,7 +1880,7 @@ pg3 =
     
     \begin{figure}[H]
         \centering
-        \includegraphics{img/delay.pdf}
+        \includegraphics[width=\linewidth]{img/delay.pdf}
         \caption{Benchmarks results (delay)}
         \label{fig:delay}
     \end{figure}
@@ -3104,7 +3107,7 @@ prettyPrint :: (KnownNat (Count cols), Show e) => Matrix e cols rows -> IO ()
 prettyPrint = putStrLn . pretty
     \end{lstlisting}
     
-	\chapter{Selective probabilistic programming library}\label{appendix-b}
+	\chapter{Selective probabilistic programming library}\label{appendix-c}
 	
     \begin{lstlisting}[language=Haskell, caption={SelectiveProb.hs},captionpos=b]
 {- |
@@ -3509,8 +3512,7 @@ condS p f g = (\r -> branch r f g) . grdS p
 
 	% Back Cover -------------------------------------------
 	\umbackcover{
-	NB: place here information about funding, FCT project, etc in which the work is framed. Leave empty otherwise.
+        While doing this work Armando Santos held a Research Grant of the DaVinci Project funded by FEDER (through the Operational Programme for Competitiveness and Internationalisation - COMPETE 2020 Programme) and by National Funds through the \grantsponsor{ GS100000001 }{ FCT (Portuguese Foundation for Science and Technology, I.P.) }{ http://dx.doi.org/10.13039/501100001871 } under Grant No.~\grantnum{GS100000001}{PTDC/CCI-COM/29946/2017}.
 	}
-
 
 \end{document}
