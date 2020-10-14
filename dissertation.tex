@@ -212,7 +212,7 @@
     
     Arrows \citep{Hughes:2000:GMA:347238.347246} are more generic than monads and were designed to abstract the structure of more complex patterns that the monad interface could not support. The most common example is the parsing library by \cite{swiestra&duponcheel} that takes advantage of static analysis to improve its performance. This example could not be optimised using the Monad interface given its sequential nature. Having \gls{ct} as a foundation, the Arrow abstraction has made its way to the \gls{fp} ecosystem in order to mitigate the limitation of the powerful Monad.
     
-    There are reasons to believe that by adopting the selective abstraction one could shorten the gap that once was only filled by the Arrow abstraction \citep{Hughes:2000:GMA:347238.347246}. On the one hand, the generality of the Arrow interface allows one to overcome some of the structural limitation that refrains from implementing a stronger abstraction and compose different combinators to achieve increased expressiveness. On the other hand, languages such as Haskell, which incorporate many of these abstractions out of the box, make code written in the Arrow style not only convoluted and unnatural, but also hard to refactor.
+    There are reasons to believe that by adopting the selective abstraction one could shorten the gap that once was only filled by the Arrow abstraction \citep{Hughes:2000:GMA:347238.347246}. On the one hand, the generality of the Arrow interface allows one to overcome some of the structural limitation that refrains from implementing a stronger abstraction and compose different combinators to achieve increased expressiveness. On the other hand, languages such as Haskell, which incorporate many of these abstractions out of the box, make code written in the Arrow style not only convoluted, but also unnatural and hard to refactor.
     
     \section{Motivation and Goals}\label{sec-moti-goals}
     
@@ -225,7 +225,7 @@
     
     The main goal of this research is to study, evaluate and compare ways of describing and implementing probabilistic computations using the so-called \emph{selective abstraction}. In particular, we want to evaluate the benefits of doing so in the \gls{pfp} ecosystem. This will be accomplished by proposing an appropriate set of case studies and, ultimately, developing a Haskell library that provides an efficient encoding of probabilities, taking advantage of the selective applicative abstraction. Focusing on how to overcome the intrinsic sequential nature of the monad abstraction \citep{Scibior:2015:PPP:2887747.2804317} in favour of the speculative execution of the selective functors, this work aims to answer the following research question:
         \begin{quote}
-        "Can the \texttt{select} operator be implemented more efficiently than the \texttt{bind} operator?"
+        "Can the \texttt{select} operator be implemented more efficiently than the monadic \texttt{bind} operator?"
         \end{quote}
 
 	\section{State of the Art}\label{sec-state-art}
