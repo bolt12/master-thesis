@@ -158,11 +158,9 @@
 	% Add abstracts (en,pt) ---------------------------
 	\chapter*{Abstract}
 
-    % RPD This document is describes the work carried out so far in the MSc project "Selective Applicative Functors \& Probabilistic Programming".
-    
     In functional programming, \emph{selective applicative} functors (SAF) are an abstraction between applicative functors and monads. This abstraction requires all effects to be statically declared, but provides a way to select which effects to execute dynamically. SAF have been shown to be a useful abstraction in several examples, including two industrial case studies. Selective functors have been used for their static analysis capabilities. The collection of information about all possible effects in a computation and the fact that they enable \emph{speculative} execution make it possible to take advantage to describe probabilistic computations instead of using monads. In particular, selective functors appear to provide a way to obtain a more efficient implementation of probability distributions than monads.
     
-    This dissertation addresses a probabilistic interpretation for the \emph{arrow} and \emph{selective} abstractions in the light of the linear algebra of programming discipline, as well as exploring ways of offering SAF capabilities to probabilistic programming. As a result, provides a Haskell type-safe matrix library capable of expressing probability distributions and probabilistic computations as typed matrices, and a probabilistic programming eDSL that explores various techniques in order to offer a novel, performant solution to probabilistic functional programming.
+    This dissertation addresses a probabilistic interpretation for the \emph{arrow} and \emph{selective} abstractions in the light of the linear algebra of programming discipline, as well as exploring ways of offering SAF capabilities to probabilistic programming, by exposing sampling as a concurrency problem. As a result, provides a Haskell type-safe matrix library capable of expressing probability distributions and probabilistic computations as typed matrices, and a probabilistic programming eDSL that explores various techniques in order to offer a novel, performant solution to probabilistic functional programming.
 	
 	\vskip0.5cm
     \keywords{master thesis, functional programming, probabilistic programming, monads, applicatives, selective applicative functor, Haskell, matrices}
@@ -172,9 +170,9 @@
 	
 	%Este documento descreve o trabalho realizado até o momento no projeto de mestrado "Selective Applicative Functors \& Probabilistic Programming".
     
-    Em programação funcional, os functores \emph{aplicativos seletivos} (FAS) são uma abstração entre functores aplicativos e monades. Essa abstração requer que todos os efeitos sejam declarados estaticamente, mas fornece uma maneira de selecionar quais efeitos serão executados dinamicamente. FAS têm se mostrado uma abstração útil em vários exemplos, incluindo dois estudos de caso industriais. Functores seletivos têm sido usados ​​pela suas capacidade de análise estática. O conjunto de informações sobre todos os efeitos possíveis numa computação e o facto de que eles permitem a execução \emph{especulativa} tornam possível descrever computações probabilísticas. Em particular, functores seletivos parecem oferecer uma maneira de obter uma implementação mais eficiente de distribuições probabilisticas do que monades.
+    Em programação funcional, os functores \emph{aplicativos seletivos} (FAS) são uma abstração entre functores aplicativos e monades. Essa abstração requer que todos os efeitos sejam declarados estaticamente, mas fornece uma maneira de selecionar quais efeitos serão executados dinamicamente. FAS têm se mostrado uma abstração útil em vários exemplos, incluindo dois estudos de caso industriais. Functores seletivos têm sido usados pela suas capacidade de análise estática. O conjunto de informações sobre todos os efeitos possíveis numa computação e o facto de que eles permitem a execução \emph{especulativa} tornam possível descrever computações probabilísticas. Em particular, functores seletivos parecem oferecer uma maneira de obter uma implementação mais eficiente de distribuições probabilisticas do que monades.
         
-    Esta dissertação aborda uma interpretação probabilística para as abstrações \emph{Arrow} e \emph{Selective} à luz da disciplina da álgebra linear da programação, bem como explora formas de oferecer as capacidades dos FAS para programação probabilística. Como resultado, fornece uma biblioteca de matrizes em Haskell, capaz de expressar distribuições de probabilidade e cálculos probabilísticos como matrizes tipadas e uma eDSL de programação probabilística que explora várias técnicas, com o obejtivo de oferecer uma solução inovadora e de alto desempenho para a programação funcional probabilística.
+    Esta dissertação aborda uma interpretação probabilística para as abstrações \emph{Arrow} e \emph{Selective} à luz da disciplina da álgebra linear da programação, bem como explora formas de oferecer as capacidades dos FAS para programação probabilística, expondo \emph{sampling} como um problema de concorrência. Como resultado, fornece uma biblioteca de matrizes em Haskell, capaz de expressar distribuições de probabilidade e cálculos probabilísticos como matrizes tipadas e uma eDSL de programação probabilística que explora várias técnicas, com o obejtivo de oferecer uma solução inovadora e de alto desempenho para a programação funcional probabilística.
 	
 	\vskip0.5cm
     \keywordsPT{dissertação de mestrado, programação funcional, programação probabilística, monades, aplicativos, funtores aplicativos seletivos, haskell, matrizes}
@@ -227,9 +225,6 @@
         "Can the \texttt{select} operator be implemented more efficiently than the \texttt{bind} operator?"
         \end{quote}
 
-	% CHAPTER - State of the Art ---------------------
-    % \chapter{State of the art}\label{ch-state-art}
-		
 	\section{State of the Art}\label{sec-state-art}
 	In the context of this research, abstractions can be viewed from two prisms:
 	\begin{itemize}
@@ -266,7 +261,7 @@
 	        
 	There are many situations in which the type \texttt{f a} makes sense. The easiest way to understand it is to see \texttt{f} as a data container; then readers can instantiate \texttt{f} to a concrete type, for instance lists (\texttt{[a]}).
 	           
-	Probabilistically speaking, \texttt{f a} instantiates to the "Distribution of a's" container and \texttt{fmap} (the factored out pattern) as the action of mapping a function through all the values of a distribution without changing their probabilities. (Probabilities will sum up automatically wherever function \texttt{f} is not injective.) As will be seen in section \ref{s-2-2} there are multiple ways of combining probabilities. However, given the properties of a functor, it is only possible to map functions inside it while preserving its structure. This said, the probability functor can be casually seen as only being capable to express $P(A)$ in probability theory \citep{jtobin}.
+	Probabilistically speaking, \texttt{f a} instantiates to the "Distribution of a's" container and \texttt{fmap} (the factored out pattern) as the action of mapping a function through all the values of a distribution without changing their probabilities. (Probabilities will sum up automatically wherever function \texttt{f} is not injective.) As will be seen in chapter \ref{ch-background} there are multiple ways of combining probabilities. However, given the properties of a functor, it is only possible to map functions inside it while preserving its structure. This said, the probability functor can be casually seen as only being capable to express $P(A)$ in probability theory \citep{jtobin}.
 	
 	    \subsection{Applicative Functors}
 	    
@@ -435,7 +430,9 @@
 	But if there was already an abstraction capable of expressing the same as \glspl{saf} why did they arise? Arrows are more general and powerful than \glspl{saf} and could be used to solve the static analysis and speculative execution examples presented by \cite{andrey2019selective}. In fact, the build system DUNE \citep{dune_2018}, is an example of the successful application of Arrows. However, adding the ability of performing static analysis or speculative execution in a code-base that is not written using the Arrow abstraction, becomes more complicated than only defining an instance for \gls{saf} in just a couple of lines. Given this, \glspl{saf} are a just good enough solution for providing the ability of static analysis of conditional effects and speculative execution without relying in the more powerful and intrusive Arrow abstraction.
 	            
 	    \section{Related Work}\label{sec-related-work}
-        
+	    
+            This thesis is the product of synergies between various computer mathematics fields, such as probability theory, category theory and programming languages. This section provides a list of similar work in these fields of investigation.
+
         \subsection{Exhaustive Probability Distribution Encoding}
         
     Over the past few years, the field of probabilistic programming has been primarily concerned with extending languages by offering probabilistic expressions as primitives and serving as practical tools for Bayesian modelling and inference \citep{erwig_kollmansberger_2006}. As a result, several languages were created to respond to emerging limitations. Despite the observation that probability distributions form a monad is not new, it was not until later that its sequential and compositional nature was explored by \cite{Ramsey:2002:SLC:565816.503288}, \cite{Goodman:2013:PPP:2480359.2429117} and \cite{Gordon:2013:MPB:2429069.2429119}.
@@ -474,11 +471,9 @@
     
     \chapter{Background}\label{ch-background}
     
-        \section{Path to Probabilistic Programming}\label{s-2-2}
-    
-        This section shines a light through the path of probabilities and their foundations, culminating with its use in probabilistic programming. The objective is to give a good background refreshment and intuition to the reader in order to eliminate the need of resorting to heavy books.
+        This chapter shines a light through the path of probabilities and their foundations, culminating with its use in probabilistic programming. The objective is to give a good background refreshment and intuition to the reader in order to eliminate the need of resorting to heavy books.
         
-        \subsection{Set Theory}
+        \section{Set Theory}
         
             The field of probability theory is the base in which all statistics was built, giving means to model populations, experiences, or almost everything else. Through these models, statisticians are able to draw inference about populations, inferences based on examination of only a part of the whole.
             
@@ -532,7 +527,7 @@
             
             I remit the reader to \cite{CaseBerg:01} for the proofs of these properties.
         
-        \subsection{Basic Probabilities and Distributions}
+        \section{Basic Probabilities and Distributions}
         
             Probabilities come up a lot often in our daily lives. They are not only of use to statisticians, a good understanding of probability theory allows us to assess correct probabilities to everyday tasks and to benefit from the wise choices that are made because of them. Probability theory is also useful in the fields of science and engineering, for example the design of a nuclear reactor must be such that the escape of radioactivity into the environment is an extremely rare event. So, using probability theory as a tool to deal with uncertainties, the reactor can be designed to ensure that an unacceptable amount of radiation will escape once in a billion years.
             
@@ -873,8 +868,6 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
     
     \chapter{Contribution}\label{sec-current-work}
 	
-	    \section{Introduction}
-	    
 	    Just like it was mentioned in the previous section, in order to reach the goal of this thesis, we need to sequentially answer different problems. This way, we gradually become more knowledgeable about the domain at hands and can venture further with certainty. This chapter gives a detailed overview of the main results of this master thesis and their scientific evidence, starting by contextualising Arrows, one of the most general frameworks, in the probabilistic environment and then explaining how each solution contributes to the next one.
 	    
 	    \section{Probabilistic Interpretation of Arrows}
@@ -1603,8 +1596,6 @@ instance Selective Fetch where
     
     \chapter{Applications}\label{ch-applications}
     
-        \section{Introduction}
-        
         \section{LAoP Sprinkler example}
         
         Probabilistic programming arises naturally from functional programming once we replace ``sharp" functions by probabilistic ones, represented by stochastic matrices, also known as Markov chains \cite{oliveira2012towards}. Take a look at this example from the \citet{wiki:BayesianNetwork}. Suppose the following predicates modelling the behaviour of a sprinkler are defined, where \texttt{S} (sprinkler on/off), \texttt{R} (raining or not) and \texttt{G} (grass wet or not) are Booleans:
@@ -1895,12 +1886,17 @@ pg3 =
         
 	% CHAPTER - Conclusion/Future Work --------------
 	\chapter{Conclusions and future work}\label{ch-conclusion}
+	    In this chapter we’ll summarise the primary contributions of the dissertation and demonstrate that they defend the thesis. We'll also discuss some possible future work directions.
 	
 	    \section{Conclusions}
 	        In this master thesis, we searched for a way to use \glspl{saf} in functional probabilistic programming, in particular to explore how this abstraction could be applied in a more efficient manner than the monadic \texttt{bind}. In order to do that, it was important to understand what these functors' probabilistic meaning was and what they could bring to the table. It is also important to consider what existing solutions and methods exist, and their drawbacks. We centered on the general theory of \gls{laop} when searching for answers to the probabilistic sense, and studied the structure of stochastic matrices, where we found that \glspl{saf} is capable of conditioning random variables and branching a program in two different ways. We realised that, through this prism, \glspl{saf} generalises the already known McCarthy conditional and, theoretically, allows for parallel execution of conditional probability calculations by means of the divide-and-conquer block-matrix algebra law. A programming library of typed inductive block-matrices has been implemented in Haskell to demonstrate how the findings of the research can be applied in practice, and a number of examples and benchmarks have been made available, demonstrating that the theoretical gains are indeed valid. However, the use of matrices in probabilistic programming has its drawbacks, namely in relation to programs where the sample space has an explosion of potential states. Sampling of the probability distributions should be done in these cases. However, existing solutions rely heavily on the use of monads that are inherently sequential, leaving behind any possibility of parallel sampling wherever possible. In order to solve this problem, a small probabilistic programming \gls{edsl} has been developed using the free \gls{saf} construction. Using this method, we push the end-user to use selective combinators wherever possible, so that the compiler can be sure to take advantage of the capabilities of this abstraction. The crucial insight that made it possible was to realise that the problem of sampling could be reduced to a concurrent external data access problem. Knowing this, it was possible to implement a solution close to the Haxl system and use it in our \gls{edsl}. The findings were positive compared to the previous sequential version. In view of this, it can be inferred that, due to the nature of \glspl{saf}, it was possible to use static analysis and speculative execution to write the \texttt{select} operator more efficiently than the monadic \texttt{bind}.
 	        
 	    \section{Future work}
-    
+	    
+	     The work presented in this dissertation highlights the themes of composition, abstraction and structure, thes are relevant concepts in functional programming. The majority of features developed during this thesis are focused on important core aspects of static, purely functional languages. Monads, definitely the key driver of innovation, are difficult to express faithfully without a strong type system and functional purity, but as we have seen, these features have enabled us to have a great deal of reasoning power and have helped us to study novel abstractions in a different (probabilistic) context.
+	    
+	     One of the most important avenues for future work would also be to make the various pieces of software that have been developed during this research production-ready. Such projects necessarily have a proof-of-concept feeling about them; they are meant to explore new fields and opportunities. Specifically, quadtrees \citep{samet1984quadtree} and their savings with respect to repetitive cells (pixels) are brought to mind by the block-oriented matrix type from the typed matrix programming library. A better matrix definition for sparsity could be more useful for sparse matrices with large zero blocks.  The probabilistic programming \gls{edsl} can also be extended in order to support more distribution primitives and sampling algorithms. An interesting future direction is also to investigate improving the proposed solution in the light of the new found concurrency relationship, as well as studying parallelization strategies to improve performance. 
+	     
 	\bookmarksetup{startatroot} % Ends last part.
 	\addtocontents{toc}{\bigskip} % Making the table of contents look good.
 	%\cleardoublepage
