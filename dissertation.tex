@@ -145,8 +145,6 @@
 %\input{sec/acronyms}
 %\glsaddall[types={\acronymtype}]
 
-
-
 \ummetadata % add metadata to the document (author, publisher, ...)
 
 \begin{document}
@@ -154,9 +152,39 @@
 	\umfrontcover	
 	\umtitlepage
 	
-	% Add acknowledgements ----------------------------
+\chapter*{Copyright and Terms of Use for Third Party Work}
+
+This dissertation reports on academic work that can be used by third parties as long as the internationally accepted standards and good practices are respected concerning copyright and related rights.
+\vskip 1em
+\noindent This work can thereafter be used under the terms established in the license below.
+\vskip 1em
+\noindent Readers needing authorization conditions not provided for in the indicated licensing should contact the author through the RepositóriUM of the University of Minho.
+
+\section*{License granted to users of this work:}
+
+\CCBY % or replace by one in***************** the list below, cf https://alunos.uminho.pt/PT/estudantes/Formataes/3_Despacho_RT-31_2019_Anexo%203-Informa%c3%a7%c3%a3o-Direitor%20de%20Autor.docx 
+%---------
+%\CCBYNCND
+%\CCBYNCSA
+%\CCBYNC
+%\CCBYND
+%\CCBYSA
+
+	
+% Add acknowledgements ----------------------------
+
 	\chapter*{Acknowledgements}
 	Acknowledgements to be written here. %Agradecer ao prof. Andrey
+	% Não esquecer a bolsa!
+
+\chapter*{Statement of Integrity}
+
+I hereby declare having conducted this academic work with integrity.
+\vskip 1em\noindent
+I confirm that I have not used plagiarism or any form of undue use of information or falsification of results along the process leading to its elaboration. 
+\vskip 1em\noindent
+I further declare that I have fully acknowledged the Code of Ethical Conduct of the University of Minho.
+
 
 	% Add abstracts (en,pt) ---------------------------
 	\chapter*{Abstract}
@@ -171,8 +199,6 @@
 	\cleardoublepage
 	\chapter*{Resumo}
 	
-	%Este documento descreve o trabalho realizado até o momento no projeto de mestrado "Selective Applicative Functors \& Probabilistic Programming".
-    
     Em programação funcional, os functores \emph{aplicativos seletivos} (FAS) são uma abstração entre functores aplicativos e monades. Essa abstração requer que todos os efeitos sejam declarados estaticamente, mas fornece uma maneira de selecionar quais efeitos serão executados dinamicamente. FAS têm se mostrado uma abstração útil em vários exemplos, incluindo dois estudos de caso industriais. Functores seletivos têm sido usados pela suas capacidade de análise estática. O conjunto de informações sobre todos os efeitos possíveis numa computação e o facto de que eles permitem a execução \emph{especulativa} tornam possível descrever computações probabilísticas. Em particular, functores seletivos parecem oferecer uma maneira de obter uma implementação mais eficiente de distribuições probabilisticas do que monades.
         
     Esta dissertação aborda uma interpretação probabilística para as abstrações \emph{Arrow} e \emph{Selective} à luz da disciplina da álgebra linear da programação, bem como explora formas de oferecer as capacidades dos FAS para programação probabilística, expondo \emph{sampling} como um problema de concorrência. Como resultado, fornece uma biblioteca de matrizes em Haskell, capaz de expressar distribuições de probabilidade e cálculos probabilísticos como matrizes tipadas e uma eDSL de programação probabilística que explora várias técnicas, com o obejtivo de oferecer uma solução inovadora e de alto desempenho para a programação funcional probabilística.
@@ -187,7 +213,6 @@
 	\lstlistoflistings
 	%\listofabbreviations
     \renewcommand{\listtheoremname}{List of theorems and definitions}
-    % \listoftheorems[show={theorem,definition}]
 	\printglossary[type=\acronymtype]
 	\clearpage
 	\thispagestyle{empty}
@@ -198,37 +223,38 @@
 	\chapter{Introduction}
         This dissertation describes the work carried out in the context of the author's \gls{miei} offered by the \gls{di} of the \gls{um}.
         
-        The text is structured in the following way. This chapter provides the context, motivation and overall goals of the dissertation. It also presents a review of the state of the art and work related to the subject of this dissertation. Chapter \ref{ch-background} introduces the most relevant background topics and chapter \ref{ch-problem} explains in more detail what the problem is and its main challenges. Chapters \ref{sec-current-work} and \ref{ch-applications} present all details of the implemented solution, as well as some application examples and evaluation results. Finally chapter \ref{ch-conclusion}, presents conclusions and guidelines fir future work.
-		
+        This chapter provides an introduction to the research by explaining the context of the research problem, the research motivation and objectives, state of the art, scope and related work.
+        
     \section{Context}\label{sec-context}
     
     Monads were pioneered by \cite{Moggi:1991:NCM:116981.116984} in the field of computer science to verify effectful programs, i.e.\ programs that deal with side effects. \cite{Wadler:1989:TF:99370.99404} further introduced monads in functional programming as a general and powerful approach for describing effectful (or impure) computations, while still using pure functions. The key ingredient of the monad abstraction is the \textit{bind} operator. This operator leads to an approach to composing effectful computations which is inherently sequential. This intrinsic nature of monads can be used for conditional effect execution. However, sometimes the abstraction is too strong for particular programming situations, and abstractions with weaker laws are welcome.
 
-    Applicative functors \citep{mcbride2008applicative} can be used for composing statically known collections of effectful computations, as long as these computations are independent from each other. However, this kind of functor can only take two effectful computations and, independently (i.e. in parallel), compute their values and return their composition.
+    Applicative functors \citep{mcbride2008applicative} can be used for composing statically known collections of effectful computations, as long as these computations are independent from each other. Given this, this kind of functor can only take two effectful computations and, independently (i.e. in parallel), compute their values and return their composition.
 
-   There is a need for programming abstractions that, while requiring all effects to be statically declared, provide a way to select which of the effects to execute dynamically. The Selective Applicative Functor (SAF) abstraction solves this issue \citep{andrey2019selective}.
+    There are situations where just having a Monad or an Applicative is too limiting. So, there are cases when a programming abstraction that sits between Monad and Applicative is required. An abstraction that requires all effects to be statically declared but provide a way to select which of the effects to execute dynamically was then introduced, by \cite{andrey2019selective}, to solve this issue. It is called the \gls{saf} abstraction.
 
-    In the field of \gls{pfp}, monads are used to describe events (probabilistic computations in this case) that depend on others \citep{erwig_kollmansberger_2006}. Better than monads, which are inherently sequential, selective functors provide a better abstraction for describing conditional probabilistic computations. This kind of functor has proved to be a very helpful abstraction in the fields of static analysis (at Jane Street) and speculative execution (at Facebook), and achieved great results without compromising the naturality of the adopted code style \citep{andrey2019selective}.
+    In the field of \gls{pfp}, monads are used to describe events (probabilistic computations in this case) that depend on others \citep{erwig_kollmansberger_2006}. Better than monads, which are inherently sequential, selective functors provide a nicer abstraction for describing conditional probabilistic computations. This kind of functor has proved to be a very helpful abstraction in the fields of static analysis (at Jane Street) and speculative execution (at Facebook), and achieved great results without compromising the naturality of the adopted code style \citep{andrey2019selective}.
     
-    Arrows \citep{Hughes:2000:GMA:347238.347246} are more generic than monads and were designed to abstract the structure of more complex patterns that the monad interface could not support. The most common example is the parsing library by \cite{swiestra&duponcheel} that takes advantage of static analysis to improve its performance. This example could not be optimised using the Monad interface given its sequential nature. Having \gls{ct} as a foundation, the Arrow abstraction has made its way to the \gls{fp} ecosystem in order to mitigate the limitation of the powerful Monad.
+    Arrows \citep{Hughes:2000:GMA:347238.347246} are more generic than monads and were designed to abstract the structure of more complex patterns that the monad interface could not support. The most common example is the parsing library by \cite{swiestra&duponcheel} that takes advantage of static analysis to improve its performance. This example could not be optimised using the Monad interface, given its sequential nature. Having \gls{ct} as a foundation, the Arrow abstraction has made its way to the \gls{fp} ecosystem, in order to mitigate the limitation of the powerful Monad.
     
-    There are reasons to believe that by adopting the selective abstraction one could shorten the gap that once was only filled by the Arrow abstraction \citep{Hughes:2000:GMA:347238.347246}. On the one hand, the generality of the Arrow interface allows one to overcome some of the structural limitation that refrains from implementing a stronger abstraction and compose different combinators to achieve increased expressiveness. On the other hand, languages such as Haskell, which incorporate many of these abstractions out of the box, make code written in the Arrow style not only convoluted, but also unnatural and hard to refactor.
+    There are reasons to believe that by adopting the selective abstraction one could shorten the gap that once was only filled by the Arrow abstraction \citep{Hughes:2000:GMA:347238.347246}. The generality of the Arrow interface, on the one hand, enables one to resolve some of the structural constraints that refrain from implementing a stronger abstraction and compose various combinators in order to achieve greater expressiveness. On the other hand, languages such as Haskell, which implement many of these abstractions out of the box, render code written in the Arrow style not only convoluted, but also unnatural and difficult to refactor.
     
     \section{Motivation and Goals}\label{sec-moti-goals}
     
-    The rise of new topics such as e.g.\ machine learning, deep learning and quantum computing, and software engineering in general are stimulating major advances in the programming language domain. To cope with the increased complexity, mathematics always had a principal role, either by formalising the underlying theory, or by providing robust and sound theories to deal with the new heavy machinery. But what do these topics have in common? They all deal, in some way, with probabilities. 
+    The rise of new topics such as e.g.\ machine learning, deep learning, quantum computing and software engineering, in general are stimulating major advances in the programming language domain. To cope with the increased complexity, mathematics always had a principal role, either by formalising the underlying theory, or by providing robust and sound theories to deal with the new heavy machinery. But what do these topics have in common? They all deal, in some way, with probabilities. 
 	    
-	Programming languages are the most useful means of expressing complex concepts, because they provide a way to express, automate, abstract and reason about them. There are programming languages, specially functional programming languages, that work more closely to the mathematical level and are based in concepts like referential transparency and purity. 
+	Programming languages are the most useful means of communicating complex concepts, because they provide a way to express, automate, abstract and reason about them. There are programming languages, specially functional programming languages, that work more closely to the mathematical level and are based in concepts like referential transparency and purity. 
 	However, not all of the abstractions useful in \gls{cs} come from mathematics, explicitly. There are several abstractions that were meant to factor out some kind of ubiquitous behaviour or to provide a sound and robust framework where one could reason about the code and provide a more efficient solution. The \gls{saf} is such an abstraction.
 	    
 	Probabilistic programming allow programmers to model probabilistic events and predict or calculate results with a certain degree of uncertainty. Specifically \gls{pfp} manipulates and manages probabilities in an abstract, high-level way, abstracting away all the convoluted notation and complex mathematical formulas. Probabilistic programming research is primarily focused on developing optimisations to inference and sampling algorithms in order to make code run faster while preserving the posterior probabilities. There are many strategies and techniques for optimising probabilistic programs, namely using static analysis \citep{bernstein2019static}.
     
-    The main goal of this research is to study, evaluate and compare ways of describing and implementing probabilistic computations using the so-called \emph{selective abstraction}. In particular, we want to evaluate the benefits of doing so in the \gls{pfp} ecosystem. This will be accomplished by proposing an appropriate set of case studies and, ultimately, developing a Haskell library that provides an efficient encoding of probabilities, taking advantage of the selective applicative abstraction. Focusing on how to overcome the intrinsic sequential nature of the monad abstraction \citep{Scibior:2015:PPP:2887747.2804317} in favour of the speculative execution of the selective functors, this work aims to answer the following research question:
+    The main goal of this research is to study, evaluate and compare ways of describing and implementing probabilistic computations using the so-called \emph{selective abstraction}. In particular, we want to evaluate the benefits of doing so in the \gls{pfp} ecosystem. This will be accomplished by proposing an appropriate set of case studies and, ultimately, developing a couple of Haskell libraries that provides an efficient encoding of probabilities, taking advantage of the selective applicative abstraction. Focusing on how to overcome the intrinsic sequential nature of the monad abstraction \citep{Scibior:2015:PPP:2887747.2804317} in favour of the speculative execution of the selective functors, this work aims to answer the following research question:
         \begin{quote}
         "Can the \texttt{select} operator be implemented more efficiently than the monadic \texttt{bind} operator?"
         \end{quote}
 
 	\section{State of the Art}\label{sec-state-art}
+	
 	In the context of this research, abstractions can be viewed from two prisms:
 	\begin{itemize}
 	   \item The programming language prism;
@@ -237,7 +263,7 @@
 	    
 	As expected, the programming language prism makes one see things more concretely, i.e.\ brings one down the abstraction ladder. That is why normally many abstractions tend to be associated to quite frequent patterns and interfaces that programmers wish to generalise.
 	    
-	This said, a recurrent problem happens when authors try to explain their mathematical abstractions by going down to a comfortable, intuitive and easy to understand level \citep{DBLP:journals/corr/abs-1803-10195}. However, in \gls{cs} the level might be so low (you could even say \emph{ad-hoc}) that the need for such abstractions may be questionable. Mathematical abstractions are useful ways of generalising and organising patterns that are too repetitive or have much in common. Thanks to a lot of work on topics like abstract algebra or \gls{ct}, these abstractions automatically become powerful conceptual tools. In this regard, finding the right mathematical description of an abstraction is \emph{halfway} for a correct development.
+	This said, a recurrent problem happens when authors try to explain their mathematical abstractions by going down to a comfortable, intuitive and easy to understand level \citep{DBLP:journals/corr/abs-1803-10195}. However, in \gls{cs} the level might be so low (you could even say \emph{ad-hoc}) that the need for such abstractions may be questionable. Mathematical abstractions are useful ways of generalising and organising patterns that abide by the same rules, i.e. are governed by the same set of laws and properties. Thanks to a lot of work on topics like abstract algebra or \gls{ct}, these abstractions automatically become powerful conceptual tools. In this regard, finding the right mathematical description of an abstraction is \emph{halfway} for a correct development.
 	    
 	The following section presents widely used mathematical abstractions that made its way into programming languages, in particular in the probabilistic programming environment. How recent work by \cite{andrey2019selective} relates to such abstractions will also be addressed. Given the scope of this research and aiming to explore interesting ways of thinking about probability distributions, every abstraction is introduced accompanied by a concrete instance in the probabilistic setting.
 	    
@@ -277,17 +303,17 @@
         \end{inparaenum}
 	To abstract this pattern all it takes is a way to factor out \ref{p-1} and \ref{p-2}.
 	             
-	            \begin{lstlisting}[mathescape, language=Haskell, caption={Applicative laws},captionpos=b]
+	            \begin{lstlisting}[language=Haskell, caption={Applicative laws},captionpos=b]
 	                class Functor f => Applicative f where
 	                    pure :: a -> f a
-	                    (<*>) :: f (a -> b) -> f a -$>$ f b
+	                    (<*>) :: f (a -> b) -> f a -> f b
 	                    -- pure id <*> u == u
 	                    -- pure f <*> pure x == pure (f x)
 	                    -- u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
-	                    -- u <*> pure y = pure ($\mbox{\textdollar}$ y) <*> u
+	                    -- u <*> pure y = pure ($ y) <*> u
 	            \end{lstlisting}{}
 	            
-    It is important to note that for \texttt{f} to be an applicative it first needs to be a functor. So, every applicative is a functor. This hierarchy can be seen as going down one layer of abstraction, empowering a functor \texttt{f} with more capabilities if it respects the applicative laws (given in the listing above).
+    It is important to note that in order to be an applicative, \texttt{f} first needs to be a functor. So, every applicative is a functor. This hierarchy can be seen as going down one layer of abstraction, empowering a functor \texttt{f} with more capabilities if it respects the applicative laws (given in the listing above).
 	            
 	Applicatives are interesting abstractions in the sense that they were not a transposition of a known mathematical concept. However, \cite{mcbride2008applicative} establish a correspondence with the standard categorical ``zoo" concluding that \emph{in categorical terms applicative functors are strong lax monoidal functors}. This has opened ground for a stream of fascinating research, see e.g.\ \citep{Paterson:2012:CAF:2368298.2368321, Cooper:2008:EFA:1485346.1485361, DBLP:journals/corr/CapriottiK14}.
 	        
@@ -310,7 +336,7 @@
 	                \end{align*}{}
 	            \end{definition}
 	            
-	            In programming, two alternative but equivalent definitions for monads come up. A functor can seen as a type constructor and natural transformations as functions:
+	            In programming, two alternative but equivalent definitions for monads come up. A functor can be seen as a type constructor and natural transformations as functions:
 	            
 	            \begin{lstlisting}[mathescape, language=Haskell, caption={Monad laws and definition in terms of \texttt{unit} and \texttt{join}},captionpos=b]
 	                class Applicative m => Monad m where
@@ -322,7 +348,7 @@
 	                    -- fmap f $\cdot$ unit = unit $\cdot$ f
 	            \end{lstlisting}{}
 	            
-	            \begin{lstlisting}[mathescape, language=Haskell, caption={Monad laws and definition in terms of \texttt{unit} and \texttt{bind}},captionpos=b]
+	            \begin{lstlisting}[language=Haskell, caption={Monad laws and definition in terms of \texttt{unit} and \texttt{bind}},captionpos=b]
 	                class Applicative m => Monad m where
 	                    unit :: a -> m a
 	                    (>>=) :: m a -> (a -> m b) -> m b
@@ -331,25 +357,24 @@
 	                    -- (m >>= f) >>= g = m >>= (\x -> f x >>= g)
 	            \end{lstlisting}{}
 	            
-	            As we can see both definitions once again highlight the hierarchy of abstractions where every monad is an applicative, and consequently a functor. These two definitions are related by the following law:
+	            As we can see, both definitions once again highlight the hierarchy of abstractions where every monad is an applicative, and consequently a functor. These two definitions are related by the following law:
 	            
-	            \begin{lstlisting}[mathescape, language=Haskell, caption={Relation between \texttt{join} and \texttt{bind}},captionpos=b]
+	            \begin{lstlisting}[language=Haskell, caption={Relation between \texttt{join} and \texttt{bind}},captionpos=b]
 	                    m >>= f = join (fmap f m) 
 	            \end{lstlisting}{}
 	            
 	            If monads are so versatile what type of pattern do they abstract? Intuitively, monads abstract the idea of "taking some uninteresting object and turn it into something with more structure" \citep{DBLP:journals/corr/abs-1803-10195}. This idea can be explained by using some of several known metaphors:
 	            
 	            \begin{itemize}
-	                \item Monads as \emph{containers}: Visualising it as a box to represent the type \texttt{m a}, the \texttt{unit} operation takes a value and wraps it in a box and the \texttt{join} operation takes a box of boxes and wraps it into a single box. This metaphor however, is not so good at giving intuition for \texttt{bind ($>>=$)} but it can be seen as a combination of \texttt{fmap} and \texttt{join}.
+	                \item Monads as \emph{containers}: Visualising it as a box to represent the type \texttt{m a}, the \texttt{unit} operation takes a value and wraps it in a box, and the \texttt{join} operation takes a box of boxes and unwraps it into a single box. This metaphor however, is not so good at giving intuition for \texttt{bind ($>>=$)} but, as we saw on the previous listing, it can be seen as a combination of \texttt{fmap} and \texttt{join}.
 	                
 	                \item Monads as \emph{computations}: Visualising \texttt{m a} as a computation, \texttt{a $\rightarrow$ m b} represents computations that depend on previous values so, \texttt{bind} lets us combine two computations emulating the sequential, imperative programming paradigm and \texttt{unit} represents a computation that does nothing.
 	            \end{itemize}{}
 	            
-	            Brought to programming languages, monads are used to encode different notions of computations and its structure allows us to reuse a lot of code. However they are also useful for sequencing effects with the aid of syntactic sugar \citep{wiki:xxx}.
-	        
+	            Brought to programming languages, monads are used to encode different notions of computations and its structure allows us to separate pure from impure code, obtaining, in this way, nice and structured programs that are easier to reason about. 
 	        \paragraph{Probabilistically Speaking}
 	            
-	It is more rewarding to look at probability distributions as a probabilistic computation or event. Given this, by observing the type of \texttt{bind} we can infer that it let us combine an event \texttt{m a} with another that depends on the previous value \texttt{a $\rightarrow m b$} \citep{erwig_kollmansberger_2006}. In other words, \texttt{bind} very much encapsulates the notion of conditional probabilities. What happens in a conditional probability calculation $P(B|A)$ is that $A$ becomes the sample space and $A$ and $B$ will only occur a fraction $P(A \cap B)$ of the time. Making the bridge with the type signature of \texttt{($>>=$)}: \texttt{m a} represents the new sample space $A$ and \texttt{$a \rightarrow m b$} the fraction where $A$ and $B$ occur. This being said, the probability monad can be seen as being able to express $P(B|A) = \frac{P(B \cap A)}{P(A)}$. 
+	It is more rewarding to look at probability distributions as a probabilistic computation or event. Given this, by observing the type of \texttt{bind} we can infer that it let us combine an event \texttt{m a} with another that depends on the previous value \texttt{a $\rightarrow$ m b} \citep{erwig_kollmansberger_2006}. In other words, \texttt{bind} very much encapsulates the notion of conditional probabilities. What happens in a conditional probability calculation $P(B|A)$ is that $A$ becomes the sample space, and $A$ \& $B$ will only occur a fraction $P(A \cap B)$ of the time. Making the bridge with the type signature of \texttt{($>>=$)}: \texttt{m a} represents the new sample space $A$ and \texttt{a $\rightarrow$ m b} the fraction where $A$ and $B$ occur. This being said, the probability monad can be seen as being able to express $P(B|A) = \frac{P(B \cap A)}{P(A)}$. 
 	            
 	The observation that probability distributions form a monad is not new. Thanks to the work of \cite{giry1982} and following the hierarchy of abstractions, we see that it is indeed possible to talk about probabilities with respect to the weaker structures mentioned in the other sections \citep{jtobin, Scibior19}.
 	            
@@ -357,11 +382,11 @@
 	    
 	        \paragraph{What Arrows are}
 	        
-    Most of the abstractions described until now are based on \gls{ct}. The reason for this is because \gls{ct} can be seen as the "theory of everything", a framework where a lot of mathematical structures fit in. So, how can such an abstract theory be so useful in programming? Because computer scientists value abstraction! When designing an interface it is meant to reveal as little as possible about the implementation details and it should be possible to switch the implementation with an alternative one, i.e. other \emph{instances} of the same \emph{concept}. It is the generality of a monad that is so valuable and it is thanks to the generality of \gls{ct} that makes it so useful in programming.
+    Most of the abstractions described until now are based on \gls{ct}. The reason for this is because \gls{ct} can be seen as the "theory of everything", a framework where a lot of mathematical structures fit in. So, how can such an abstract theory be so useful in programming? Because computer scientists value abstraction. When designing an interface, it is meant to reveal as little as possible about the implementation details and it should be possible to switch the implementation with an alternative one, i.e. other \emph{instances} of the same \emph{concept}. It is the generality of a monad that is so valuable and it is thanks to the generality of \gls{ct} that makes it so useful in programming.
     	        
     This being said, Arrows, introduced by \cite{Hughes:2000:GMA:347238.347246} and inspired by the ubiquity of \gls{ct}, aim to abstract how to build and structure more generic combinator libraries by suggesting the following type-class:
     	        
-                \begin{lstlisting}[mathescape, language=Haskell, caption={Arrow type-class},captionpos=b]
+                \begin{lstlisting}[language=Haskell, caption={Arrow type-class},captionpos=b]
                     class Arrow a where
                         arr :: (b -> c) -> a b c
                         (>>>) :: a b c -> a c d -> a b d
@@ -372,7 +397,7 @@
     	       
     Due to the fact that there are many more arrow combinators than monadic ones, a larger set of laws are required and the reader is remitted to \cite{Hughes:2000:GMA:347238.347246} paper for more information about them. However, a brief explanation of the three combinators is given: \texttt{arr} can be seen as doing the same as \texttt{return} does for monads, it lifts pure functions to computations; \texttt{($>>>$)} is analogous to \texttt{($>>=$)}, it is the left-to-right composition of arrows; and \texttt{first} comes from the limitation that Arrows can not express binary arrow functions, so this operator converts an arrow from $b$ to $c$ into an arrow of pairs, that applies its argument to the first component and leaves the other unchanged.
     	       
-    An astute reader can see how Arrows try to encode the notion of a category and indeed the associativity law of \texttt{($>>>$)} is one of the laws of this type-class. Moreover, if one thinks about how, for any monad a function of type $a \rightarrow m b$ is a Kleisli arrow \citep{Awodey:2010:CT:2060081}, we can define the arrow combinators as follows:
+    An astute reader can see how Arrows try to encode the notion of a category and indeed the associativity law of \texttt{($>>>$)} is one of the laws of this type-class. Moreover, if one thinks about how, for any monad a function of type \texttt{a $\rightarrow$ m b} is a Kleisli arrow \citep{Awodey:2010:CT:2060081}, we can define the arrow combinators as follows:
     	        
                 \begin{lstlisting}[mathescape, language=Haskell, caption={Arrow Kleisli type-class instance},captionpos=b]
                     newtype Kleisli m a b = K (a -> m b)
@@ -408,33 +433,47 @@
 	            
 	With this being said, \cite{andrey2019selective} developed an interface (abstraction) which allows to get the best of both worlds, the \gls{saf}.
 	            
-	            \begin{lstlisting}[mathescape, language=Haskell, label={lst:saf}, caption={Selective Applicative Functor laws},captionpos=b]
-	                class Applicative f => Selective f where
-	                    select :: f (Either a b) -> f (a -> b) -> f b
-	                    -- x <*? pure id = either id id <$\mbox{\textdollar}$> x
-	                    -- pure x <*? (y *> z) = (pure x <*? y) *> (pure x <*? z)
-	                    -- x <*? (y <*? z) = (f <$\mbox{\textdollar}$> x) <*? (g <$\mbox{\textdollar}$> y) <*? (h <$\mbox{\textdollar}$> z)
-                      -- where
-                      --     f x = Right <$\mbox{\textdollar}$> x
-                      --     g y = \a -> bimap (,a) ($\mbox{\textdollar}$a) y
-                      --     h z = uncurry z
+	            \begin{lstlisting}[language=Haskell, label={lst:saf}, caption={Selective Applicative Functor laws},captionpos=b]
+	          class Applicative f => Selective f where
+	              select :: f (Either a b) -> f (a -> b) -> f b
+	              -- x <*? pure id = either id id <$> x
+	              -- pure x <*? (y *> z) = (pure x <*? y) *> (pure x <*? z)
+	              -- x <*? (y <*? z) = (f <$> x) <*? (g <$> y) <*? (h <$> z)
+                  -- where
+                  --     f x = Right <$> x
+                  --     g y = \a -> bimap (,a) ($ a) y
+                  --     h z = uncurry z
 	            \end{lstlisting}{}
 	            
-	As we can observe, \gls{saf} find themselves between Applicatives and Monads and only provide one operator, \texttt{select}. By parametricity \citep{Wadler:1989:TF:99370.99404}, it is possible to understand that this operator runs an effect \texttt{f (Either a b)} which returns one of two values, \texttt{a} or \texttt{b}. In the case of the return value be of type \texttt{a}, the second effect must be run, in order to apply the function $a \rightarrow b$ and obtain the \texttt{f b} value. In the case of the return value be of type \texttt{b}, then the second computation can be \emph{skipped}.
+	As we can observe, \glspl{saf} find themselves between Applicatives and Monads and only provide one operator, \texttt{select}. By parametricity \citep{Wadler:1989:TF:99370.99404}, it is possible to understand that this operator runs an effect \texttt{f (Either a b)} which returns one of two values, \texttt{a} or \texttt{b}. In the case of the return value be of type \texttt{a}, the second effect must be run, in order to apply the function \texttt{a $\rightarrow$ b} and obtain the \texttt{f b} value. In the case of the return value be of type \texttt{b}, then the second computation can be \emph{skipped}.
 	            
-	The laws presented in the listing above characterise \gls{saf} insofar as the former indicates that the \texttt{select} operator should not duplicate any effect associated with \texttt{x} and the second indicates that \texttt{select} should not add any computation when the first one is pure, which allows it to be distributed.
+	The laws presented in the listing above, characterise \glspl{saf} insofar as the former indicates that the \texttt{select} operator should not duplicate any effect associated with \texttt{x}, and the second indicates that \texttt{select} should not add any computation when the first one is pure, which allows it to be distributed.
 	            
-	It is worth noting that there is not any law that forces \gls{saf} to discard the second computation, in particular \texttt{pure (Right x) $<$*$?$ y = pure x}, nor it exists a law that forces the return value of $f (a \rightarrow b)$ to be applied to the value obtained by the first computation, in particular \texttt{pure (Left x) $<$*$?$ y = (\$x) $<$\$$>$ y}. The reason for this is simple: it allows instances of \gls{saf} that are useful to perform static analysis and, in the same way as Applicative functors do not restrict the order of execution of two independent effects, the \texttt{select} operator becomes more expressive.
+	It is worth noting that there is not any law that forces \glspl{saf} to discard the second computation, in particular \texttt{pure (Right x) <*? y = pure x}, nor it exists a law that forces the return value of \texttt{f (a $\rightarrow$ b)} to be applied to the value obtained by the first computation, in particular \texttt{pure (Left x) <*? y = (\$ x) <\$> y}. The explanation for this is simple: it allows instances of \glspl{saf} which are useful for static analysis to be performed and the \texttt{select} operator becomes more expressive, in the same way that Applicative Functors do not limit the execution order of two independent results.
 	            
-	With this in mind, it is possible to see how \gls{saf} solve the limitation of Applicatives and Monads in the context of static analysis, allowing over-approximation and under-approximation of effects in a circuit with conditional branches. Nonetheless, \gls{saf} are useful not only in static contexts, but also in dynamic ones, benefiting from speculative execution \citep{andrey2019selective}.
+	With this in mind, it is possible to see how \glspl{saf} solve the limitation of Applicatives and Monads in the context of static analysis, allowing over-approximation and under-approximation of effects in a circuit with conditional branches. Nonetheless, \glspl{saf} are useful not only in static contexts, but also in dynamic ones, benefiting from speculative execution \citep{andrey2019selective}.
 	            
-	From a theoretic point of view, \gls{saf} can be seen as the composition of an Applicative functor \texttt{f} with the \texttt{Either} monad \citep{andrey2019selective}. Even though this formalisation has not been studied by \cite{andrey2019selective}, it is important to address the relation between \gls{saf} and Arrows. Taking advantage of the first sentence of this paragraph, we can infer that, as every \gls{saf} is an instance of Applicative, every Applicative functor is also an instance of Selective. Moreover, as it is pointed by \cite{andrey2019selective}, it is possible to implement a specialised version of the \texttt{bind ($>>$=)} operator for any \emph{enumerable} data type, i.e. the capacity of \emph{selecting} an infinite number of cases makes \glspl{saf} equivalent to Monads \citep{gist_2019}. It seems that, like Arrows, given the right conditions, \gls{saf} are also able to "slide" between Applicatives and Monads. As a matter of fact, \cite{Hughes:2000:GMA:347238.347246} had already come up with an interface that extended Arrows with conditional capabilities, the \texttt{ArrowChoice} type-class.
+	From a theoretic point of view, \glspl{saf} can be seen as the composition of an Applicative functor \texttt{f} with the \texttt{Either} monad \citep{andrey2019selective}. Even though this formalisation has not been studied by \cite{andrey2019selective}, it is important to address the relation between \glspl{saf} and Arrows. Taking advantage of the first sentence of this paragraph, we can infer that, as every \gls{saf} is an instance of Applicative, every Applicative functor is also an instance of Selective. Moreover, as it is pointed by \cite{andrey2019selective}, it is possible to implement a specialised version of the \texttt{bind ($>>$=)} operator for any \emph{enumerable} data type, i.e. the capacity of \emph{selecting} an infinite number of cases makes \glspl{saf} equivalent to Monads \citep{gist_2019}. It seems that, like Arrows, given the right conditions, \glspl{saf} are also able to "slide" between Applicatives and Monads. As a matter of fact, \cite{Hughes:2000:GMA:347238.347246} had already come up with an interface that extended Arrows with conditional capabilities, the \texttt{ArrowChoice} type-class.
 	            
 	But if there was already an abstraction capable of expressing the same as \glspl{saf} why did they arise? Arrows are more general and powerful than \glspl{saf} and could be used to solve the static analysis and speculative execution examples presented by \cite{andrey2019selective}. In fact, the build system DUNE \citep{dune_2018}, is an example of the successful application of Arrows. However, adding the ability of performing static analysis or speculative execution in a code-base that is not written using the Arrow abstraction, becomes more complicated than only defining an instance for \gls{saf} in just a couple of lines. Given this, \glspl{saf} are a just good enough solution for providing the ability of static analysis of conditional effects and speculative execution without relying in the more powerful and intrusive Arrow abstraction.
+    
+    \subsection{Summary}\label{sec-summary}
+    
+    The discrete probability distribution is a particular representation of probability distributions. A distribution is represented by a sampling space, i.e. an enumeration of both the support and associated probability mass at any point.
+    
+    Discrete distributions are also instances of the Functor type-class, which means that you can take advantage of the \texttt{fmap} operator to map all values (the distribution domain) to others while keeping the distribution structure intact, i.e. maintaining the probabilities of each value.
+        
+    The Applicative instance lets you apply pure functions to distributions. By taking advantage of the Applicative properties and laws, it is possible, for example, to combine two distributions to calculate their joint probability, if we know that they are independent from each other.
+        
+    The Monad instance lets you chain distributions, giving the possibility of expressing the calculation of conditioned probability.
+    
+    The most prevalent abstractions in \gls{fp} were analysed in order to understand the motivation and theory behind these and in which way they relate to the probabilistic setting. It is concluded that the mathematical theoretic foundations are transversal to all abstractions seen and, in particular, \gls{ct} is ubiquitous in programming and \gls{cs} in general. There are cases where the need for abstraction comes from more practical contexts and a systematic and disciplinary study, recurring to sound mathematical frameworks, leads to the design of a correct and efficient solution.
+    
+    Given this, what type of probabilistic interpretations or benefits are possible to achieve with \gls{saf} concerns the scope of this dissertation. After a detailed analysis and interpretation of the different abstractions found in the \gls{fp} ecosystem, it is possible to outline several starting points in order to try and achieve the main goal of this thesis: proving that the \gls{saf} abstraction is useful in providing a more efficient solution than Monads to encode probabilities. The ability of static analysis and speculative execution of \glspl{saf} can prove to be very useful in optimising certain libraries, as was the case of the Haxl library \citep{Marlow:2014:NFA:2692915.2628144, andrey2019selective}. On the other hand, the adoption of a less strong abstraction than the monadic one, but (infinitely) as expressive as this one, may prove to be of value in mitigating the performance constraints that the monadic interface imposes because of being inherently sequential.
 	            
-	    \section{Related Work}\label{sec-related-work}
+	\section{Related Work}\label{sec-related-work}
 	    
-            This thesis is the product of synergies between various computer mathematics fields, such as probability theory, category theory and programming languages. This section provides a list of similar work in these fields of investigation.
+    This thesis is the product of synergies between various computer mathematics fields, such as probability theory, category theory and programming languages. This section provides a list of similar work in these fields of investigation.
 
         \subsection{Exhaustive Probability Distribution Encoding}
         
@@ -456,21 +495,9 @@
                 
         \cite{jtobin} contributes to the investigation of embedded probabilistic programming languages, which have the advantage of benefiting from various features for free such as parser, compiler and host language library ecosystem. More than that, \cite{jtobin} studies the functorial and applicative nature of the Giry monad and highlights its various capabilities by mapping them to the probabilistic setting. It uses free monads, a novel technique for embedding a statically typed probabilistic programming language into a purely functional language, obtaining a syntax based on the Giry monad, and uses free applicative functors to be able to express statistical independence and explore its parallel nature. Notwithstanding the progress and studies shown, \cite{jtobin} does not cope with the latest abstraction of \gls{saf} nor fills the gap on how they fit into a probabilistic context in order to benefit from their properties.
         
-    \section{Summary}\label{sec-summary}
+    \section{Document Structure}
     
-    The discrete probability distribution is a particular representation of probability distributions. A distribution is represented by a sampling space, i.e. an enumeration of both the support and associated probability mass at any point.
-    
-    Discrete distributions are also instances of the Functor type-class, which means that you can take advantage of the \texttt{fmap} operator to map all values (the distribution domain) to others while keeping the distribution structure intact, i.e. maintaining the probabilities of each value.
-        
-    The Applicative instance lets you apply pure functions to distributions. By taking advantage of the Applicative properties and laws, it is possible, for example, to combine two distributions to calculate their joint probability, if we know that they are independent from each other.
-        
-    The Monad instance lets you chain distributions, giving the possibility of expressing the calculation of conditioned probability. As far as probabilistic programming is concerned, the monadic interface allows the programmer to benefit from syntactic sugar making it easier for him to write imperative style code.
-    
-    The most prevalent abstractions in \gls{fp} were analysed in order to understand the motivation and theory behind these and in which way do they relate to the probabilistic setting. It is concluded that the mathematical theoretic foundations are transversal to all abstractions seen and, in particular, \gls{ct} is ubiquitous in programming and \gls{cs} in general. There are cases where the need for abstraction comes from more practical contexts and a systematic and disciplinary study, recurring to sound mathematical frameworks, leads to the design of a correct and efficient solution.
-    
-    Given this, what type of probabilistic interpretations or benefits are possible to achieve with \gls{saf} concerns the scope of this dissertation. After a detailed analysis and interpretation of the different abstractions found in the \gls{fp} ecosystem, it is possible to outline several starting points in order to try and achieve the main goal of this thesis: proving that the \gls{saf} abstraction is useful in providing a more efficient solution than Monads to encode probabilities. The ability of static analysis and speculative execution of \glspl{saf} can prove to be very useful in optimising certain libraries, as was the case of the Haxl library \citep{Marlow:2014:NFA:2692915.2628144, andrey2019selective}. On the other hand, the adoption of a less strong abstraction than the monadic one, but (infinitely) as expressive as this one, may prove to be of value in mitigating the performance constraints that the monadic interface imposes because of being inherently sequential.
-    
-    At this point the reader already has all the context necessary to understand the scope of this master's dissertation, as well as understands the current state-of-the art.
+    The text is structured in the following way: this chapter provides the context, motivation and overall goals of the dissertation. It also presents a review of the state of the art and work related to the subject of this dissertation. Chapter \ref{ch-background} introduces the most relevant background topics and chapter \ref{ch-problem} explains in more detail what the problem its main challenges consist of. Chapters \ref{sec-current-work} and \ref{ch-applications} present all details of the implemented solution, as well as some application examples and evaluation results. Finally chapter \ref{ch-conclusion}, presents conclusions and guidelines for future work.
     
     \chapter{Background}\label{ch-background}
     
@@ -843,24 +870,28 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
         
     %\section{Markov Chains Category}
     
-	\chapter{The Problem and its Challenges}\label{ch-problem}
+    \section{Summary}
+    
+    \chapter{Contribution}\label{sec-current-work}
+    
+	\section{The Problem and its Challenges}\label{ch-problem}
 	
-	\section{Probabilistic Interpretation of Selective Functors}
+	\subsection{Probabilistic Interpretation of Selective Functors}
 	
 	In section \ref{sec-state-art} was presented the most well-known abstractions in functional programming as well as a probabilistic interpretation of them and how they translate into the context of probabilistic programming. The analysis of how the Giry monad \citep{giry1982} is a Functor and an Applicative made by \cite{jtobin} brings us closer to a possible probabilistic interpretation of \gls{saf}, observation induced by the hierarchy of abstractions. In addition, the relationship between \gls{saf} and Arrows made by \cite{andrey2019selective} and the fact that \gls{ct} had a very strong presence in Arrows design and semantics has also prompted the challenge of finding how Arrows' fundamentals and generality can be useful in finding the answer.
-	
+
 	Thus, one of the problems is to find the probabilistic meaning of \glspl{saf} in the probabilistic programming environment. That being said, it is assumed that due to the aforementioned equivalence with Arrows, much of their definition can be reused as a step closer to finding the answer to the problem posed in the next section.
 
-	\section{Inefficient Probability Encodings}
-	
+	\subsection{Inefficient Probability Encodings}
+
 	Roughly, there are two ways to model probabilistic distributions. In light of the work mentioned in section \ref{sec-related-work}, it is possible to opt for an extensive representation of a distribution, where all chance-value pairs are stored and any structural manipulation is achieved by modifying all the pairs. This approach has the advantage of being possible to get the exact probability of any type of event, however any slightly complex problem can lead to an explosion of states within the distribution, which greatly affects performance. With this in mind, another less rigorous method of estimating probabilities is to measure them using less precise yet quicker and more effective inference algorithms instead of always measuring the exact probabilities for all values. 
-	
+
     Modelling a simple program that calculates the probability that a particular event will occur in $N$ throws of a die, using the exhaustive approach quickly becomes unfeasible for a relatively small $N$. Modelling a complex, critical program that calculates the likelihood of two planes crashing using a non-exhaustive approach can lead to dangerous situations, if the accuracy of the results is not the desired one. It is this trade-off that is usually explored in probabilistic programming research and depends largely on the type of approach that is used.
 
     The challenge then, is to find a solution capable of minimising the distance between the two most common approaches to encoding probabilistic distributions, seeking one that takes advantage of the abstraction of Selective Functors and benefits from its properties of static analysis or speculative execution.
 	
-	\section{Proposed Approach - Solution}\label{sec-approach}
-	
+	\subsection{Proposed Approach - Solution}\label{sec-approach}
+
 	Given the above-mentioned problems and challenges, the proposed approach is to tackle each one consecutively.
 	
 	With this being said, regarding the problem of finding the probabilistic interpretation of \glspl{saf}, a type safe matrix representation and manipulation library was developed in Haskell in order to encode the basic \gls{laop} combinators. This library will be important to help building intuition and exploring the functorial, applicative and monadic structure of probability distributions represented as matrices.
@@ -868,10 +899,8 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
 	Regarding the problem of finding an efficient probability encoding that is capable of taking advantage of the \gls{saf} abstraction, an \gls{edsl} suited for writing probabilistic programs was designed, recurring to the Free Selective Functor construction. This \gls{edsl} will be important to see how far does the Selective abstraction is able to go in the probabilistic setting and what type of benefits can we extract from its conditional static analysis capabilities.
 	
     After gaining an understanding of \glspl{saf}'s probabilistic capabilities, a study will be conducted to determine which of the two possible approaches \gls{saf} can be more impactful, either by reusing the former type safe \gls{laop} library or by adopting the probabilistic \gls{edsl} to express probabilistic programs. A set of case studies and examples will be used in order to benchmark both contributions with related work.
-    
-    \chapter{Contribution}\label{sec-current-work}
 	
-	    Just like it was mentioned in the previous section, in order to reach the goal of this thesis, we need to sequentially answer different problems. This way, we gradually become more knowledgeable about the domain at hands and can venture further with certainty. This chapter gives a detailed overview of the main results of this master thesis and their scientific evidence, starting by contextualising Arrows, one of the most general frameworks, in the probabilistic environment and then explaining how each solution contributes to the next one.
+	    xxxxx Just like it was mentioned in the previous section, in order to reach the goal of this thesis, we need to sequentially answer different problems. This way, we gradually become more knowledgeable about the domain at hands and can venture further with certainty. This chapter gives a detailed overview of the main results of this master thesis and their scientific evidence, starting by contextualising Arrows, one of the most general frameworks, in the probabilistic environment and then explaining how each solution contributes to the next one.
 	    
 	    \section{Probabilistic Interpretation of Arrows}
 	    
@@ -1597,6 +1626,8 @@ instance Selective Fetch where
       (Blocked bx x, Blocked bf f) -> Blocked (bx <> bf) (select x f) -- speculative execution
     \end{lstlisting}
     
+    \section{Summary}
+    
     \chapter{Applications}\label{ch-applications}
     
         \section{LAoP Sprinkler example}
@@ -1886,6 +1917,8 @@ pg3 =
     \end{figure}
     
     So, because of the delay that was implemented, the sequential versions are slower in this case, but the performance gains between the sequential and concurrent versions were larger and more evident than in the previous results.
+
+    \section{Summary}
         
 	% CHAPTER - Conclusion/Future Work --------------
 	\chapter{Conclusions and future work}\label{ch-conclusion}
