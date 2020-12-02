@@ -249,7 +249,6 @@
 \usepackage{hyperref}
 \usepackage{bookmark}
 
-
 % Format table of contents
 \usepackage{tocloft}
 \renewcommand{\cftpartleader}{\cftdotfill{\cftnodots}} % for parts
@@ -382,10 +381,10 @@
 \gdef\@subtitleB{}
 
 % Default Department
-\gdef\@department{Departamento de Inform\'{a}tica}
-\gdef\@school{Escola de Engenharia}
-\gdef\@university{Universidade do Minho}
-\gdef\@masterdegree{Computer Science}
+\gdef\@department{Informatics Department}
+\gdef\@school{School of Engineering}
+\gdef\@university{University of Minho}
+\gdef\@masterdegree{Integrated Masters in Computer Engineering}
 
 % Authoring Macros
 \def\supervisor#1{\gdef\@supervisor{#1}}
@@ -502,5 +501,5 @@
 \def\CCBY{\CCaux{by}{CCBY.png}{CC BY}}
 
 \def\CCaux#1#2#3{%
-\noindent\includegraphics[width=0.2\textwidth]{img/#2}\\{\bf\textsf{#3}}
+\noindent\includegraphics[width=0.2\textwidth]{img/#2}\\{\textbf{\textsf{#3}}}
 \\\url{https://creativecommons.org/licenses/#1/4.0/}\\}
