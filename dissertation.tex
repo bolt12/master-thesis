@@ -25,6 +25,7 @@
 \newtheorem{corollary}{Corollary}[theorem]
 
 \usepackage{upgreek}
+\usepackage{stmaryrd}
 %----- jno added stuff -----
 %\usepackage{fleqn}
 %\setlength\mathindent{3em}
@@ -88,7 +89,7 @@
 \newacronym{pfp}{PFP}{Probabilistic Functional Programming}
 \newacronym{aop}{AoP}{Algebra of Programming}
 \newacronym{laop}{LAoP}{Linear Algebra of Programming}
-\newacronym{saf}{SAF}{Selective Applicative Functors}
+\newacronym{saf}{SAF}{Selective Applicative Functor}
 \newacronym{edsl}{eDSL}{Embedded domain specific language}
 \newacronym{ppl}{PPL}{Probabilistic Programming Language}
 \newacronym{gadt}{GADT}{Generalised Algebraic Datatype}
@@ -179,8 +180,19 @@ This dissertation reports on academic work that can be used by third parties as 
 % Add acknowledgements ----------------------------
 
 	\chapter*{Acknowledgements}
-	Acknowledgements to be written here. %Agradecer ao prof. Andrey
-	% Não esquecer a bolsa!
+	Throughout the writing of this dissertation I have received a great deal of support and assistance.
+
+    I would like to thank my co-supervisor, Andrey Mokhov, first and foremost, for welcoming me as his student and for proposing the subject of this master's thesis. Andrey's expertise was invaluable in the formulation of research questions and methodology. His insightful feedback pushed me to sharpen my thinking and brought my work to a higher level.
+    
+    I would also like to express my sincere gratitude to my supervisor, Professor José N. Oliveira, for all his assistance and guidance. Without him, I wouldn't be able to tackle a lot of challenges that I've found along the way. I would like to thank you for the patient support and for all the opportunities I have been given to further my studies.
+    
+    While doing this work I held a Research Grant of the DaVinci Project funded by FEDER and by National Funds, so I wish to thank \grantsponsor{ GS100000001 }{ FCT (Portuguese Foundation for Science and Technology, I.P.) }{ http://dx.doi.org/10.13039/501100001871 } and all people involved in the project for the opportunity.
+    
+    A special, heartfelt thank you to Cláudia Correia, whose invaluable and unconditional support was what kept me moving. Thank you for always being there for me, in good and bad times, and for encouraging me to be professional and to do the right thing even when the road got rough. Without your support, this work would not have been possible.
+    
+    Moreover, I would like to thank my family for standing by me, for investing on my education, and for always providing me everything I needed to strive.
+    
+    Last but not least, for all the wonderful adventures, stories and shared moments over the past five years, I want to acknowledge and thank all of my friends. This master's thesis depicts five years of work, friendship, love, and without each one of you, I definitely wouldn't have made it this far.
 
 \chapter*{Statement of Integrity}
 
@@ -194,7 +206,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	% Add abstracts (en,pt) ---------------------------
 	\chapter*{Abstract}
 
-    In functional programming, \emph{selective applicative} functors (SAF) are an abstraction between applicative functors and monads. This abstraction requires all effects to be statically declared, but provides a way to select which effects to execute dynamically. SAF have been shown to be a useful abstraction in several examples, including two industrial case studies. Selective functors have been used for their static analysis capabilities. The collection of information about all possible effects in a computation and the fact that they enable \emph{speculative} execution make it possible to take advantage to describe probabilistic computations instead of using monads. In particular, selective functors appear to provide a way to obtain a more efficient implementation of probability distributions than monads.
+    In functional programming, \emph{selective applicative functors} (SAF) are an abstraction between applicative functors and monads. This abstraction requires all effects to be statically declared, but provides a way to select which effects to execute dynamically. SAF have been shown to be a useful abstraction in several examples, including two industrial case studies. Selective functors have been used for their static analysis capabilities. The collection of information about all possible effects in a computation and the fact that they enable \emph{speculative} execution make it possible to take advantage to describe probabilistic computations instead of using monads. In particular, selective functors appear to provide a way to obtain a more efficient implementation of probability distributions than monads.
     
     This dissertation addresses a probabilistic interpretation for the \emph{arrow} and \emph{selective} abstractions in the light of the linear algebra of programming discipline, as well as exploring ways of offering SAF capabilities to probabilistic programming, by exposing sampling as a concurrency problem. As a result, provides a Haskell type-safe matrix library capable of expressing probability distributions and probabilistic computations as typed matrices, and a probabilistic programming eDSL that explores various techniques in order to offer a novel, performant solution to probabilistic functional programming.
 	
@@ -235,7 +247,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
    
    \gls{fp} deals with the complexity of real life problems by handling so-called (side) \emph{effects} in an algebraic manner. Monads are one such algebraic device, pioneered by \cite{Moggi:1991:NCM:116981.116984} in the field of computer science to verify \emph{effectful} programs, i.e.\ programs that deal with side effects. \cite{Wadler:1989:TF:99370.99404} was among the first to recommend monads in functional programming as a general and powerful approach for describing effectful (or impure) computations, while still using pure functions. The key ingredient of the monad abstraction is the \textit{bind} operator, which applies functions to monadic objects \emph{carrying the effects through}. This operator leads to an approach to composing effectful computations which is inherently sequential. This intrinsic nature of monads can be used for conditional effect execution. However, this abstraction is often too strong for particular programming situations, where abstractions with weaker laws are welcome.
 
-    Applicative functors \citep{mcbride2008applicative} can be used for composing statically known collections of effectful computations, as long as these computations are independent from each other. Therefore, this kind of functor can only take two effectful computations and, independently (i.e. in parallel), compute their values and return their composition.
+    Applicative functors \citep{mcbride2008applicative} can be used for composing statically known collections of effectful computations, as long as these computations are independent from each other. Therefore, this kind of functor can only take two effectful computations and, independently (i.e.\ in parallel), compute their values and return their composition.
 
     There are situations in which just having a Monad or an Applicative is too limiting, calling for a programming abstraction sitting somewhere between Monad and Applicative. An abstraction that requires all effects to be statically declared but provides a way to select which of the effects to execute dynamically was introduced by \cite{andrey2019selective} to cope with such situations. It is called the \gls{saf} abstraction.
 
@@ -253,7 +265,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	    
 	Probabilistic programming allows programmers to model probabilistic events and predict or calculate results with a certain degree of uncertainty. In particular \gls{pfp} manipulates and manages probabilities in an abstract, high-level way, circumventing convoluted notation and complex mathematical formulas. Probabilistic programming research is primarily focused on developing optimisations to inference and sampling algorithms in order to make code run faster while preserving the posterior probabilities. There are many strategies and techniques for optimising probabilistic programs, namely using static analysis \citep{bernstein2019static}.
     
-    The main goal of this research is to study, evaluate and compare ways of describing and implementing probabilistic computations using the so-called \emph{selective abstraction}. In particular, we want to evaluate the benefits of doing so in the \gls{pfp} ecosystem. This will be accomplished by proposing an appropriate set of case studies and, ultimately, developing a couple of Haskell libraries that provides an efficient encoding of probabilities, taking advantage of the selective applicative abstraction. Focusing on how to overcome the intrinsic sequential nature of the monad abstraction \citep{Scibior:2015:PPP:2887747.2804317} in favour of the speculative execution of the selective functors, one of the aims of this work is to answer the following research question:
+    The main goal of this research is to study, evaluate and compare ways of describing and implementing probabilistic computations using the so-called \emph{selective abstraction}. In particular, to evaluate the benefits of doing so in the \gls{pfp} ecosystem. This will be accomplished by proposing an appropriate set of case studies and, ultimately, developing a couple of Haskell libraries that provides an efficient encoding of probabilities, taking advantage of the selective applicative abstraction. Focusing on how to overcome the intrinsic sequential nature of the monad abstraction \citep{Scibior:2015:PPP:2887747.2804317} in favour of the speculative execution of the selective functors, one of the aims of this work is to answer the following research question:
         \begin{quote}
         "Can the \texttt{select} operator be implemented more efficiently than the monadic \texttt{bind} operator?"
         \end{quote}
@@ -324,7 +336,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	        
          \paragraph{Probabilistic Speak}
 	            
-	Looking at the laws of applicative functors one sees that they pretty much define what the intended semantics regarding sequencing effects are. The last one, called the \emph{interchange law} \citep{mcbride2008applicative}, clearly says that when evaluating the application of an effectful function to a pure argument, the order in which we evaluate the function and its argument \emph{does not matter}. However, if both computations are effectful the order \emph{does matter}, but a computation cannot depend on values returned by prior computations, i.e.\ the result of the applicative action can depend on earlier values but the effects cannot. In other words, computations can run \emph{independently} from each other \citep{Cooper:2008:EFA:1485346.1485361, Marlow:2014:NFA:2692915.2628144, Marlow:2016:DHD:3241625.2976007, andrey2019selective}.
+	Looking at the laws of applicative functors one sees that they pretty much define what the intended semantics regarding sequencing effects are. The last one, called the \emph{interchange law} \citep{mcbride2008applicative}, clearly says that when evaluating the application of an effectful function to a pure argument, the order in which one evaluates the function and its argument \emph{does not matter}. However, if both computations are effectful the order \emph{does matter}, but a computation cannot depend on values returned by prior computations, i.e.\ the result of the applicative action can depend on earlier values but the effects cannot. In other words, computations can run \emph{independently} from each other \citep{Cooper:2008:EFA:1485346.1485361, Marlow:2014:NFA:2692915.2628144, Marlow:2016:DHD:3241625.2976007, andrey2019selective}.
 	            
 	So, if \texttt{f a} represents a distribution then \texttt{pure} can be seen as the embedding of a given value \texttt{a} in the probabilistic context with 100\% chance, and \texttt{(\textless*\textgreater)} as the action responsible of combining two \emph{independent} distributions, calculating their joint probability. This said, the probability instance of applicative functors can be regarded as being able to express $P(A, B) = P(A)P(B)$, i.e.\ statistical independence \citep{jtobin}.
 	    
@@ -362,7 +374,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	                    -- (m >>= f) >>= g = m >>= (\x -> f x >>= g)
 	            \end{lstlisting}{}
 	            
-	            As we can see, both definitions once again highlight the hierarchy of abstractions where every monad is an applicative, and consequently a functor. These two definitions are related by the following law:
+	            As can be seen, both definitions once again highlight the hierarchy of abstractions where every monad is an applicative, and consequently a functor. These two definitions are related by the following law:
 	            
 	            \begin{lstlisting}[language=Haskell, caption={Relation between \texttt{join} and \texttt{bind}},captionpos=b]
 	                    m >>= f = join (fmap f m) 
@@ -371,18 +383,18 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	            If monads are so versatile what type of pattern do they abstract? Intuitively, monads abstract the idea of "taking some uninteresting object and turning it into something with more structure" \citep{DBLP:journals/corr/abs-1803-10195}. This idea can be explained by using some of several known metaphors:
 	            
 	            \begin{itemize}
-	                \item Monads as \emph{containers}: Visualising it as a box to represent the type \texttt{m a}, the \texttt{unit} operation takes a value and wraps it in a box, and the \texttt{join} operation takes a box of boxes and unwraps it into a single box. This metaphor however, is not so good at giving intuition for \texttt{bind ($\bind$)} but, as we saw in the previous listing, it can be seen as a combination of \texttt{fmap} and \texttt{join}.
+	                \item Monads as \emph{containers}: Visualising it as a box to represent the type \texttt{m a}, the \texttt{unit} operation takes a value and wraps it in a box, and the \texttt{join} operation takes a box of boxes and unwraps it into a single box. This metaphor however, is not so good at giving intuition for \texttt{bind ($\bind$)} but, as the previous listing demonstrated, it can be seen as a combination of \texttt{fmap} and \texttt{join}.
 	                
-	                \item Monads as \emph{computations}: Visualising \texttt{m a} as a computation, \texttt{a $\rightarrow$ m b} represents computations that depend on previous values; so, \texttt{bind} lets us combine two computations emulating the sequential, imperative programming paradigm and \texttt{unit} represents a computation that does nothing.
+	                \item Monads as \emph{computations}: Visualising \texttt{m a} as a computation, \texttt{a $\rightarrow$ m b} represents computations that depend on previous values; so, \texttt{bind} let us combine two computations emulating the sequential, imperative programming paradigm and \texttt{unit} represents a computation that does nothing.
 	            \end{itemize}{}
 	            
 	            Brought to programming languages, monads are used to encode different notions of computations and their structure allows us to separate pure from impure code, obtaining, in this way, nice and structured programs that are easier to reason about. 
 	            
 	 \paragraph{Probabilistic Speak}
 	            
-	It is more rewarding to look at probability distributions as a probabilistic computation or event. Given this, by observing the type of \texttt{bind} we can infer that it lets us combine an event \texttt{m a} with another that depends on the previous value \texttt{a $\rightarrow$ m b} \citep{erwig_kollmansberger_2006}. In other words, \texttt{bind} in a sense encapsulates the notion of conditional probability. What happens in a conditional probability calculation $P(B|A)$ is that $A$ becomes the sample space, and $A$ \& $B$ will only occur a fraction $P(A \cap B)$ of the time. Making the bridge with the type signature of \texttt{($\bind$)}: \texttt{m a} represents the new sample space $A$ and \texttt{a $\rightarrow$ m b} the fraction where $A$ and $B$ occur. This being said, the probability monad can be seen as being able to express $P(B|A) = \frac{P(B \cap A)}{P(A)}$. 
+	It is more rewarding to look at probability distributions as a probabilistic computation or event. Given this, by observing the type of \texttt{bind} one can infer that it let us combine an event \texttt{m a} with another that depends on the previous value \texttt{a $\rightarrow$ m b} \citep{erwig_kollmansberger_2006}. In other words, \texttt{bind} in a sense encapsulates the notion of conditional probability. What happens in a conditional probability calculation $P(B|A)$ is that $A$ becomes the sample space, and $A$ \& $B$ will only occur a fraction $P(A \cap B)$ of the time. Making the bridge with the type signature of \texttt{($\bind$)}: \texttt{m a} represents the new sample space $A$ and \texttt{a $\rightarrow$ m b} the fraction where $A$ and $B$ occur. This being said, the probability monad can be seen as being able to express $P(B|A) = \frac{P(B \cap A)}{P(A)}$. 
 	            
-	The observation that probability distributions form a monad is not new. Thanks to the work of \cite{giry1982} and following the hierarchy of abstractions, we see that it is indeed possible to talk about probabilities with respect to the weaker structures mentioned in the other sections \citep{jtobin, Scibior19}.
+	The observation that probability distributions form a monad is not new. Thanks to the work of \cite{giry1982} and following the hierarchy of abstractions, it is easy to see that it is indeed possible to talk about probabilities with respect to the weaker structures mentioned in the other sections \citep{jtobin, Scibior19}.
 	            
 	    \subsection{Arrows}
 	    
@@ -403,7 +415,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
     	       
     Due to the fact that there are many more arrow combinators than monadic ones, a larger set of laws are required and the reader is referred to \cite{Hughes:2000:GMA:347238.347246} paper for more information about them. However, a brief explanation of the three combinators is given: \texttt{arr} can be seen as doing the same as \texttt{return} does for monads, it lifts pure functions to computations; \texttt{($\bindA$)} is analogous to \texttt{($\bind$)}, it is the left-to-right composition of arrows; and \texttt{first} comes from the limitation that Arrows can not express binary arrow functions, so this operator converts an arrow from $b$ to $c$ into an arrow of pairs, that applies its argument to the first component and leaves the other unchanged.
     	       
-    The astute reader will see how Arrows try to encode the notion of a category and indeed the associativity law of \texttt{($\bindA$)} is one of the laws of this type-class. Moreover, if one thinks about how, for any monad a function of type \texttt{a $\rightarrow$ m b} is a Kleisli arrow \citep{Awodey:2010:CT:2060081}, we can define the arrow combinators as follows:
+    The astute reader will see how Arrows try to encode the notion of a category and indeed the associativity law of \texttt{($\bindA$)} is one of the laws of this type-class. Moreover, if one thinks about how, for any monad a function of type \texttt{a $\rightarrow$ m b} is a Kleisli arrow \citep{Awodey:2010:CT:2060081}, one can define the arrow combinators as follows:
     	        
                 \begin{lstlisting}[mathescape, language=Haskell, caption={Arrow Kleisli type-class instance},captionpos=b]
                     newtype Kleisli m a b = K (a -> m b)
@@ -414,7 +426,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
                         first (K f) = K (\(b, d) -> f b >>= \c -> return (c, d))
                 \end{lstlisting}{}
                 
-    This shows that Arrows in fact generalise monads. Nevertheless there's still one question that goes unanswered --- why generalise monads if they serve the same purpose of providing a common structure to generic programming libraries? \cite{Hughes:2000:GMA:347238.347246} saw in the example of \cite{swiestra&duponcheel} a limitation on the monadic interface and argues that the advantage of the Arrow interface is that it has a wider class of implementations. Thus, simpler libraries based on abstract data types that are not monads, can be given an arrow interface.
+    This shows that Arrows in fact generalise monads. Nevertheless there is still one question that goes unanswered --- why generalise monads if they serve the same purpose of providing a common structure to generic programming libraries? \cite{Hughes:2000:GMA:347238.347246} saw in the example of \cite{swiestra&duponcheel} a limitation on the monadic interface and argues that the advantage of the Arrow interface is that it has a wider class of implementations. Thus, simpler libraries based on abstract data types that are not monads, can be given an arrow interface.
                 
     It seems that Arrows are more expressive than the abstractions seen in the previous sections, but what \emph{are} their relation with them? \cite{Lindley:2011:IOA:1953652.1954016} established the relative order of strength of Applicative $\rightarrow$ Arrow $\rightarrow$ Monad, in contrast to the putative order of Arrow $\rightarrow$ Applicative $\rightarrow$ Monad. Furthermore, given the right restrictions, Arrows are isomorphic to both Applicatives and Monads being able to "slide" between the layers of this hierarchy of abstractions.
     	        
@@ -464,7 +476,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	%Taking advantage of the first sentence of this paragraph, we can infer that,
 	As every \gls{saf} is an instance of Applicative, every Applicative functor is also an instance of Selective. Moreover, as pointed by \cite{andrey2019selective} it is possible to implement a specialised version of the \texttt{bind ($>>$=)} operator for any \emph{enumerable} data type, i.e.\ the capacity of \emph{selecting} an infinite number of cases makes \glspl{saf} equivalent to Monads \citep{gist_2019}. It seems that, like Arrows, given the right conditions, \glspl{saf} are also able to "slide" between Applicatives and Monads. As a matter of fact, \cite{Hughes:2000:GMA:347238.347246} had already come up with an interface that extended Arrows with conditional capabilities, the \texttt{ArrowChoice} type-class.
 	            
-	Given that there was already an abstraction capable of expressing the same as \glspl{saf}, why did these arise? Arrows are more general and powerful than \glspl{saf} and could be used to solve the static analysis and speculative execution examples presented by \cite{andrey2019selective}. In fact, the build system DUNE \citep{dune_2018} is an example of successful application of Arrows. However, adding the ability of performing static analysis or speculative execution in a code-base that is not written using the Arrow abstraction, becomes more complicated than only defining an instance for \gls{saf} in just a couple of lines. Given this, \glspl{saf} are a "just good enough" solution for providing the ability of static analysis of conditional effects and speculative execution without relying in the more powerful and intrusive Arrow abstraction.
+	Given that there was already an abstraction capable of expressing the same as \glspl{saf}, why did these arise? Arrows are more general and powerful than \glspl{saf} and could be used to solve the static analysis and speculative execution examples presented by \cite{andrey2019selective}. In fact, the build system DUNE \citep{dune_2018} is an example of successful application of Arrows. However, adding the ability of performing static analysis or speculative execution in a code-base that is not written using the Arrow abstraction, becomes more complicated than only defining an instance for \gls{saf} in just a couple of lines. With this being said, \glspl{saf} are a "just good enough" solution for providing the ability of static analysis of conditional effects and speculative execution without relying in the more powerful and intrusive Arrow abstraction.
     
     \subsection{Summary}\label{sec-summary}
     
@@ -472,9 +484,9 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
     
     Discrete distributions are also instances of the Functor type-class, which means that one can take advantage of the \texttt{fmap} operator to map all values (the distribution domain) to others while keeping the distribution structure intact, i.e.\ maintaining the probabilities of each value.
         
-    The Applicative instance lets one apply pure functions to distributions. By taking advantage of the Applicative laws, it is possible, for example, to combine two distributions and calculate their joint probability, if we know that they are independent from each other.
+    The Applicative instance let us apply pure functions to distributions. By taking advantage of the Applicative laws, it is possible, for example, to combine two distributions and calculate their joint probability, if one knows that they are independent from each other.
         
-    The Monad instance lets one chain distributions, giving the possibility of expressing the calculation of conditioned probability.
+    The Monad instance let us chain distributions, giving the possibility of expressing the calculation of conditioned probability.
     
 \begin{table}%[]
 \centering
@@ -495,7 +507,7 @@ Selective & \texttt{select A B} & - \\ \hline
 
     The most prevalent abstractions in \gls{fp} were analysed in order to understand the motivation and theory behind these and in which way they relate to the probabilistic setting. Table \ref{tab:my-table-2} summarises the relation between each abstraction and its probabilistic counterpart. The conclusion is that maths-theoretic foundations traverse all the abstractions addressed and, in particular, \gls{ct} is ubiquitous in programming and \gls{cs} in general. There are cases in which the need for abstraction comes from more practical contexts, calling for a more systematic and disciplined study grounded on sound mathematical frameworks and leading to the design of correct and efficient solutions.
     
-    This said, this dissertation is chiefly concerned with identifying which probabilistic interpretations or benefits are achievable with \glspl{saf}. After a detailed analysis of the different abstractions found in the \gls{fp} ecosystem, we shall proceed to outlining several starting points in order to
+    This said, this dissertation is chiefly concerned with identifying which probabilistic interpretations or benefits are achievable with \glspl{saf}. After a detailed analysis of the different abstractions found in the \gls{fp} ecosystem, several starting points are outlined, in order to
     % try and achieve the main goal of this thesis: proving
     prove that the \gls{saf} abstraction is useful in providing a more efficient solution than Monads to encode probabilities. The ability of static analysis and speculative execution of \glspl{saf} has proved very useful in optimising certain libraries, as was the case of the Haxl library \citep{Marlow:2014:NFA:2692915.2628144, andrey2019selective}. On the other hand, the adoption of an abstraction weaker than the monadic one, may prove to be of value in mitigating the performance constraints that the monadic interface imposes because of being inherently sequential.
 	            
@@ -507,7 +519,7 @@ Selective & \texttt{select A B} & - \\ \hline
         
     Over the past few years, the field of probabilistic programming has been primarily concerned with extending language capabilities in expressing probabilistic calculations and serving as practical tools for Bayesian modelling and inference \citep{erwig_kollmansberger_2006}. As a result, several languages were created to respond to emerging limitations. Despite the observation that probability distributions form a monad is not new, it was not until later that its sequential and compositional nature was explored by \cite{Ramsey:2002:SLC:565816.503288}, \cite{Goodman:2013:PPP:2480359.2429117} and \cite{Gordon:2013:MPB:2429069.2429119}.
         
-        \cite{erwig_kollmansberger_2006} were among the first to encode  distributions as monads by designing a probability and simulation library based on this concept. \cite{kidd2007build}, the following year, inspired by the work of \cite{Ramsey:2002:SLC:565816.503288}, introduced a modular way of probability monad construction and showed the power of using monads as an abstraction. Given this, he was able to, through a set of different monads, offer ways to calculate probabilities and explore their compositionality, from discrete distributions to sampling algorithms.
+        \cite{erwig_kollmansberger_2006} were among the first to encode  distributions as monads by designing a probability and simulation library based on this concept. \cite{kidd2007build}, the following year, inspired by the work of \cite{Ramsey:2002:SLC:565816.503288}, introduced a modular way of probability monad construction and showed the power of using monads as an abstraction. Due to this, he was able to, through a set of different monads, offer ways to calculate probabilities and explore their compositionality, from discrete distributions to sampling algorithms.
                 
          \cite{erwig_kollmansberger_2006}, in their library, used the non-deterministic monad to represent distributions, resulting in an exhaustive approach capable of calculating the exact probabilities of any event. However, common examples of probabilistic programming grow the sample space exponentially and make it impossible to calculate the entire distribution. Despite \cite{larsen2011memory}'s efforts to improve the performance of this library, his approach was still limited to exhaustively calculating all possible outcomes.
                 
@@ -596,7 +608,7 @@ Selective & \texttt{select A B} & - \\ \hline
                 When an experiment is made, its realisation results in an outcome that is a subset of the sample space. If the experiment is repeated multiple times the result might vary in each repetition, or not. This "frequency of occurrence" can be seen as a \emph{probability}. % If the result of an experiment can be described probabilistically its half way there to analyse the experience statistically. 
                 However, this "frequency of occurrence" is just one of the many interpretations of what a probability is, another one being more subjective: a probability is the \emph{belief} of a chance of an event occurring.
                 
-                For each event $A$ in the sample space $S$ we want to associate with $A$ a number in the interval $[0, 1]$ said to be the probability of $A$, denoted $P(A)$. The domain of $P$, which intuitively is the set of all subsets of $S$, is called a \emph{sigma algebra}, denoted by $\mathscr{B}$.%
+                For each event $A$ in the sample space $S$ a number in the interval $[0, 1]$, said to be the probability of $A$, is associated with $A$ denoted $P(A)$. The domain of $P$, which intuitively is the set of all subsets of $S$, is called a \emph{sigma algebra}, denoted by $\mathscr{B}$.%
                 
                 \begin{definition}{A collection of subsets of $S$ is a sigma algebra, $\mathscr{B}$ if it satisfies the following properties:}
                 \begin{align*}
@@ -620,7 +632,7 @@ Selective & \texttt{select A B} & - \\ \hline
                     \end{align*}{}
                 \end{example}{}
                 
-                Given this, we can now define $P(\cdot)$ as a function from $\mathscr{B} \rightarrow [0,1]$, this probability measure must assign to each event $A$, a probability $P(A)$ and abide the following properties:
+                Given this, $P(\cdot)$ can now be defined as a function from $\mathscr{B} \rightarrow [0,1]$, this probability measure must assign to each event $A$, a probability $P(A)$ and abide the following properties:
                 
                 \begin{definition}{Given a sample space $S$ and an associated sigma algebra $\mathscr{B}$, a probability function $P$ satisfies:}
                 \begin{align*}
@@ -633,15 +645,15 @@ Selective & \texttt{select A B} & - \\ \hline
                 \end{align*}{}
                 \end{definition}{}
                 
-                These properties satisfy the Axioms of Probability (or the Kolmogorov Axioms), and every function that satisfies them is called a probability function. The first three axioms are pretty intuitive and easy to understand. However, the fourth one is more subtle and is an implication of the third Kolmogorov Axiom, called the \emph{Axiom of Countable Additivity} which says that we can calculate probabilities of complicated events by adding up the probabilities of smaller events, provided those smaller events are disjoint and together contain the entire complicated event.
+                These properties satisfy the Axioms of Probability (or the Kolmogorov Axioms), and every function that satisfies them is called a probability function. The first three axioms are pretty intuitive and easy to understand. However, the fourth one is more subtle and is an implication of the third Kolmogorov Axiom, called the \emph{Axiom of Countable Additivity} which says that one can calculate probabilities of complicated events by adding up the probabilities of smaller events, provided those smaller events are disjoint and together contain the entire complicated event.
         
         \subsubsection{Calculus of Probabilities}
             
-            From the Axioms of Probabilities we can build up many properties of a probability function
+            Many properties of a probability function follow from the From the Axioms of Probabilities, which is
             % Properties are quite 
             useful for calculating more complex probabilities. The additivity property automatically implies certain basic properties that are true for any probability model.
             
-            Taking a look at $A$ and $A^c$ we can see that they are always disjoint, and their union is the entire sample space: $A \cup A^c = S$. By the additivity property we have $P(A \cup A^c) = P(A) + P(A^c) = P(S)$, and since we know $P(S) = 1$ , then $P(A \cup A^c) = 1$ or:
+            Taking a look at $A$ and $A^c$ one can see that they are always disjoint, and their union is the entire sample space: $A \cup A^c = S$. By the additivity property one has $P(A \cup A^c) = P(A) + P(A^c) = P(S)$, and since $P(S) = 1$ is known, then $P(A \cup A^c) = 1$ or:
             \begin{align}
                 P(A^c) = 1 - P(A)
             \end{align}{}
@@ -656,10 +668,10 @@ Selective & \texttt{select A B} & - \\ \hline
                 \end{align*}{}
             \end{theorem}
             
-            \begin{theorem}{Let $A$ and $B$ be two events such that $B \subseteq A$. Then:}\label{2-1-3}
-                \begin{align*}
+            \begin{theorem}{Let $A$ and $B$ be two events such that $B \subseteq A$. Then:}
+                \begin{align}\label{2-1-3}
                     P(A) = P(B) + P(A \cap B^c)
-                \end{align*}{}
+                \end{align}{}
             \end{theorem}
             
             \noindent From this one can draw, since  $P(A \cap B^c) \geq 0$ always holds:
@@ -670,7 +682,7 @@ Selective & \texttt{select A B} & - \\ \hline
                 \end{align*}{}
             \end{corollary}
             
-            \noindent Moreover, by rearranging \ref{2-1-3} one obtains:
+            \noindent Moreover, by rearranging (\ref{2-1-3}) one obtains:
             \begin{corollary}{Let $A$ and $B$ be two events such that $B \subseteq A$. Then:}
                 \begin{align*}
                     P(A \cap B^c) = P(A) - P(B)
@@ -678,7 +690,7 @@ Selective & \texttt{select A B} & - \\ \hline
             \end{corollary}
             
             \noindent Finally, by lifting constraint $B \subseteq A$ one has the following, more general property:
-            \begin{theorem}{(Principle of inclusion–exclusion, two-event version) Let $A$ and $B$ be two events. Then:}\label{2-1-4}
+            \begin{theorem}{(Principle of inclusion–exclusion, two-event version) Let $A$ and $B$ be two events. Then:}
                 \begin{align}\label{t-2-1-4}
                     P(A \cup B) = P(A) + P(B) - P(A \cap B)
                 \end{align}{}
@@ -700,12 +712,12 @@ Selective & \texttt{select A B} & - \\ \hline
             If a job consists in $k$ tasks, in which the \emph{i}-th task can be done in $n_i$ ways, $i = 1,...,k$, then the whole job can be done in $n_1 \times n_2 \times ... \times n_k$ ways.
         \end{theorem}{}
         
-        Although theorem \ref{t-2-1-5} is a good starting point, in some situations there are more aspects to consider. In a lottery, for instance, the first number can be chosen in 44 ways and the second in 43 ways, making a total of $44 \times 43 = 1892$ ways. However, if the player could pick the same number twice then the first two numbers could be picked in $44 \times 44 = 1936$ ways. This shows the distinction between counting \emph{with replacement} and counting \emph{without replacement}. There is a second very important aspect in any counting problem: whether or not the \emph{order} of the tasks is important. Taking these considerations into account, it is possible to construct a $2 \times 2$ table of possibilities.
+        Although theorem \ref{t-2-1-5} is a good starting point, in some situations there are more aspects to consider. In a lottery, for instance, the first number can be chosen in 44 ways and the second in 43 ways, making a total of $44 \times 43 = 1892$ ways. However, if the player could pick the same number twice then the first two numbers could be picked in $44 \times 44 = 1936$ ways. This shows the distinction between counting \emph{with replacement} and counting \emph{without replacement}. There is a second important aspect in any counting problem: whether or not the \emph{order} of the tasks matters. Taking these considerations into account, it is possible to construct a $2 \times 2$ table of possibilities.
         
-        Back to the lottery example, we can express all the ways a player can pick 6 numbers out of 44, under the four possible case:
+        Back to the lottery example, one can express all the ways a player can pick 6 numbers out of 44, under the four possible cases:
         
         \begin{itemize}
-            \item \emph{ordered, without replacement} - Following \ref{t-2-1-5} the first number can be picked in 44 ways, the second in 43, etc. So, there are:
+            \item \emph{ordered, without replacement} - Following theorem \ref{t-2-1-5} the first number can be picked in 44 ways, the second in 43, etc. So, there are:
             \begin{align*}
                 44 \times 43 \times 42 \times 41 \times 40 \times 39 = \frac{44!}{38!} = 5082517440
             \end{align*}{}
@@ -713,7 +725,7 @@ Selective & \texttt{select A B} & - \\ \hline
             \begin{align*}
                 44 \times 44 \times 44 \times 44 \times 44 \times 44 = 44^6 = 7256313856
             \end{align*}{}
-            \item \emph{unordered, without replacement} - Since we know how many ways we can pick the numbers if the order is taken into account, then we just need to divide the redundant orderings. Following \ref{t-2-1-5}, 6 numbers can be rearranged in $6!$, so:
+            \item \emph{unordered, without replacement} - Since how many ways we can pick the numbers if the order is taken into account is known, then one just needs to divide the redundant orderings. Following theorem \ref{t-2-1-5}, 6 numbers can be rearranged in $6!$, so:
             \begin{align*}
                 \frac{44 \times 43 \times 42 \times 41 \times 40 \times 39}{6 \times 5 \times 4 \times 3 \times 2 \times 1} = \frac{44!}{6!38!} = 7059052
             \end{align*}{}
@@ -727,13 +739,14 @@ Selective & \texttt{select A B} & - \\ \hline
             \end{align*}{}
         \end{definition}{}
        \begin{itemize}
-            \item \emph{unordered, with replacement} - This is the most difficult case to count. To count this case, it is easier to think of placing 6 markers into 44 boxes. Someone noticed \citep{feller-vol-2} that all we need to keep track of is the arrangement of the markers and the walls of the boxes. Therefore, we have 43 (walls) $+$ 6 markers $=$ 49 objects which can be combined in $49!$ ways. We still need to divide the redundant orderings, so: 
+            \item \emph{unordered, with replacement} - %This is the most difficult case to count. 
+            To count this more difficult case, it is easier to think of placing 6 markers into 44 boxes. Someone noticed \citep{feller-vol-2} that all one needs to keep track of is the arrangement of the markers and the walls of the boxes. Therefore, 43 (walls) $+$ 6 markers $=$ 49 objects which can be combined in $49!$ ways. Redundant orderings still need to be divided, so: 
             \begin{align*}
                 \frac{49!}{6!43!} = 13983816
             \end{align*}{}
         \end{itemize}{}
         
-        We can summarise these situations in the following table:
+        The following table summarises these situations:
         \begin{table}[h]
             \centering
             \resizebox{0.6\textwidth}{!}{%
@@ -748,7 +761,7 @@ Selective & \texttt{select A B} & - \\ \hline
             \label{tab:my-table}
         \end{table}
         
-        This counting techniques are useful when the sample space is finite and all outcomes in $S$ are equally probable. With this being said, the probability of an event can be calculated counting the number of its possible outcomes. For $S = \{S_1, ..., S_n\}$ saying that all the elements are equally probable means $P(\{s_i\} = \frac{1}{N}$. From the Axiom of Countable Additivity, for any event $A$:
+        Counting techniques are useful when the sample space is finite and all outcomes in $S$ are equally probable. So, the probability of an event can be calculated by counting the number of its possible outcomes. For $S = \{S_1, ..., S_n\}$, saying that all the elements are equally probable means $P(\{s_i\} = \frac{1}{N}$. From the Axiom of Countable Additivity, for any event $A$:
         
         \begin{align*}
             P(A) = \frac{\text{\# of elements in $A$}}{\text{\# of elements in $S$}}
@@ -756,30 +769,30 @@ Selective & \texttt{select A B} & - \\ \hline
         
         \subsubsection{Conditional Probability and Independence}
         
-        Every probabilities dealt with until now were unconditional. There are several situations where it is desirable to \emph{update the sample space based on new information}, that is to calculate conditional probabilities.
+        All probabilities dealt with so far were unconditional. There are situations in which it is desirable to \emph{update the sample space based on new information}, that is to calculate conditional probabilities.
         
-        \begin{definition}{If $A$ and $B$ are events in S, and $P(B) > 0$, then the conditional probability of $A$ given $B$, is:}\label{d-2-1-6}
-            \begin{align*}
+        \begin{definition}{If $A$ and $B$ are events in S, and $P(B) > 0$, then the conditional probability of $A$ given $B$, is:}
+            \begin{align}\label{d-2-1-6}
                 P(A|B) = \frac{P(A \cap B)}{P(B)}
-            \end{align*}{}
+            \end{align}{}
         \end{definition}{}
         
-        It is worth noting that what happens in a conditional probability calculation is that $B$ becomes the sample space ($P(B|B) = 1$). The intuition is that the event $B$ will occur a fraction $P(B)$ of the time and, both $A$ and $B$ will occur a fraction $P(A \cap B)$ of the time; so the ration $P(A \cap B)/P(B)$ gives the \emph{proportion} of times when $B$ occurs, $A$ also occurs.
+        It is worth noting that what happens in a conditional probability calculation is that $B$ becomes the sample space ($P(B|B) = 1$). The intuition is that the event $B$ will occur a fraction $P(B)$ of the time and, both $A$ and $B$ will occur a fraction $P(A \cap B)$ of the time; so the ratio $P(A \cap B)/P(B)$ gives the \emph{proportion of times} when both $B$ and $A$ occur.
         
-        Rearranging \ref{d-2-1-6} gives a useful way to calculate intersections:
+        Rearranging (\ref{d-2-1-6}) gives a useful way to calculate intersections:
         \begin{align}\label{a-7}
            P(A \cap B) = P(A|B)P(B) 
         \end{align}{}
         
-        By symmetry of \ref{a-7} and equating both right-hand sides of the symmetry equations we get:
+        By symmetry with (\ref{a-7}) and equating both right-hand sides of the symmetry equations:
         
-        \begin{theorem}{(Bayes' Theorem) Let $A$ and $B$ be two events with positive probabilities each:}\label{t-bayes}
-            \begin{align*}
+        \begin{theorem}{(Bayes' Theorem) Let $A$ and $B$ be two events with positive probabilities each:}
+            \begin{align}\label{t-bayes}
                 P(A|B) = P(B|A)\frac{P(A)}{P(B)}
-            \end{align*}{}
+            \end{align}{}
         \end{theorem}{}
         
-        There might be cases where an event $B$ does not have any impact on the probability of other event $A$: $P(A|B) = P(A)$. If this holds then by using Bayes' rule \ref{t-bayes}:
+        There might be cases where an event $B$ does not have any impact on the probability of another event $A$: $P(A|B) = P(A)$. If this holds then by using Bayes' rule (\ref{t-bayes}):
         
         \begin{align*}
             P(B|A) = P(A|B)\frac{P(B)}{P(A)} = P(A)\frac{P(B)}{P(A)} = P(B)
@@ -795,9 +808,9 @@ Selective & \texttt{select A B} & - \\ \hline
     
     \section{(Linear) Algebra of Programming}
     
-    \gls{laop} is a quantitative extension to the well-known \gls{aop} discipline that treats binary functions as relations. This extension generalises relations to matrices and sees them as arrows, i.e. morphisms typed by the dimensions of the matrix. This achievement is important as it paves the way for a categorical approach which is the starting point for the development of an advanced type system for linear algebra and its operators.
+    \gls{laop} is a quantitative extension to the  \gls{aop} discipline that treats binary functions as relations. This extension generalises relations to matrices and sees them as arrows, i.e.\ morphisms typed by the dimensions of the matrix. This extension is important as it paves the way to a categorical approach which is the starting point for the development of an advanced type system for linear algebra and its operators.
     
-    Central to the approach is the notion of a biproduct, which merges categorical products and coproducts into a single construction. Careful analysis of the biproduct axioms as a system of equations provides a rich palette of constructs for building matrices from smaller ones, regarded as blocks.
+    Central to the approach is the notion of a \emph{biproduct}, which merges categorical products and coproducts into a single construction. Careful analysis of the biproduct axioms as a system of equations provides a rich palette of constructs for building matrices from smaller ones, regarded as blocks.
     
     By regarding a matrix as a morphism between two dimensions, matrix multiplication becomes simple matrix composition:
     
@@ -807,17 +820,20 @@ m & n \arrow[l, "A"'] & q \arrow[l, "B"'] \arrow[ll, "C = A \cdot B", bend left]
         \end{tikzcd}
     \end{center}
     
-    Since this discipline is centered around in \gls{ct}, we assume some basic familiarity with categories $\mathbb{C}$, $\mathbb{D}$, functors $\mathbb{F}$, $\mathbb{G} : \mathbb{C} → \mathbb{D}$, natural transformations $\alpha$ , $\beta : \mathbb{F} → \mathbb{G}$, products and coproducts. Otherwise, we remit the reader to \cite{Awodey:2010:CT:2060081} and \cite{jno-5}. A more detailed overview of the topic can also be seen in the work done by \cite{Macedo2012MatricesAA}. 
+    Since this discipline is based on \gls{ct}, some basic familiarity with categories $\mathbb{C}$, $\mathbb{D}$, functors $\mathbb{F}$, $\mathbb{G} : \mathbb{C} → \mathbb{D}$, natural transformations $\alpha$ , $\beta : \mathbb{F} → \mathbb{G}$, products and coproducts, is assumed. The reader is referred to e.g.\ %Otherwise, we remit the reader to
+    \citep{Awodey:2010:CT:2060081}, \citep{jno-5}
+    %. A more detailed overview of the topic can also be seen in the work done by
+    and \citep{Macedo2012MatricesAA} for more details.
     
-        \subsection{Structure of the Category of Matrices}
+        \subsection{Category of Matrix Basic Structure}
         
-            \subsubsection{Vectors and Linear Maps} Wherever one of the dimensions of the matrix is 1 the matrix is referred as a \emph{vector}. In more detail, a matrix of type $m \leftarrow 1$ is a column vector, and $1 \leftarrow m$ is a row vector.
+            \subsubsection{Vectors} Wherever one of the dimensions of the matrix is 1 the matrix is referred as a \emph{vector}. In more detail, a matrix of type $m \leftarrow 1$ is a column vector, and of type $1 \leftarrow m$ is a row vector.
             
-            \subsubsection{Identity} The identity matrix as type $n \leftarrow n$. For every object $n$ in the matrix category there must be a morphism of this type, which will be denoted by $n \xleftarrow{id_n} n$
+            \subsubsection{Identity} The identity matrix has type $n \leftarrow n$. For every object $n$ in the category there must be a morphism of this type, which will be denoted by $n \xleftarrow{id_n} n$
             
              \subsubsection{Transposed Matrix} The transposition operator changes the matrix shape by swapping rows with columns. Type-wise, this means converting an arrow of type $n \xleftarrow{A} m$ into an arrow of type $m \xleftarrow{A^\circ} n$.
             
-            \subsubsection{Bilinearity} Given two matrices it is possible to add them up entry-wise, leading to $A + B$, where $0$ is the neutral matrix (filled with $0$'s). This unit matrix works exactly as one is expecting with respect to matrix composition:
+            \subsubsection{Bilinearity} Given two matrices it is possible to add them up entry-wise, leading to $A + B$ with $0$ as unit - the matrix wholly filled with $0$'s. This unit matrix works as one would expect with respect to matrix composition:
             
             \begin{align*}
                 & A + 0 = A = 0 + A \\
@@ -833,7 +849,7 @@ m & n \arrow[l, "A"'] & q \arrow[l, "B"'] \arrow[ll, "C = A \cdot B", bend left]
     
         \subsection{Biproducts}
         
-        In an abelian category, a biproduct diagram for the objects $m$, $n$ is a diagram of the following shape:
+        In an Abelian category, a biproduct diagram for the objects $m$, $n$ is a diagram of the following shape
         
         \begin{center}
         \begin{tikzcd}
@@ -841,7 +857,7 @@ m \arrow[r, "i_1"', bend right] & r \arrow[l, "\pi_1"', bend right] \arrow[r, "\
         \end{tikzcd}
         \end{center}{}
         
-        whose arrows $\pi_1$, $\pi_2$, $i_1$, $i_2$, satisfy the following laws:
+        \noindent whose arrows $\pi_1$, $\pi_2$, $i_1$, $i_2$, satisfy the following laws:
         
         \begin{align*}
            &\pi_1 \cdot i_1 = id_m \\
@@ -861,7 +877,7 @@ a \arrow[rr, "i_1"', bend left] \arrow[rru, "A", bend left] &  & a + b \arrow[u,
         \end{tikzcd}
         \end{center}{}
         
-        By analogy with the \gls{aop}, expressions $\left[A | B\right]$ and $\left[\tfrac{A}{B}\right]$ will be read 'A junc B' and 'C split D', respectively. These combinators purport the effect of putting matrices side by side and stacked on top of each other, respectively. The rich algebra of such combinators of which the most useful laws follow, where capital letters M, N, etc. denote suitably typed matrices (the types, i.e. dimensions, involved in each equality can be inferred by drawing the corresponding diagram):
+        By analogy with the \gls{aop}, expressions $\left[A | B\right]$ and $\left[\tfrac{A}{B}\right]$ will be read 'A junc B' and 'C split D', respectively. These combinators purport the effect of putting matrices side by side or stacked on top of each other, respectively. Taken from the rich algebra of such combinators, the following laws are very useful, where capital letters $M$, $N$, etc.\ denote suitably typed matrices (the types, i.e.\ dimensions, involved in each equality can be inferred by drawing the corresponding diagram):
         
         \begin{itemize}
             \item Fusion laws:
@@ -885,7 +901,7 @@ a \arrow[rr, "i_1"', bend left] \arrow[rru, "A", bend left] &  & a + b \arrow[u,
         
         \subsection{Biproduct Functors}
         
-        As one could expect, as it is true in \gls{aop} it is also possible to obtain functors out of the biproducts presented above, and by using the same recipe we obtain the coproduct bifunctor that joins two matrices:
+        As in the relational setting of the standard \gls{aop}, the biproduct presented above gives rise to the coproduct bifunctor that joins two matrices (which is usually known as \emph{direct sum}):
         
         \begin{center}
             \begin{tikzcd}
@@ -895,7 +911,7 @@ n \arrow[u, "A"] & n + m \arrow[u, "A \oplus B" description]  & m \arrow[u, "B"'
             \end{tikzcd}
         \end{center}{}
         
-        The well-known Kronecker product is the tensor product in the matrix category. In the context of \gls{laop}, this bifunctor may be expressed in terms of the Khatri Rao product which, in turn, can and be expressed in terms of the Hadamard and Schur matrix multiplication:
+        The well-known Kronecker product is the tensor product in matrix categories. In the context of \gls{laop}, this bifunctor may be expressed in terms of the Khatri Rao product which, in turn, can and be expressed in terms of the Hadamard and Schur matrix multiplication:
         
         \begin{center}
             \begin{tikzcd}
@@ -904,55 +920,102 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
             \end{tikzcd}
         \end{center}{}
         
-    %\section{Markov Chains Category}
+    \section{Stochastic Matrices}\label{sec-stoch-mat}
     
-    %\section{Summary}
+    Functions are special cases of relations — the deterministic, totally defined ones. Relations, however, can also be considered as special cases of functions — the set-valued ones, as captured by universal property:
+    \begin{align}\label{func-rel}
+        f = \Lambda R \equiv \langle \forall\ b,a\ ::\ b R a \equiv b \in f\ a \rangle
+    \end{align}
+    
+    \noindent This implies that a binary relation $R$ can be expressed uniquely by the $\Lambda R$ function, which yields the (possibly empty) set of all $b$ that $R$ relates to $a$ for a given input $a$. Dually, any set-valued function $f$ "is" a relation that relates every input to any of its \emph{possible} outputs.
+    
+    Note the word 'possible' in the previous paragraph: it means that any outcome may be output, but nothing is said about which outputs are more \emph{probable} than others. Even if one were able to foresee such a probability or tendency, how would it be expressed?
+    
+    Written in terms of types, (\ref{func-rel}) is the isomorphism:
+    
+    % https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAEEACAHW4CcsAcwAWOOnz4QA7j24BbOjmFwAxn2AAFAL6cAQiC2l0mXPkIoATOSq1GLNl14CRYidL0GjIDNjwEiAIzW1PTMrIggvCoEggY2MFCC8ESgAGaSckhkIDgQSEEgAEYwYFBIAMzZDHTFDBomfuYgDDCpOCAhduEgABS8WGCyKlAQOACUnmkZ+dS5WdTFpRVVNTB1DWZsLW0dtmFsvAAydHKFUHRxWkA
+    \begin{equation}\label{func-rel-2}
+    \begin{tikzcd}
+    A \rightarrow \mathscr{P} B \arrow[rr, "(\in \cdot)", bend left] & \cong & A \rightarrow B \arrow[ll, "\Lambda", bend left]
+    \end{tikzcd}
+    \end{equation}
+    
+    \noindent $A \rightarrow \mathscr{P}B$ is the functional type that can also be written $(\mathscr{P}B)^{A}$, where $\mathscr{P}B$ denotes the power set of $B$, and $A \rightarrow B$ is the relational type of all relations $R \subseteq B \times A$. Operator $\Lambda$, termed the \emph{ power transpose} \citep{Bird:1997:AP:248932,oliveira2012towards, freyd1990categories}, defines the isomorphism, from right to left. Since $\mathscr{P}B$ is isomorphic to $2^{B}$, which is the set of all $B$ predicates, one might write $A \rightarrow 2^{B}$ for the type of $f$ in (\ref{func-rel}), where $2 = \{0,1\}$ is the set of truth values ($0$ is false and $1$ is true). So for each input $a \in A$, $f\ a$ is a predicate that tells which outputs are likely to be $b \in B$.
+    
+    With $2^B$ one is able to tell which outputs can be issued but not how likely they are. Ranking output probability can be achieved by extending from $B$ predicates to $[0,1]^{B}$ distributions, where $[0,1]$ denotes the interval of real numbers between $0$ and $1$. That is, on extends the discrete set $\{0,1\}$ to the corresponding interval of real numbers. Not every function $\mu \in [0,1]^{B}$ qualifies: only those such that $\sum\limits_{b \in B} \mu\ b = 1$ holds. By defining
+    
+        \begin{align}\label{func-rel-3}
+            \mathscr{D}B = \{\mu \in [0,1]^{B}\ |\ \sum\limits_{b \in B} \mu\ b = 1 \}
+        \end{align}
+        
+    \noindent $A \rightarrow \mathscr{D} B$ will be regarded as the type of all probabilistic functions from $A$ to $B$. Probabilistic functions have been around in various guises. For $B = A$ they can be regarded as Markov chains.
+    
+    In what way does the \gls{aop} extends to probabilistic functions? In the same way one can look for an isomorphism close to (\ref{func-rel}), this time with $\mathscr{D} B$ instead of $\mathscr{P} B$. This is not difficult to accomplish: just write $(\mathscr{D} B)^{A}$ instead of $A \rightarrow \mathscr{D} B$ and extend $\mathscr{D}B$ to $[0,1]^{B}$, temporarily leaving aside the requirement captured by the summation in (\ref{func-rel-3}): by uncurrying, $([0,1]^{B})^{A}$ is isomorphic to $[0,1]^{B \times A}$, which can be considered as the mathematical space of all $[0,1]$-valued matrices with as many columns as elements in $A$ and rows as elements in $B$. Thus, given the probabilistic function  $A \xrightarrow[]{f} \mathscr{D}B$, its matrix transform $\llbracket f \rrbracket$ is an unique $M$ matrix, such that:
+    %
+    \begin{align}
+        M = \llbracket f \rrbracket \equiv \langle \forall b,a\ ::\ M(b,a)\ = (f\ a)\ b \rangle
+    \end{align}
+    
+    Recalling (\ref{func-rel-3}), each matrix of this kind will be such that all its columns will add up to $1$, i.e., \emph{left-stochastic}. This gives rise to a \emph{typed} linear algebra of programming in which matrices replace relations and which can be used to express and reason about (recursive) probabilistic functions \citep{oliveira2012towards}.
+    
+    \section{Summary}
+    
+    Common knowledge indicates that probabilities concern numerical descriptions of how likely an event is to occur, or how likely it is to be true for a hypothesis. A number between 0 and 1 is the probability of an occurrence, where 0 indicates the impossibility of the event and 1 indicates certainty. It is easy to reason about the possibility of such outcomes for simple events, e.g.\ a flip of a coin or a game of cards, but most real life situations require carefulness and rigour. 
+    %With this being said, 
+    Set theory is the mathematical framework on which probability theory and its calculus are founded, by expressing it through a set of axioms in a rigorous mathematical manner. Without this basis, abstractions such as \gls{laop}, which allow one to reason about probabilities in a more compositional, generic, higher-level manner, would not be possible. With regard to the computational aspect of probabilities and probabilistic programming, linear algebra is closer than what could be imagined and, that thanks to matrices and these mathematical foundations, correct, efficient and compositional solutions were made possible to build.
+    
+    The main purpose of the current chapter is to provide a path to basic probability theory, its foundations and its common vocabulary, followed by a brief introduction to the linear algebra of programming and stochastic matrices.
     
     \chapter{Contribution}\label{sec-current-work}
     
-    This chapter discusses the major obstacles and difficulties of this master's dissertation, as well as its main contributions, that arose from the study and work carried out during the master's degree. As we shall see later, two types of contributions are made: one theoretical and the other practical. With regard to the theoretical contributions, the probabilistic interpretations of Arrows and \glspl{saf} are discussed, furthermore a bridge is made between sampling problems and concurrency ones. With regard to practical contributions, two probabilistic programming libraries in Haskell are described and presented.
+    This chapter presents the main contributions of the work carried out in this master's project and discusses its major obstacles and difficulties.
+    %of this master's dissertation, as well as its main contributions, that arose from the study and work carried out during the master's degree. 
+    As will be seen later, the contributions range over theoretical and practical aspects of the problem being addressed. Concerning theoretical contributions, the probabilistic interpretations of Arrows and \glspl{saf} are discussed, while bridging between sampling problems and concurrency ones. With regard to practical contributions, two probabilistic programming libraries in Haskell are described and presented.
     
 	\section{The Problem and its Challenges}\label{ch-problem}
 	
-	This section addresses the main problems and challenges that were found during this master thesis. The proposed approach and corresponding solution are described as well.
+	%This section addresses the main problems and challenges that were found during this master thesis. The proposed approach and corresponding solution are described as well.
 	
 	\subsection{Probabilistic Interpretation of Selective Functors}
 	
-	Section \ref{sec-state-art} presented some of the most well-known abstractions in functional programming, as well as their probabilistic interpretation. How these abstractions are translated into the context of probabilistic programming was also addressed. The fact that the Giry monad \citep{giry1982, jtobin} is an Applicative Functor, takes us closer to a potential probabilistic interpretation of \glspl{saf}. In addition, the relationship between \glspl{saf} and Arrows \citep{andrey2019selective} have also led to the challenge of figuring out how Arrows' fundamentals and generality can be useful in finding an answer.
-
-    One of the difficulties therefore is to find the probabilistic definition of \glspl{saf} and how it relates to any probabilistic programming construct.
+	Section \ref{sec-state-art} presented some of the most well-known abstractions in functional programming, as well as their probabilistic interpretation. How these abstractions are translated into the context of probabilistic programming was also addressed. The fact that the Giry monad \citep{giry1982, jtobin} is an Applicative Functor takes us closer to a potential probabilistic interpretation of \glspl{saf}. In addition, the relationship between \glspl{saf} and Arrows \citep{andrey2019selective} has also led to the challenge of figuring out how Arrows' fundamentals and generality can be useful in finding % an answer.
+	%
+    % One of the difficulties therefore is to find 
+    the probabilistic interpretation of \glspl{saf} and how it relates to any probabilistic programming construct.
 
 	\subsection{Inefficient Probability Encodings}
 
-    There are two ways to model probabilistic distributions. In the light of the work outlined in section \ref{sec-related-work}, it is possible to opt for an exhaustive representation of distributions, where all chance-value pairs are stored and any structural manipulation is done by changing all pairs, one by one. This method has the advantage of allowing the calculation of the exact probability of any type of event. However, even a seemingly simple problem can lead to an explosion of states within the distribution, which has a major impact on performance. With this in mind, another less rigorous method of calculating probabilities is to calculate them using less reliable, yet faster and more efficient inference algorithms, instead of always measuring the exact probabilities across all values.
+    There are two ways to model probabilistic distributions. In the light of the work outlined in section \ref{sec-related-work}, it is possible to opt for an exhaustive representation of distributions, where all chance-value pairs are stored and any structural manipulation is done by changing all pairs, one by one. This method has the advantage of ensuring the calculation of the exact probability of any type of event. However, even a seemingly simple problem can lead to state explosions within distributions, which have major negative impacts on performance. With this in mind, another (less rigorous) method of calculating probabilities is to infer them using less reliable, yet faster and more efficient inference algorithms, instead of always measuring the exact probabilities across all values.
 
-    Modelling a simple program that calculates the likelihood that a particular event will occur in $N$ throws of a die, using an exhaustive method, will easily become unfeasible for a relatively small $N$. Modelling a complex, critical program that calculates the probability of two aircrafts crashing, using a non-exhaustive approach may lead to hazardous situations, if the accuracy of the results is not the desired one. It is this trade-off that is generally discussed in probabilistic programming research and is largely based on the type of method used.
+    Modelling a simple program that calculates the likelihood that a particular event will occur in $N$ throws of a die, using an exhaustive method, will easily become unfeasible even for a relatively small $N$. However, modelling complex, safety-critical problems (such as e.g.\ calculating the probability of two aircrafts crashing) using a non-exhaustive approach may lead to hazardous situations, if the accuracy of the results is not the desired one. This trade-off is a topic of much concern in probabilistic programming. % research and is largely based on the type of method used.
 
-    The challenge, then is to find a solution capable of minimising the distance between the two most common probabilistic distribution encodings. It is also challenging to find one that takes advantage of the \gls{saf} abstraction and manages to make the most out of its static analysis or speculative execution properties. 
+    Therefore, finding a way capable of minimising the distance between the two most common probabilistic distribution encodings is challenging. Another challenge is to find one that takes advantage of the \gls{saf} abstraction and manages to make the most out of its static analysis or speculative execution properties. 
 	
-	\subsection{Proposed Approach - Solution}\label{sec-approach}
-
-	Regarding the problem of finding the probabilistic interpretation of \glspl{saf}, a type safe matrix representation and manipulation library was developed in Haskell in order to encode the basic \gls{laop} combinators. This library will be important to help building intuition and exploring the functorial, applicative and monadic structure of probability distributions represented as matrices.
+	\subsection{Proposed Approach}\label{sec-approach}
 	
-	Regarding the problem of finding an efficient probability encoding that is capable of taking advantage of the \gls{saf} abstraction, an \gls{edsl} suited for writing probabilistic programs was designed, recurring to the Free Selective Functor construction. This \gls{edsl} will be important to see how far does the Selective abstraction is able to go in the probabilistic setting and what type of benefits can we extract from its conditional static analysis capabilities.
+	Regarding the problem of finding the probabilistic interpretation of \glspl{saf}, in order to encode the basic \gls{laop} combinators in a cost-effective and compositional manner, a type safe matrix representation and manipulation library was developed in Haskell. From reading section \ref{sec-stoch-mat}, one can understand how, by using matrices and their probabilistic semantics, this library can be useful to help building intuition and exploring the functorial, applicative and monadic structure of probability distributions.
 	
-	Of course, all this would not be possible without a deep understanding of the theoretical context in which \glspl{saf} are inserted. That being said the probabilistic semantics for \glspl{saf}, where all the other contributions rest on top of, is provided.
+	Regarding the problem of finding an efficient probability encoding that is capable of taking advantage of the \gls{saf} abstraction, an \gls{edsl} suited for writing probabilistic programs was designed, recurring to the Free Selective Functor construction. This \gls{edsl} will be important to see how far the Selective abstraction is able to go in the probabilistic setting and what type of benefits one can extract from its conditional static analysis capabilities.
 	
-	After understanding the probabilistic capabilities of \glspl{saf}, an analysis was performed to decide which of the two alternative approaches could have more impact. Either by reusing the former type safe \gls{laop} library or by adopting the probabilistic \gls{edsl} library to express probabilistic programs. A set of case studies and examples were used to benchmark all contributions with the related work.
+	Of course, all this would not be possible without a deep understanding of the theoretical context in which \glspl{saf} are inserted, which leads to a probabilistic semantics for \glspl{saf}, where all the other contributions rest on top of.
+	
+	After understanding the probabilistic capabilities of \glspl{saf}, an analysis is performed to decide which of the two alternative approaches could have more impact --- either by reusing the former type safe \gls{laop} library or by adopting the probabilistic \gls{edsl} library to express probabilistic programs. A set of case studies and examples shall be described to benchmark all contributions in the context of the related work.
 	
 	    \section{Probabilistic Interpretation of Arrows}
 	    
-	        \gls{aop} \citep{Bird:1997:AP:248932} is regarded as a calculational and point-free programming discipline, and as a case where the use of \gls{ct} provides an economy on definitions and proofs of correction. \cite{Bird:1997:AP:248932} demonstrates how \gls{ct} can be used to describe the basic building blocks of datatypes found in \gls{fp} and the program derivation. The lesson from \gls{aop}, where functions are viewed as a special case of relations, is that by changing the category (from $Fun$ to $Rel$) expressive power increases. Relations are inherently non-deterministic and are capable of specifying a wider range of problems by making rich operators, such as converse and division, universally available. Other reasons for this transition are that more structure is uncovered, opportunities for generalization are unveiled, and the arrangement of specific proofs becomes simpler. "Keep the definition, change category" is a slogan that summarises well the lesson that \cite{Bird:1997:AP:248932} has passed and emphasises gradual composition, as seen in relational algebra.
+	        \gls{aop} \citep{Bird:1997:AP:248932} is a calculational and point-free programming discipline, making a case for the use of \gls{ct} to achieve elegant correctness proofs.The book %\cite{Bird:1997:AP:248932} demonstrates
+	        shows how the language of \gls{ct} can be used to describe the basic building blocks of datatypes found in \gls{fp} and the associated program derivation. The lesson from \gls{aop}, where functions are viewed as a special case of relations, is that by changing the category (from $Fun$ to $Rel$) expressive power increases. Relations are inherently non-deterministic and are capable of specifying a wider range of problems by making rich operators, such as converse and division, universally available. Other reasons for this transition are that more structure is uncovered, opportunities for generalisation are unveiled and the arrangement of specific proofs becomes simpler. "Keep the definition, change category" is a slogan that neatly summarises the lesson that \cite{Bird:1997:AP:248932} have passed on to the community and emphasises on gradual composition, as practised in relational algebra.
 	        
-	        So how can this lesson be used in a probabilistic context? \cite{Oliveira2016KeepDC} directs us towards \gls{laop}, inspired by the work of \cite{Macedo2012MatricesAA} and \cite{oliveira2012towards}. \gls{laop} generalises relations and functions treating them as Boolean matrices and in turn consider these as \emph{arrows}. If instead of seeing matrices of just $0's$ and $1's$, we limit them to being left-stochastic, where the values of each column amount to 1, it would be possible to express multiple probabilistic extensions to the regular \gls{aop} combinations and help keep the convoluted probability notation under control.
+	        How can this lesson be used in a probabilistic context? \cite{Oliveira2016KeepDC} direct us towards \gls{laop}, inspired by the work of \cite{Macedo2012MatricesAA} and \cite{oliveira2012towards}. \gls{laop} generalises relations and functions treating them as Boolean matrices and in turn consider these as \emph{arrows}. Instead of staying with matrices of just $0's$ and $1's$, one shifts to the  left-stochastic, where the values of each column amount to 1. This makes it possible to express multiple probabilistic extensions to the regular \gls{aop} combinations and help keep the convoluted probability notation under control.
 	        
-	        Given this, probabilistically speaking, left-stochastic matrices are seen as \emph{Arrows} and can be written as $n \xrightarrow{M} m$ to denote that matrix $M$ is of type $n \longrightarrow m$ ($n$ columns, $m$ rows). Using this notation matrix multiplication can be understood as arrow composition, therefore forming the category of matrices, where objects are numeric dimensions and morphisms are the matrices themselves. Since all arrows represent left-stochastic matrices, a simple distribution $P(A)$ can be seen of a matrix of type $1 \longrightarrow m$, which represents a left-stochastic column vector. Statistical independence $P(B|A) = P(A)P(B)$ can be calculated by the probabilistic pairing, also known as the Khatri-Rao matrix product \citep{Macedo2012MatricesAA, murta2013calculating}. Objects in the category of matrices may be generalised to arbitrary denumerable types ($A$, $B$). By performing this generalisation, probabilistic functions $A \xrightarrow{f} \mathscr{D}B$ are viewed as matrices of type $A \longrightarrow B$, enabling us to express conditional probability calculation $P(B|A)$ in the form of probabilistic function application. It is worth noting that by using just the monadic interface it would only be possible to reason about conditional probabilities by recurring to the \texttt{bind ($\bind$)} operator, which convolutes probabilistic reasoning. However, by adopting the \gls{laop} transition, probabilistic function (Kleisli) composition becomes simply matrix composition \citep{oliveira2012towards}.
+	        Probabilistically speaking, left-stochastic matrices are seen as \emph{Arrows} and can be written as $n \xrightarrow{M} m$ to denote that matrix $M$ is of type $n \longrightarrow m$ ($n$ columns, $m$ rows). Using this notation matrix multiplication can be understood as arrow composition, therefore forming a category of matrices, where objects are numeric dimensions and morphisms are the matrices themselves. Since all arrows represent left-stochastic matrices, a simple distribution $P(A)$ can be seen of a matrix of type $1 \longrightarrow m$, which represents a left-stochastic column vector. Statistical independence $P(B|A) = P(A)P(B)$ can be calculated by probabilistic pairing, also known as the Khatri-Rao matrix product \citep{Macedo2012MatricesAA, murta2013calculating}. Objects in the category of matrices may be generalised to arbitrary denumerable types ($A$, $B$). By performing this generalisation, probabilistic functions $A \xrightarrow{f} \mathscr{D}B$ are viewed as matrices of type $A \longrightarrow B$, enabling us to express conditional probability calculation $P(B|A)$ in the form of probabilistic function application. It is worth noting that by using just the monadic interface it would only be possible to reason about conditional probabilities by recurring to the \texttt{bind ($\bind$)} operator, which convolutes probabilistic reasoning. However, by adopting the \gls{laop} transition, probabilistic function (Kleisli) composition becomes simply matrix composition \citep{oliveira2012towards}.
 	        
-	        This probabilistic Arrows interpretation takes the analysis one step closer to the probabilistic interpretation of \gls{saf}. It should be possible to encode matrices around sound mathematical abstractions and take advantage of the best they have to give, by using what has been learned so far. What \gls{saf} has to do with the linear approach to \gls{aop}, and how it fits into the probabilistic setting is the answer that it is hoped to find.
+	        This probabilistic Arrows interpretation takes the analysis one step closer to the probabilistic interpretation of \gls{saf}. It should be possible to encode matrices around sound mathematical abstractions and take advantage of the best they have to give, by using what has been learned so far. What \gls{saf} has to do with the linear approach to \gls{aop}, and how it fits into the probabilistic setting is the question that one wishes to answer.
 	    
 	    \section{Type Safe Linear Algebra of Programming Matrix Library}\label{sec-laop-lib1}
 	    
-	    When finding a probabilistic interpretation for \glspl{saf}, an attempt was made to construct a matrix-representing data structure based on \gls{laop}. The \gls{laop} discipline has an inductive approach to the calculation of the various combinators that characterize it, since it is based on \texttt{Junc} and \texttt{Split} biproducts, which will be called \texttt{Join} and \texttt{Fork} from now on. A \gls{gadt} was then used as an attempt to achieve a strongly typed data type capable of inferring matrix dimensions. Taking advantage of the library of TypeLits, \gls{gadt} was constructed as follows:
+	    When finding a probabilistic interpretation for \glspl{saf}, an attempt was made to construct a matrix-representing data structure based on the \gls{laop}. The \gls{laop} discipline offers an inductive approach due to the various combinators that characterise it, since these are based on % the \texttt{Join} and \texttt{Fork}
+	    biproducts which enable block-oriented matrix manipulation. As an attempt to achieve a strongly typed data structure, a \gls{gadt} indexed by type level naturals is used:
 	    
         \begin{lstlisting}[language=Haskell, label={lst:nat-matrix}, caption={Inductive matrix definition},captionpos=b]
         data Matrix e (c :: Nat) (r :: Nat) where
@@ -961,18 +1024,18 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
             Fork :: Matrix e p m -> Matrix e p n -> Matrix e p (m + n)
         \end{lstlisting}{}
         
-        This inductive data type will correctly represent any type of matrix and infer dimensions. However since \gls{ghc} is not able to properly infer the correct types while pattern-matching, this data type poses some difficulties in implementing functions for construction and manipulation. It is easy to implement a simple example, such as matrix transposition, but others such as the entry-wise addition of two matrices, are impossible in practice, as two matrices of the same dimensions can be internally represented by a different combination of \texttt{Join}s and \texttt{Fork}s. One solution to this problem would be to find a way to ensure that all matrices were constructed according to a convention (either \texttt{Join} of \texttt{Fork}s or \texttt{Fork} of \texttt{Join}s), but even so the type system would still not be able to know that the matrices actually followed the convention.
+        This inductive data type will correctly represent any type of matrix and infer its dimensions. However, since \gls{ghc} is not able to properly infer the correct types while pattern-matching, this data type poses some difficulties in implementing functions for construction and manipulation. It is easy to implement a simple example, such as matrix transposition, but others such as the entry-wise addition of two matrices, are impossible in practice, as two matrices of the same dimensions can be internally represented by a different combination of \texttt{Join}s and \texttt{Fork}s. One solution to this problem would be to find a way to ensure that all matrices were constructed according to a convention (either \texttt{Join} of \texttt{Fork}s or \texttt{Fork} of \texttt{Join}s), but even so the type system would still be unable to know that the matrices actually followed the convention.
 	    
-	    In order to resolve this problem and to try to get a feel of the probabilistic interpretation/intuition of \gls{saf}, a library has been developed. This library just offers a type-safe newtype wrap around an existing library's matrix data structure. The chosen library was \texttt{HMatrix} \citep{hmatrix} because it is one of the most common and widely used.
+	    In order to solve this problem and to try and get a feel of the probabilistic interpretation/intuition of \gls{saf}, a library has been developed. This library just offers a type-safe newtype wrap around an existing library's matrix data structure. The chosen library was \texttt{HMatrix} \citep{hmatrix} because it is one of the most common and widely used.
 	    
         \begin{lstlisting}[language=Haskell, label={lst:m-type-2}, caption={Type-safe wrapper around HMatrix},captionpos=b]
         import qualified Numeric.LinearAlgebra.Data as HM
         newtype Matrix e (c :: Nat) (r :: Nat) = M {unMatrix :: HM.Matrix e}
         \end{lstlisting}{}
         
-        With this type-safe wrapper, it was possible to implement several \gls{laop} combinators, but when using it one is at the mercy of the internal representation used by the host library, and the possibility of obtaining a structure that benefits from the properties of \glspl{saf} and \gls{laop} is lost\footnote{Note that \texttt{HMatrix} is quite efficient, but for the purposes of this thesis we want to observe the benefits of using \glspl{saf} and \gls{laop} as cleanly as possible} . Nevertheless this technique makes a potential response closer.
+        With this type-safe wrapper, it is possible to implement several \gls{laop} combinators, but when using it one is at the mercy of the internal representation used by the host library, and the possibility of obtaining a structure that benefits from the properties of \glspl{saf} and \gls{laop} is lost\footnote{Note that \texttt{HMatrix} is quite efficient, but for the purposes of this thesis the benefits of using \glspl{saf} and \gls{laop} need to be observed as cleanly as possible}. Nevertheless this technique makes a potential response closer.
         
-        As mentioned in the previous subsection, representing distributions as stochastic arrays, and these in turn as arrows, allows us to implement the Arrow instance in the data type shown Listing \ref{lst:m-type-2}. As described in section \ref{sec-state-art}, probability distributions are capable of satisfying the Functor, Applicative, and Monad instances. However, due to the constraints required for all type-checking to be carried out, and the fact that the content type of the matrix is in a negative position, it is not possible to implement instances for spoken interfaces. However an equivalent version of the functions of each instance can be implemented as shown in the list below:
+        As mentioned in the previous subsection, representing distributions as stochastic arrays, and these in turn as arrows, allows us to implement the Arrow instance in the data type shown in Listing \ref{lst:m-type-2}. As described in section \ref{sec-state-art}, probability distributions are capable of satisfying the Functor, Applicative, and Monad instances. However, due to the constraints required for all type-checking to be carried out, and the fact that the content type of the matrix is in a negative position, it is not possible to implement instances for spoken interfaces. However an equivalent version of the functions of each instance can be implemented as shown in the listing below:
         
         \begin{lstlisting}[language=Haskell, caption={Interface equivalent function implementations},captionpos=b]
         -- | Monoidal/Applicative instance
@@ -985,9 +1048,10 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
       fromF :: ( ... ) => (a -> b) -> Matrix e c r
         \end{lstlisting}{}
         
-        The Applicative instance is defined in terms of the Khatri Rao product, taking advantage of the monoidal nature that characterises this abstraction. With respect to Monads, the matrix composition, as seen in the previous subsection, is the equivalent of \texttt{bind}. Finally, with respect to the Arrow abstraction, the fundamental operation is to transform (lift) a function into its matrix representation. It should be noted that all of these operators have associated constraints, which are presented in Appendix \ref{appendix-a} for space economy purposes.
+        The Applicative instance is defined in terms of the Khatri Rao product, taking advantage of the monoidal nature that characterises this abstraction. With respect to Monads, the matrix composition, as seen in the previous subsection, is the equivalent of \texttt{bind}. Finally, with respect to the Arrow abstraction, the fundamental operation is to transform (lift) a function into its matrix representation. It should be noted that all of these operators have associated constraints, which are deferred to appendix \ref{appendix-a} for space economy.
         
-        Having said that, simple probabilistic problems such as the Monty Hall problem can be modelled: 
+        In this setting, simple probabilistic problems such as the Monty Hall puzzle \citep{rosenhouse2009monty} can be easily modelled.
+        In this puzzle, a game show contestant is faced with three doors, one of which hides a prize. One of the doors is chosen by the player, and then the host opens another door that \emph{does not} have the reward behind it. The player then has the option of staying with the chosen door or switching to the other closed door. The following listing presents the Haskell code that models such a puzzle:
         
         \begin{lstlisting}[language=Haskell, caption={LAoP Monty Hall Problem},captionpos=b]
     -- Monty Hall Problem
@@ -1027,19 +1091,19 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
    toArrow (ArrowMonad f) = arr (\x -> ((), x)) >>> first f >>> arr (uncurry ($))
         \end{lstlisting}{}
 	    
-	    The relationship of Arrows with \glspl{saf} is highlighted in this case. Given the results seen in the previous section, an implementation similar to that shown in Listing \ref{lst:safm} can be used, and a selective instance for the \texttt{Matrix} data type (\ref{lst:m-type-2}) can be obtained similarly. However it is not possible to implement an official instance due to restrictions placed on the types of the matrix dimensions. Nonetheless, it is possible to write the operator \texttt{select} at the cost of operators identical to the ones used above:
+	    The relationship of Arrows with \glspl{saf} is highlighted in this case. Given the results seen in the previous section, an implementation similar to that shown in Listing \ref{lst:safm} can be used, and a selective instance for the \texttt{Matrix} data type (\ref{lst:m-type-2}) can be obtained similarly. However it is not possible to implement an official instance.\footnote{due to restrictions placed on the types of the matrix dimensions} Nonetheless, it is possible to write the operator \texttt{select} at the cost of operators identical to the ones used above:
 	    
         \begin{lstlisting}[language=Haskell, label={lst:safm2}, caption={LAoP Selective instance},captionpos=b]
-    select :: ( ... ) => Matrix e n (m1 + m2) -> Matrix e m1 m2 -> Matrix e n m2
-    select m y = (y ||| id) `comp` m
-        
     (|||) :: Matrix e m p -> Matrix e n p -> Matrix e (m + n) p
     (|||) = Join
+    
+    select :: ( ... ) => Matrix e n (m1 + m2) -> Matrix e m1 m2 -> Matrix e n m2
+    select m y = (y ||| id) `comp` m
         \end{lstlisting}{}
         
-        Notice that the function \texttt{toArrow} is needed, in order to Listing \ref{lst:safm} to type check. In order to match the same signature, an equivalent \texttt{toMatrix} function would be necessary, unfortunately an instance of \texttt{Enum (a $\rightarrow$ b)} is be needed, and that is currently not feasible in Haskell. For this reason, the type signature of \texttt{select} has been adjusted.
+        Note that the function \texttt{toArrow} is needed so that Listing \ref{lst:safm} type checks. In order to match the same signature, an equivalent \texttt{toMatrix} function would be necessary, but unfortunately an instance of \texttt{Enum (a $\rightarrow$ b)} would be needed too, and this is currently not feasible in Haskell. For this reason, the type signature of \texttt{select} needed adjustments.
         
-        As interesting as the relationship between Arrows and \glspl{saf} is, and as much as it is possible to write an instance for the same interface, this tells us little or nothing about its semantics. It is more or less clear that some kind of conditional is expressed, but it is hard to imagine its implementation and interaction with the other combinators. To find a more concrete description, the following type diagram was designed:
+        However interesting, the relationship between Arrows and \glspl{saf} does not tell much about its semantics. It is more or less clear that some kind of conditional is expressed, but it is hard to imagine how it would interact with the other combinators. The following diagram gives a more concrete description:
         \vskip0.2cm
         
         \begin{center}
@@ -1050,7 +1114,7 @@ a \arrow[rr, "i_1"] \arrow[rru, "y", bend left] &  & a + b \arrow[u, "{[ y\ |\ i
         \end{tikzcd}
         \end{center}
         
-        A more detailed observation:
+        In more detail:
         
         \begin{center}
         \begin{tikzcd}
@@ -1070,9 +1134,9 @@ a \arrow[rr, "i_1"', bend left] \arrow[rru, "A", bend left] &  & a + b \arrow[u,
         \end{tikzcd}
         \end{center}{}
         
-        This last diagram is the same as the one seen by \cite{Macedo2012MatricesAA} and defines exactly the biproducts \texttt{Join} and \texttt{Fork}. This diagram highlights several properties of this biproduct such as the famous divide-and-conquer law $[A|B] \cdot [\frac{C}{D}] = A \cdot C + B \cdot D$.
+        This last diagram can be found in \citep{Macedo2012MatricesAA} and defines exactly the biproducts \texttt{Join} and \texttt{Fork}. This diagram highlights several properties of this biproduct such as the well-known divide-and-conquer law $[A|B] \cdot [\frac{C}{D}] = A \cdot C + B \cdot D$.
         
-        Another known combinator of the \gls{aop} discipline is McCarthy's conditional \citep{Bird:1997:AP:248932}, whose probabilistic version was studied by \cite{oliveira2012towards}, and has the following diagram:
+        Another important combinator of the \gls{aop} discipline is McCarthy's conditional \citep{Bird:1997:AP:248932}, whose probabilistic version was studied by \cite{oliveira2012towards} as described by following diagram:
         
         \begin{center}\label{dig-mccarthy}
         \begin{tikzcd}
@@ -1082,7 +1146,7 @@ B &  & A + A \arrow[ll, "{[f|g]}" description] & A \arrow[l, "p?"'] \\
         \end{tikzcd}
         \end{center}{}
         
-        This probabilistic version of \emph{if-then-else} is denoted by $p \rightarrow f,g$, where $p?$ is the predicate defined by the coreflexive matrix:
+        \noindent This probabilistic version of \emph{if-then-else} is denoted by $p \rightarrow f,g$, where the guard $p?$ controls information flow by putting together the two coreflexive matrices\footnote{A Boolean matrix is said to be coreflexive if it is smaller than the identity matrix.} induced by the predicate $p$ and its negation:
         
         \begin{center}
         \begin{tikzcd}
@@ -1090,13 +1154,15 @@ A + A &  & {A\ =\ [\frac{\Phi_p}{\Phi_{-p}}]} \arrow[ll, "p?"']
         \end{tikzcd}
         \end{center}{}
         
-        Looking closely at the diagram one can see some resemblance to what one gets from Listing \ref{lst:safm2}, and indeed McCarthy's conditionals have the same conditional nature that is inherent to \glspl{saf}.
+        \noindent Looking closely at the diagram one can see some resemblance to what is found in Listing \ref{lst:safm2}, meaning that McCarthy's conditionals and \glspl{saf} share the same selective, conditional behavioural semantics.
         
-        What would we then infer as what is the \glspl{saf} probabilistic interpretation? So far we can determine that if we consider \texttt{f} (Listing \ref{lst:saf}) as a distribution, the operator \texttt{select} has the ability to condition the random variable in probabilistic programming and branch the program in two separate ways. v This operator expresses the divide-and-conquer rule present in the block-matrix calculus and is capable of exploiting parallelism. As we will see in section \ref{sec-eq-reason}, it is possible to further optimise this \texttt{select} operator by using some equational reasoning, suggesting that this abstraction is still useful.
+        What can one learn from this heading towards a possible probabilistic interpretation of \glspl{saf}? Should \texttt{f} be regarded as a distribution in Listing \ref{lst:saf}, the \texttt{select} operator has the ability to condition a random variable in some probabilistic program and branch over it in two separate ways. This operator can also express the divide-and-conquer rule present in the block-matrix calculus, thus being capable of performing computations in parallel. As section \ref{sec-eq-reason} will show, it is possible to derive an optimised version of the \texttt{select} operator by using equational reasoning.
         
 	\section{Type safe inductive matrix definition}
 	    
-	    Only a limited, intuitive understanding of the semantics and probabilistic interpretation of \glspl{saf} can be given by the type-safe matrix library described in section \ref{sec-laop-lib1}. This library also illustrates the kinds of benefits that, by taking advantage of such abstraction, can be theoretically acquired. Also, in the provided library (\ref{appendix-a}), these advantages are not transparent, because it is just a wrapper based on the \texttt{Vector} data type. Many different approaches and solutions were tried, in order to benefit from a efficient \gls{laop}-inspired matrix encoding, whose benefits are apparent and promising, by construction. In the end, type-level naturals were abandoned and simple structured data-types were used to replace them. Given this, the following encoding was achieved:
+     Unfortunately, the type-safe matrix library described in section \ref{sec-laop-lib1} only allows for a limited understanding of what a possible probabilistic interpretation of \glspl{saf} could be. As can be inferred from the provided library code in appendix \ref{appendix-a}, one could only reason at the type level, given that the underlying representation is far from allowing calculational, algebraic reasoning. With this being said, only what advantages are theoretically feasible when dealing with \glspl{saf} came to light.
+     
+     Several attempts were made in order to come up with an efficient and correct by construction \gls{laop}-inspired matrix encoding. In the end, type-level naturals were abandoned, due to the \gls{ghc} limitations mentioned previously, and simple structured data-types were used to replace them. Given this, the following encoding was achieved:
 	    
         \begin{lstlisting}[language=Haskell,label={lst:type-fam}, caption={Inductive Matrix definition},captionpos=b]
 data Matrix e cols rows where
@@ -1132,9 +1198,9 @@ type family FromNat' (b :: Bool) (m :: Type) :: Type where
   FromNat' 'False m = Either () (Either m m)
         \end{lstlisting}{}
 	    
-	    This solution is based on the assumption that algebraic data types are isomorphic to their cardinality, i.e. \texttt{Void} $ \cong 0$, \texttt{()} $\cong 1$, \texttt{Either b} $\cong |a| + |b|$, etc. In addition, this \gls{gadt} ensures that the matrix always has valid dimensions i.e. correct-by-construction. This isomorphism is leveraged by the \texttt{Count} and \texttt{FromNat} type families to provide a conversion mechanism from and to data-types/type-level naturals. Surprisingly enough, \gls{ghc} does not complain when pattern-matching with this definition, so it was possible to implement more complex functions.
+	    This solution is based on the assumption that algebraic data types are isomorphic to their cardinalities, i.e. \texttt{Void} $ \cong 0$, \texttt{()} $\cong 1$, \texttt{Either a b} $\cong |a| + |b|$, etc. In addition, this \gls{gadt} ensures that the matrix always has valid dimensions, i.e.\ it is correct by construction. This isomorphism is leveraged by the \texttt{Count} and \texttt{FromNat} type families to provide a conversion mechanism from and to data-types/type-level naturals. Using this strategy, \gls{ghc} does not complain when pattern-matching with this definition, so more complex functions are possible to implement.
 	    
-	    Here is an example of how \gls{laop} makes it possible to write a concise, correct and efficient code by exploring the divide-and-conquer, fusion and 'abide' laws of the biproducts:
+	    Here is an example of how \gls{laop} makes it possible to write concise, correct and efficient code by exploring the divide-and-conquer, fusion and 'abide' laws of enabled by biproducts:
 	    
         \begin{lstlisting}[language=Haskell, caption={Matrix composition and abiding functions},captionpos=b]
 comp :: Num e => Matrix e cr rows -> Matrix e cols cr -> Matrix e cols rows
@@ -1150,15 +1216,15 @@ abideJS (Join a b)                   = Join (abideJS a) (abideJS b)
 abideJS (Fork a b)                   = Fork (abideJS a) (abideJS b)
         \end{lstlisting}{}
         
-        It is very straightforward to see the advantages of using an inductive approach to encoding matrices. However it still has its disadvantages. For example, more complex operators, such as the Khatri-Rao (also known as matrix pairing) product, are expected to return a matrix of type $m \times n \leftarrow c$, and their projections are limited to returning matrices constructed at the expense of \texttt{Either}s. In addition, since certain large matrices, such as the \texttt{identity} matrix, have constraints associated to the dimension types, it is not possible to implement instances of abstractions such as Arrow or Selective. However, \cite{10.1145/3406088.3409019} show how restricted versions of these classes can be written, adopting the \texttt{(.)} composition operator, from the \texttt{Category} instance, in place of the more verbose \texttt{comp} function. It is also possible to have a version of \texttt{select} and McCarthy's conditional operators that, as will be seen, are indeed able to take advantage of all the theoretical gains described in the previous section.
+        It is very straightforward to see the advantages of using an inductive approach to encoding matrices. However, it still has its disadvantages. For example, more complex operators, such as the Khatri-Rao (also known as matrix pairing) product, are expected to return matrices of type $m \times n \leftarrow c$, and their projections are limited to returning matrices constructed at the expense of \texttt{Either}s\footnote{Note that it is possible to overcome this limitation, as will be shown further ahead.}. In addition, since certain large matrices, such as the \texttt{identity} matrix, have constraints associated to the dimension types, instances of abstractions such as Arrow or Selective are not possible to implement.
         
-        Given this, the new data-type makes the following contributions:
+        \cite{10.1145/3406088.3409019} show how restricted versions of these classes can be written, while adopting the \texttt{(.)} composition operator, from the \texttt{Category} type class, in place of the more verbose \texttt{comp} function. In this setting, the new data-type makes the following contributions:
         
         \begin{itemize}
-            \item Enables the transformation and manipulation of matrices in a composable and flexible way.
-            \item Compared to current libraries, this one is more compositional, polymorphic, and does not have partial matrix manipulation functions (hence less chances for usage errors). 
-            \item Using the mathematical framework described by the linear algebra of programming \citep{oliveira2012towards}, this implementation of matrices allows easy manipulation of submatrices, making it especially suitable for formal verification and equational reasoning. In addition, the constructors of the data type ensure that sound matrices of this type i.e. malformed matrices with incorrect dimensions of the kind, can not be constructed.
-            \item More concretely, compared to the previous data-type, this one has:
+            \item It enables the transformation and manipulation of matrices in a constructive and flexible way.
+            \item Compared to current libraries, this one is more compositional, polymorphic, and does not have partial matrix manipulation functions (hence less chances for run-time errors). This is because the type constructors ensure that malformed matrices (with incorrect dimensions of the kind), can not be constructed.
+            \item Using the mathematical framework described by the linear algebra of programming \citep{oliveira2012towards}, this implementation of matrices allows easy manipulation of submatrices, making it especially suitable for formal verification and equational reasoning.
+            \item More concretely, compared to the current available data-types, this one has:
                   \begin{itemize}
                     \item Statically typed dimensions;
                     \item Polymorphic data type dimensions;
@@ -1170,9 +1236,9 @@ abideJS (Fork a b)                   = Fork (abideJS a) (abideJS b)
                   \end{itemize}
         \end{itemize}
         
-        Unfortunately, this approach does not solve the issue of type dimensions being in some way constrained. Type inference is not perfect, when it comes to infer the types of matrices which dimensions are computed using type level naturals multiplication, the compiler needs type annotations in order to succeed.
+        %Unfortunately, this approach does not solve the issue of type dimensions being, in some way, constrained. Type inference is not perfect, when it comes to infer the types of matrices which dimensions are computed using type level naturals multiplication, the compiler needs type annotations in order to succeed.
         
-        Two different data types were built on top of the inductive definition presented in this section. These data types consist of wrappers around the \texttt{Matrix} type and with the help of the type families presented in Listing \ref{lst:type-fam} it is possible to provide a much more user friendly interface:
+        Two different data types were built on top of the inductive definition presented in this section. These data types consist of wrappers around the \texttt{Matrix} type and, with the help of the type families presented in Listing \ref{lst:type-fam}, it is possible to providemore user friendly user interfaces:
         
         \begin{lstlisting}[language=Haskell, caption={Dimensions are type level naturals},captionpos=b]
 import qualified LAoP.Matrix.Internal as I
@@ -1180,15 +1246,17 @@ import qualified LAoP.Matrix.Internal as I
 newtype Matrix e (cols :: Nat) (rows :: Nat) = M (I.Matrix e (I.FromNat cols) (I.FromNat rows))
         \end{lstlisting}
         
-        \begin{lstlisting}[language=Haskell, caption={Dimensions are arbitrary data types},captionpos=b]
+        \begin{lstlisting}[language=Haskell, caption={Dimensions are arbitrary data types},captionpos=b, label={lst:gen-matrix}]
 newtype Matrix e (cols :: Type) (rows :: Type) = M (I.Matrix e (I.Normalize cols) (I.Normalize rows))
         \end{lstlisting}
         
-        These were created with user experience in mind. Actually the last one captures the type generalisation depicted by \cite{oliveira2012towards}. In short objects in categories of matrices can be generalised from numeric dimensions ($n, m \in \mathbb{N}_0$) to arbitrary denumerable types $(A,B)$, taking disjoint union $A + B$ for $m + n$, Cartesian product $A \times B$ for $m \times n$, unit type 1 for number $1$, the empty set $\emptyset$ for $0$, etc.
+        Listing \ref{lst:gen-matrix} captures the type generalisation proposed by \cite{oliveira2012towards}. In short, objects in categories of matrices can be generalised from numeric dimensions ($n, m \in \mathbb{N}_0$) to arbitrary denumerable types $(A,B)$, taking disjoint union $A + B$ for $m + n$, Cartesian product $A \times B$ for $m \times n$, unit type 1 for number $1$, the empty set $\emptyset$ for $0$, etc.
         
         \subsection{The Probability Distribution Matrix and the Selective Abstraction}
         
-        If the sum of each column of a matrix is equal to 1 as has already been said, it is called a stochastic matrix, and if this matrix has only one column, it is called a distribution. An exhaustive approach is assumed when using matrices to represent distributions, and these are notorious for their related performance issues \citep{Scibior:2015:PPP:2887747.2804317, kidd2007build}. It makes sense to build a probabilistic programming library that performs better than other exhaustive probabilistic programming libraries and, by taking advantage of the inductive matrix encoding and the \gls{laop} discipline that seems to be possible. So, in order to address the central topic of this master's thesis and explore how the Selective interface can be used more efficiently than Monads in handling probabilistic distributions, the \texttt{Dist} data type was developed. This data type is just a newtype wrapper around type \texttt{Matrix Prob () a}.
+         As has already been pointed out, a matrix of positive reals is said to be \emph{stochastic} wherever each column adds up to 1. In case of one column only, it is called a \emph{distribution}. An exhaustive approach is assumed when using matrices to represent distributions, and these are notorious for their related performance issues \citep{Scibior:2015:PPP:2887747.2804317, kidd2007build}.
+         
+         By taking advantage of the inductive matrix encoding and the \gls{laop} discipline it is possible to implement a probabilistic programming library that performs better than other exhaustive approaches. So, in order to address the central topic of this thesis and explore how the Selective interface can be used more efficiently than Monads in handling probabilistic distributions, the \texttt{Dist} data type (below) was defined. This data type is just a newtype wrapper around the matrix type \texttt{Matrix Prob () a}.
         
         \begin{lstlisting}[language=Haskell, caption={Dist type alias},captionpos=b]
 -- | Type synonym for probability value
@@ -1199,7 +1267,7 @@ type Prob = Double
 newtype Dist a = D (Matrix Prob () a)
         \end{lstlisting}
         
-        Now if we take this type and match it against the \gls{saf} \texttt{select} operator function signature we can pretty much recover all the conditioning capabilities that are inherent to \gls{saf} and probabilistic choice:
+        Now, this type is matched against the \gls{saf} \texttt{select} operator function signature one can recover all the conditioning capabilities that are inherent to \gls{saf} and probabilistic choice:
         
         \begin{lstlisting}[language=Haskell, caption={Dist - \texttt{select} and \texttt{cond} operators},captionpos=b]
 -- Selective 'select' operator
@@ -1222,7 +1290,7 @@ corr p = let f = fromF p :: Matrix e a ()
           in khatri f (identity :: Matrix e a a)
         \end{lstlisting}{}
         
-        Revisiting the probabilistic interpretation of Arrows and the work by \cite{Lindley:2011:IOA:1953652.1954016}, it is clear that the isomorphism evidenced by them - that a Monad is isomorphic to Arrows of type \texttt{a () o} - can be visualised in the type \texttt{Dist}. More clearly, \texttt{Dist a} is a row vector matrix of type $a \leftarrow 1$ and corresponds to the probability monad presented by \cite{erwig_kollmansberger_2006}.
+        Revisiting the probabilistic interpretation of Arrows and the work by \cite{Lindley:2011:IOA:1953652.1954016}, it is clear that the isomorphism evidenced by them --- that a Monad is isomorphic to Arrows of type \texttt{a () o} --- can be visualised when looking at the type of \texttt{Dist}. More clearly, \texttt{Dist a} is a column vector of type $a \leftarrow 1$ and corresponds to the probability monad presented by \cite{erwig_kollmansberger_2006}.
         
         A \gls{saf} can be seen equivalent to a Monad, if the associated data type is \texttt{(Enum a, Bounded a, Eq a)} \citep{andrey2019selective}. See for instance:
         
@@ -1248,9 +1316,9 @@ class Selective m => Monad m where
       fromRight (Right x) = x
         \end{lstlisting}{}
         
-        This fact, in case of functions, would give an inefficient \texttt{bind} ($\bind$) implementation but, in the case of matrices (distributions), this gives place to matrix composition that takes advantage of the divide-and-conquer and fusion laws. In fact, in order to lift functions to matrices (distributions) the same type restrictions are needed. Given this, it is safe to assume that in a practical sense the \texttt{Matrix}/\texttt{Dist} type is a \gls{saf} and equivalently the distribution monad.
+        While in the case of functions this would give an inefficient \texttt{bind} ($\bind$) implementation, in the case of matrices (distributions) it gives room for matrix composition that takes advantage of the divide-and-conquer and fusion laws. In fact, in order to lift functions to matrices (distributions) the same type restrictions are needed. Thus one can say that, in practical terms, the \texttt{Matrix}/\texttt{Dist} type is a \gls{saf} and equivalently the distribution monad.
         
-        \subsection{Equational Reasoning}\label{sec-eq-reason}
+        \subsection{Equational Reasoning} \label{sec-eq-reason}
         
         This section shows how to use equational reasoning and the laws of the linear algebra of programming to prove properties of functions on matrices and/or to obtain more efficient programs.
         
@@ -1271,7 +1339,7 @@ class Selective m => Monad m where
         	c \arrow[u, "m"']
         \end{tikzcd}
         \end{figure}
-        As we already saw, from an abstract point-of-view, the diagram above corresponds to the \texttt{ArrowChoice} implementation of \texttt{select} where, in the case of stochastic matrices, \texttt{m} can be seen as a probability distribution that outputs either \texttt{a} or \texttt{b}, and \texttt{y} is only computed for values of type \texttt{a}, all others are skipped.
+        As seen already, from an abstract point of view, the diagram above corresponds to the \texttt{ArrowChoice} implementation of \texttt{select} where, in the case of stochastic matrices, \texttt{m} could be seen as instantiating to a probability distribution of either \texttt{a}'s or \texttt{b}'s (for $c$ the singleton type), and \texttt{y} is only computed for values of type \texttt{a}, all others being just copied by the identity.
         
         This leads to a straightforward implementation of \texttt{select} in terms of matrices:
         
@@ -1281,7 +1349,7 @@ class Selective m => Monad m where
         select m y = join y id . m
         \end{lstlisting}{}
         
-        We know upfront from the definition that a (possibly) expensive computation is taking place where one of the matrices is the \texttt{id}entity. But, from the type of \texttt{m} we know that it can be \texttt{m = Fork x z} for some \texttt{x} and \texttt{z} and the implementation can take advantage of this: \small
+        From the definition, is is known upfront that a (possibly) expensive computation is taking place while the matrix aside is the \texttt{id}entity. But, from the type of \texttt{m} it is also know that it is bound to be \texttt{m = Fork x z}, for some \texttt{x} and \texttt{z}. Thus the implementation can take advantage of this: \small
         \begin{eqnarray*}
         \start
             \texttt{join y id . m}
@@ -1298,7 +1366,7 @@ class Selective m => Monad m where
         \end{lstlisting}{}
         gaining in efficiency because \texttt{x} is necessarily smaller than the original \texttt{m}.
         % was used to find a way to compute the result more directly, and therefore more efficiently.
-        Note that \texttt{x} and \texttt{z} above can be, on their own, joins. In this case, by the abide law (\ref{abide}) one gets \texttt{m = Join (Fork x c) (Fork z d)} which lets us pattern match one level deeper and, benefiting from the divide-and-conquer law, end up with: \small
+        Note that \texttt{x} and \texttt{z} above can be, on their own, joins. In this case, by the abide law (\ref{abide}) one gets \texttt{m = Join (Fork x c) (Fork z d)} which let us pattern match one level deeper and, benefiting from the divide-and-conquer law, end up with: \small
         \begin{eqnarray*}
         \start
             \texttt{join y id . m}
@@ -1310,7 +1378,7 @@ class Selective m => Monad m where
             \texttt{Join (y . x + c) (y . z + d)}
         \end{eqnarray*}\normalsize
         
-        \noindent Putting everything together, one gets the following more efficient implementation:
+        \noindent Altogether one gets the following more efficient implementation:
         
         \begin{lstlisting}[language=Haskell, caption={Final result},captionpos=b]
         select :: (...) => Matrix e c (Either a b) 
@@ -1320,19 +1388,19 @@ class Selective m => Monad m where
         select m y                            = join y id . m
         \end{lstlisting}{}
         
-        Moving from functions to matrices has allowed us to express probability distribution more elegantly and algebraically than other representations \citep{erwig_kollmansberger_2006, kidd2007build}. It turns out that the designed data-type takes advantage of the minimum amount of structure required for a \gls{saf} to be equivalent to a monad in the developed programming library, due to the necessary constraints. This, coupled with \gls{saf}'s probabilistic interpretation, has enabled us to go one step further in finding out how \glspl{saf} offers a more efficient abstraction than monads by exploiting a parallel nature in computing discrete exhaustive probabilities. Although \glspl{saf} appear to lose the speculative execution capabilities in this probabilistic environment, due to the fact that any two computations will always be required and can not be skipped, the \gls{laop} discipline allowed us to calculate a more efficient \texttt{select} operator that mimics the speculative execution of \glspl{saf}.
+        Moving from functions to matrices has allowed us to express probability distribution more elegantly and algebraically than other representations \citep{erwig_kollmansberger_2006, kidd2007build}. It turns out that the designed data-type takes advantage of the minimum amount of structure required for a \gls{saf} to be equivalent to a monad in the developed programming library, due to the necessary constraints. This, coupled with \gls{saf}'s probabilistic interpretation, enables us to go one step further in finding out how \glspl{saf} offer a more efficient abstraction than monads by exploiting a parallel nature in computing discrete exhaustive probabilities. Although \glspl{saf} appear to lose the speculative execution capabilities in this probabilistic environment, due to the fact that any two computations will always be required and can not be skipped, by \gls{laop} laws a more efficient \texttt{select} operator was calculated that mimics the speculative execution of \glspl{saf}.
         
-        In \ref{appendix-b} the source code for the internal structure of the matrix definition can be consulted.
+        The reader is referred to appendix \ref{appendix-b} where the source code of the internal structure of the matrix definition can be inspected.
         
     \section{Probabilistic Programming eDSL \& Sampling}\label{prob-edsl}
     
-    Matrices are an exhaustive approach to probabilistic computations, which makes it unfeasible when dealing with very large ones. Although they provide an elegant encoding and are amenable to calculational manipulation, using matrices for doing probabilistic programming can incur a cognitive overhead, since programs are not written in a very declarative, straightforward way. Not to mention that, they are not able to express probabilistic programs that operate with types that are arbitrarily infinite, like lists.
+    Matrices implement an exhaustive approach to probabilistic computations that is unfeasible when dealing with very large data. Although they provide an elegant encoding and are amenable to algebraic calculation, using matrices for doing probabilistic programming can incur a cognitive overhead, since programs are not written in a very declarative, straightforward way \citep{poll-aop, brusilovsky1994teaching}. Not to mention that they are not able to express probabilistic programs that operate with types that are arbitrarily infinite, like lists.
     
-    While the current work has made it possible to find a probabilistic interpretation for \glspl{saf} in the light of the Arrow abstraction and the \texttt{select} operator, it didn't made it possible to benefit from any of \glspl{saf}' properties. 
+    On the other hand, while the work so far paves the way to a probabilistic interpretation of \glspl{saf} in the light of the Arrow abstraction and the \texttt{select} operator, no particular benefit was taken from the properties of \glspl{saf} themselves. This has lead to exploring a practical way of benefiting from the speculative execution nature of \glspl{saf} and their static analysis capabilities, based on the Free Selective Functor construction mentioned by \cite{andrey2019selective}. In particular, a simple \gls{edsl} for doing probabilistic programming was designed.
     
-    With this in mind, a practical way where the speculative execution nature of \glspl{saf} or their static analysis capabilities could be useful was explored. Recurring to the Free Selective Functor construction, mentioned by \cite{andrey2019selective}, a simple \gls{edsl} for doing probabilistic programming was designed. This \gls{edsl} has, according to \cite{Scibior:2015:PPP:2887747.2804317, gordon2014probabilistic, meent2018introduction}, the minimum requirements to represent a distribution in a functional programming language, which are having: a set of standard distributions as building blocks; a Monad instance; a conditioning function; and a way of sampling from a given distribution. Since we are not working with Monads we relax the second requirement to only having a Selective instance.
+    This \gls{edsl} has, according to \cite{Scibior:2015:PPP:2887747.2804317, gordon2014probabilistic, meent2018introduction}, the minimum requirements to handle probabilistic distributions in a functional programming language, namely (a) a collection of standard distributions as building blocks; (b) a Monad instance; (c) a conditioning function; (d) and finally a way of sampling from a given (possibly very large) distribution. Because the aim here is to study \glspl{saf}, instead of Monads the second requirement to only having a Selective instance can be relax.
     
-    Free constructions allow us to focus on the internal aspects of the effect under consideration and receive the desired applicative or monadic (in this case it is the selective) computation structure for free, i.e. without the need to define custom instances or prove laws. Given this we just need to specify the set of effects (building-blocks) of the kind of computations we wish to represent. The listing below shows how we can express the different building-blocks of our language in this way:
+    Free constructions allow one to focus on the internal aspects of the effect under consideration and receive the desired applicative or monadic (in this case: the selective) computation structure for free, i.e.\ without the need to define custom instances or prove laws \citep{swierstra_2008}. Due to this, one just needs to specify the set of effects (building-blocks) of the kind of computation one wishes to represent. The listing below shows how to express the different building-blocks of our language in this way:
     
         \begin{lstlisting}[language=Haskell, caption={eDSL primitive building-blocks},captionpos=b]
 import Control.Selective.Free
@@ -1349,10 +1417,10 @@ data Primitives a where
 type Dist a = Select Primitives a
         \end{lstlisting}
         
-    Now that we have the first two of the above mentioned requirements, we need to have a conditioning function and a way to sample from a given \texttt{Dist} type, in order to have a minimal language suited for probabilistic programming. A conditioning function conditions a distribution with respect to a predicate or condition that is defined over the variables in the program. In particular, every valid execution of the program must satisfy all conditions that occur along the execution. Knowing this, the following function was implemented:
+    Thus the first two of the above mentioned requirements are met. Next, one needs to offer a conditioning function and a way to sample from the given \texttt{Dist} type in order to have a minimal language suited for probabilistic programming. Such a function should be able to condition a distribution with respect to a predicate or condition that is defined over the variables in the program. In particular, every valid execution of the program must satisfy all conditions that occur along the execution. Knowing this, the following function was implemented:
     
     \begin{lstlisting}[language=Haskell, caption={Conditioning function},captionpos=b]
--- | It provides information about the outcome of testing @p@ on some input @a@,
+-- | This function provides information about the outcome of testing @p@ on some input @a@,
 -- encoded in terms of the coproduct injections without losing the input
 -- @a@ itself.
 grdS :: Applicative f => f (a -> Bool) -> f a -> f (Either a a)
@@ -1375,9 +1443,9 @@ condition :: Dist (a -> Bool) -> Dist a -> Dist (Maybe a)
 condition c = condS c (pure (const Nothing)) (pure Just)
     \end{lstlisting}
     
-    As we can see from the listing above, in order to implement the \texttt{condition}ing function we used McCarthy's conditional that, interestingly enough, makes a nice connection with the previous results and, as we will see later, will be a ubiquitous pattern when writing programs in our \gls{edsl}.
+    As one can see from the listing above, the implementation of the \texttt{condition}ing function uses the McCarthy's conditional combinator. Interestingly enough, this makes a connection with the previous results and, as will be seen later, will be a ubiquitous pattern when writing programs in our \gls{edsl}.
     
-    One of the benefits of using an \gls{edsl} is the capacity of providing any number of different interpretations to the same program. For instance, we could interpret the \texttt{Dist} data-type so as to return the probabilities of every possible output, i.e. an exhaustive interpretation, or we could interpret it by sampling from every primitive distribution until we reach a concrete result, i.e. a sampling interpretation. The later offers us a way of sampling from a given distribution, from which we can then apply any inference algorithm to infer the probability of a given event. The listing below shows how we can achieve the last requirement of our minimal probabilistic programming \gls{edsl}:
+    One of the benefits of using an \gls{edsl} is the capacity of providing any number of different interpretations to the same program. For instance, one could interpret the \texttt{Dist} data-type so as to return the probabilities of every possible output, i.e.\ an exhaustive interpretation, or interpret it by sampling from every primitive distribution until a concrete result is reached, i.e.\ a sampling interpretation. The later offers a way of sampling from a given distribution, to which any inference algorithm can then be applied to infer the probability of a given event. The listing below shows how the last requirement of our minimal probabilistic programming \gls{edsl} can be achieved:
     
     \begin{lstlisting}[language=Haskell, caption={Sampling function},captionpos=b]
 import qualified System.Random.MWC.Probability as MWCP
@@ -1410,7 +1478,7 @@ sample r n = sequenceA (replicate n r)
     
     \subsection{Examples of Probabilistic Programs}
     
-    Now that we have our minimal language lets see what types of probabilistic programs we can write in it. We'll start with a simple coin toss example and build up from there. In order to lift a primitive distribution into our \texttt{Dist} data-type we use \texttt{liftSelect} offered by the \texttt{Selective} library.
+    Now that a minimal language has been set up, let us see what sort of probabilistic programs can be written. Starting with a simple coin toss example and build up from it. In order to lift a primitive distribution into our \texttt{Dist} data-type, \texttt{liftSelect} offered by the \texttt{Selective} library is used.
     
     \begin{lstlisting}[language=Haskell, caption={Coin toss},captionpos=b]
 categorical :: [(a, Double)] -> Dist a
@@ -1435,7 +1503,7 @@ t2c2 = let c1 = bernoulli 0.5
         in condition (pure (uncurry (||))) ((,) <$> c1 <*> c2)
     \end{lstlisting}
     
-    When sampling 10 results from this example distributions we obtain the following values:
+    When sampling 10 results out of the $t2c$ and $t2c2$ example distributions one obtains the following outcomes:
     
     \begin{lstlisting}[language=Bash, caption={Coin toss results},captionpos=b]
 > runToIO $ sample t2c 10
@@ -1446,9 +1514,9 @@ t2c2 = let c1 = bernoulli 0.5
 >
     \end{lstlisting}
     
-    We can see that the conditioning function is limiting the results to only those that satisfy the condition.
+    \noindent One can see that the conditioning function is limiting the results to only those that satisfy the condition.
 
-    Lets look at an example that cannot be expressed by using our \gls{laop} matrix library:
+    Proceeding to an example that cannot be expressed by using our \gls{laop} matrix library --- throwing coins indefinitely until $Heads$ comes up, and collect the results in a list:
     
     \begin{lstlisting}[language=Haskell, caption={Throw coins indefinitely until Heads comes up},captionpos=b]
 -- | Throw @n@ coins
@@ -1468,20 +1536,20 @@ Result:
 -}
     \end{lstlisting}
     
-    We can see from this example that programs written using only the \texttt{Selective} abstraction are less idiomatic than those that take full advantage of \texttt{Monad}s. For instance, we do not have access to \texttt{do}-notation neither are capable of sequencing computations which values depend from other computations. We can, however, use the \texttt{Applicative} nature of \glspl{saf} and McCarthy's Conditional to recover part of the desired expressivity, as we can see from the example below:
+    This example shows that programs written using only the \texttt{Selective} abstraction are less idiomatic than those that take full advantage of \texttt{Monad}s. For instance, one neither has access to \texttt{do}-notation nor is capable of sequencing computations, in which values depend from other computations. However, the \texttt{Applicative} nature of \glspl{saf} and the McCarthy conditional can be used to recover part of the desired expressiveness, as can be seen in the example below:
     
-    \begin{lstlisting}[language=Haskell, caption={Throw N coins},captionpos=b, label={lst:dicethrow}]
+    \begin{lstlisting}[language=Haskell, caption={Throw game dice},captionpos=b, label={lst:dicethrow}]
 uniform :: [a] -> Dist a
 uniform = liftSelect . Uniform
  
 die :: Dist Int
 die = uniform [1..6]
 
--- | This models a simple board game rule where, at each turn,
--- two dice are thrown and, if the value of the two dice is equal,
--- the face of the third dice is equal to the other dice,
--- otherwise the third die is thrown and one piece moves
--- the number of squares equal to the sum of all the dice.
+-- | This models a simple board game rule in which, at each turn,
+-- two dice are thrown and, if their outcomes are different, then
+-- a third die is thrown and the player's piece moves
+-- the number of squares equal to the sum of all dice.
+-- Otherwise, the player's piece moves the number of squares equal to three times the value of the two equally-faced dies.
 diceThrow :: Dist Int
 diceThrow =
   condS (pure $ uncurry (==))
@@ -1501,9 +1569,9 @@ List of die throws which have length 2 or 3:
 -}
     \end{lstlisting}
     
-    With this example we can clearly see that, although code written in this fashion is not as expressive or idiomatic as we would wish, it is capable of allowing it to benefit from \texttt{Applicative} and \texttt{Selective} capabilities. 
+    \noindent This example clearly shows that, although code written in this fashion is not as expressive or idiomatic as one would wish, it benefits from \texttt{Applicative} and \texttt{Selective} capabilities. 
     
-    It is important to emphasise the usefulness of the McCarthy's Conditional usage since, without it one is prone to write programs that repeat unnecessary computations. \texttt{ifS} is a popular combinator present in the \texttt{Selective} library that lifts the \textit{if-then-else} primitive to the Applicative level, and one might try to use it when writing simple programs such as:
+    The usefulness of the McCarthy conditional should be emphasised, without which one is prone to write programs that repeat unnecessary computations. \texttt{ifS} is a popular combinator present in the \texttt{Selective} library that lifts the \textit{if-then-else} primitive to the Applicative level. One is therefore tempted to write probabilistic, recursive programs such as:
     
     \begin{lstlisting}[language=Haskell, caption={Bad program},captionpos=b]
 -- | Bad program
@@ -1521,16 +1589,16 @@ Total number of effects:
 >
 -}
     \end{lstlisting}
-    
-    We can see that the \texttt{toss} effect is being repeated because we do not have a way to forward its conditional result to the next computation and this leads to the program not behaving as expected.
+  
+    Nonetheless, since the code is lazily executed line $5$ does not actually run the desired effect until needed. So, it is easy to see that the \texttt{toss} effect is being repeated, because we do not have a way to forward its conditional result to the next computation. This leads to the program not behaving as expected.
     
     \subsection{Sampling and Inference Algorithms}
     
-    Probabilistic inference is the problem of computing the explicit representation of the probability distribution implicitly defined in a probabilistic program. For example, with respect to the distribution, we might want to calculate the expected value of some function $f$. Alternatively, we may want to simply draw a set of samples from the distribution to test some other system that expects inputs to follow the modelled distribution.
+    Probabilistic inference is the problem of computing the representation of the probability distribution implicitly defined in a probabilistic program. For example, to calculate the expected value of some complicated probabilistic function. Alternatively, simply drawing a set of samples to analyse some other system that expects its inputs to follow a certain distribution.
     
     This subsection will present two sampling / inference algorithms implemented on top of the probabilistic programming \gls{edsl} and describe some of the limitations found.
     
-    The first one is the Monte Carlo Sampling method which is very simple, as you can see below:
+    The first one is Monte Carlo Sampling, a very simple method as can be seen below. It basically samples $n$ values from a given distribution and calculates the relative probability of each event:
     
     \begin{lstlisting}[language=Haskell, caption={Partial monadic bind function},captionpos=b]
 -- monte carlo sampling/inference
@@ -1546,9 +1614,8 @@ Result:
 -}
     \end{lstlisting}
     
-    This method samples $n$ values from a given distribution and calculates the relative probability of each event.
     
-    Other sampling method called Rejection Sampling \citep{jtobin} can similarly be achieved:
+    The other sampling method, called Rejection Sampling \citep{jtobin}, proceeds in a similar way:
     
     \begin{lstlisting}[language=Haskell, caption={Partial monadic bind function},captionpos=b]
 rejection :: (Bounded c, Enum c, Eq c) => ([a] -> [b] -> Bool) -> [b] -> Dist c -> (c -> Dist a) -> Dist c
@@ -1563,35 +1630,37 @@ rejection predicate observed proposal model = loop where
             loop
     \end{lstlisting}
     
-    This method and more complex others require monadic capabilities which make the proposed solution quite inefficient. This seems to be a limitation of the selective abstraction. Although it is still possible to implement such algorithms, we can only deal with discrete, finite data types which limit the domain we are dealing with.
+    This method (and more complex others \citep{jtobin}) requires monadic capabilities (i.e.\ selective bind), which make the solution quite inefficient. This seems to be a limitation of the selective abstraction. Although it is still possible to implement such algorithms via selective bind (\texttt{bindS}), most often one finds oneself restricted to discrete, finite data types which limit the problem domain.
     
     \section{Sampling as a Concurrency Problem}\label{prob-conc}
     
-    The work described above dealt only with the syntactic aspect of probabilistic programming, in other words, only explored what basic operations the Free Selective Construction was able to perform in order to write probabilistic programs. In the sense of the \texttt{IO} monad, a simple interpretation of these operations was provided simply to illustrate how simple results can be achieved.
+    The work described thus far has dealt only with the syntactic side of probabilistic programming. That is to say, only the basic operations that the Free Selective Construction is able to perform were exploited in order to write probabilistic programs.
     
-    As previously stated, the sampling approach was used to try to take advantage of the capabilities of \glspl{saf}. Programming  using an \gls{edsl} which enforces programming only recurring to selective combinators, allows one to capitalise on all potential benefits. However because the \texttt{IO} monad is inherently sequential, any independent computation loses the chance of parallel/speculative effect execution.
+    As previously stated, the sampling approach is used to try to take advantage of the capabilities of \glspl{saf}. Programming in an \gls{edsl} that enforces selective combinators only allows one to capitalise on all possible benefits. However, because the \texttt{IO} monad is inherently sequential, any independent computation loses the chance of a parallel/speculative effect execution.
     
-    The \ref{rel-work-edsl} section addressed how \gls{fp} and functional languages are a great vessel for probabilistic programming. However, the use of the \texttt{IO} monad disables the ability to exploit parallelism in the sampling of two independent variables. Some authors suggest improvements to some of the drawbacks of the monad in use, as also stated in section \ref{rel-work-edsl}, but no specific practical use of them has ever been seen. This may be the case because no one has ever tackled this issue from the correct angle. This section aims to clarify why and explore how to look at the problem of sampling in a simpler and more creative way, providing a nice approach that goes hand in hand with the existing state-of-the-art as well as presenting nice preliminary results.
+    Section \ref{rel-work-edsl} addressed how \gls{fp} languages are a great vessel for probabilistic programming. Nevertheless, the sole use of the \texttt{IO} monad disables the ability to exploit parallelism when sampling two or more independent variables. As also stated in section \ref{rel-work-edsl}, some authors suggest solutions to some of the drawbacks of using only the IO monad \citep{Scibior:2015:PPP:2887747.2804317, gordon2014probabilistic, jtobin} but none of these seem to have been actually employed in concrete, real use cases, probably due to their impracticability.
+    
+    Against this background, this section aims to explore how to look at the problem of sampling in a simpler, more practical way, showing promising results.
     
     \subsection{The Concurrency Monad}
     
-    There are several references to concurrency monads in literature. One of the first works in this regard was by \cite{Claessen1999FunctionalPA}, where by describing a monad transformer in Haskell, he introduces a groundbreaking way of modelling concurrency. In essence, a concurrency monad can be seen as a way to introduce concurrency to a (functional) programming language without adding specialised primitives to the compiler. In other words, the concept of concurrency constructs is shifted towards the programmer.
+    There are several references to concurrency monads in literature. \cite{Claessen1999FunctionalPA} was among the first in this regard by describing a monad transformer in Haskell that introduces a groundbreaking way of modelling concurrency. In essence, a concurrency monad can be seen as a way to introduce concurrency to a (functional) programming language without adding specialised primitives to the compiler. Instead, the concept of concurrency construct is shifted towards the programmer.
     
-    Solutions such as \cite{Claessen1999FunctionalPA} and \cite{Scholz1995ACM}, among others, although they have somewhat different models, rely on the basic notion of interleaving processes via continuation. Continuations are capable of preserving the flowing essence of a process, allowing a process to be stopped and resumed. Many concurrency monads are provided with a collection of primitive constructs, like \texttt{fork}, to make the concurrency explicit. Thus, a common trait of these programming models is that they are based on a concurrency-monad-like substratum; they behave like lightweight threads with cooperative scheduling.
+    Although working on somewhat different models, the approaches of  \cite{Claessen1999FunctionalPA} and \cite{Scholz1995ACM} (among others) rely on the basic notion of interleaving processes via continuations. Continuations are capable of preserving the flowing essence of a process, allowing it to be stopped or resumed. Many concurrency monads are provided with a collection of primitive constructs, like \texttt{fork}, to make the concurrency explicit. Thus, a common trait of these programming models is that they are based on a concurrency-monad-like substratum; they behave like lightweight threads with cooperative scheduling.
     
-    \cite{Marlow:2014:NFA:2692915.2628144} offer a different, fascinating alternative solution, where their approach is especially useful for programming against external data sources without the use of explicit constructs of concurrency, called Haxl. It assumes that external access to data is read-only, and that the order does not matter so that it can be done in parallel. They present an extension of the concept of concurrency monads where concurrency is implied in the Applicative abstraction, which, unlike previous formulations, takes advantage of the fact that the arguments to \texttt{($<$*$>$)} are independent and can therefore be inspected. This new feature can also be interpreted as some form of static analysis, and allows multiple requests to be batched together. Recently, this solution as also been given speculative execution capabilities \citep{andrey2019selective}, which makes it very interesting to the scope of this dissertation.
+    \cite{Marlow:2014:NFA:2692915.2628144} offer a different, alternative solution, where their approach is specially useful for programming over external data sources without explicitly using concurrency constructs. It is called Haxl and it assumes that external access to data is read-only. So, the order does not matter and it can be done in parallel. They present an extension of the concept of concurrency monads in which concurrency is implied in the Applicative abstraction. Unlike previous formulations, this one takes advantage of the fact that the arguments to \texttt{($<$*$>$)} are independent and can therefore be inspected. This new feature can also be interpreted as some form of static analysis, and allows multiple requests to be batched together. Recently, this solution as also been given speculative execution capabilities \citep{andrey2019selective}, which makes it very interesting to the scope of this dissertation.
     
     \subsection{Sampling}
     
-    In order to extend the probabilistic programming \gls{edsl} with parallel and speculative execution capabilities without having to be explicit about it, we suggest that sampling can be seen as a problem of competition. So let's start by illustrating what ''see sampling as a concurrency problem`` implies.
+    Sampling should be seen as a concurrency problem in order to extend the probabilistic programming \gls{edsl} with parallel and speculative execution capabilities without having to be explicit about it. Let us start by illustrating what ``seeing sampling as a concurrency problem'' means.
     
-    Effective access to multiple remote data sources requires concurrency, and that usually requires the programmer to intervene and program the concurrency explicitly. But when the business logic is all about reading data from external sources, the programmer doesn't worry about the order in which the data accesses occur. This is the scenario defined by \cite{Marlow:2014:NFA:2692915.2628144} and it is the one which is advantageous to imply its solution. They go even further and show how to add some sort of caching capabilities. Sampling from a probability distribution is somewhat similar to collecting data from an external source thus a similar approach can be used to effectively conduct sampling. The source of randomness is the external data source to be read, and because it is random, the order by which simultaneous (independent) samples are performed does not matter or cause additional side effects. We can already see how these two models are very similar, but there is a small difference, which is that it is not possible to repeat a data access request, in the case of sampling, because we get a different result every time we access the random source. This fact does not allow one to build a caching system like the one in Haxl, since it would have a negative impact on the sampling quality itself. 
+    Effective access to multiple remote data sources requires concurrency, usually requiring the programmer to intervene and make the concurrency explicit. But wherever the business logic only needs reading data from external sources, the programmer does not need to worry about the order in which the data accesses occur. This is the scenario defined by \cite{Marlow:2014:NFA:2692915.2628144}. Sampling from a probability distribution is similar to collecting data from an external source thus a similar approach can be used to effectively conduct sampling. The source of randomness is the external data source to be read and because it is random, the order by which simultaneous (independent) samples are performed does not matter nor causes additional side effects. 
     
-    In view of this, we conclude that sampling can be seen as a more general concurrency problem than the one solved by Haxl.
+    One can already see how these two models are alike. However, there is a small difference in the case of sampling and this is that it is not possible to repeat a data access request, because one would get a different result every time the random source is accessed. This fact does not allow one to build a caching system like the one in Haxl, since it would have a negative impact on the sampling quality itself. In view of this, it is concluded that sampling can be seen as a more general concurrency issue than the one solved by Haxl.
     
     \subsection{Implementation}
     
-    An approach very similar to the one presented by \cite{Marlow:2014:NFA:2692915.2628144} was used in order to implement the solution. As it was mentioned in the previous section, we need to think about sampling as a concurrency problem and that means that our "external data access requests" are sampling requests. With this in mind, each request can be either \texttt{Done} or \texttt{Blocked}. So, in general, a computation in our data type will be a sequence of \texttt{Blocked} requests ending in a \texttt{Done} with the return value, like so:
+    An approach similar to the one presented by \cite{Marlow:2014:NFA:2692915.2628144} is proposed below in order to implement the solution. As mentioned in the previous section, sampling should be seen as a concurrency problem in which the ``external data access requests" are sampling requests. With this in mind, each request can be either \texttt{Done} or \texttt{Blocked}. So, in general, a computation in our data type will be a sequence of \texttt{Blocked} requests ending in a \texttt{Done} carrying the return value:
     
     \begin{lstlisting}[language=Haskell, caption={Fetch Data Type},captionpos=b]
 data BlockedRequest = forall a. BlockedRequest (Request a) (IORef (Status a))
@@ -1613,11 +1682,9 @@ data Result a = Done a | Blocked (Seq BlockedRequest) (Fetch a) deriving Functor
 newtype Fetch a = Fetch {unFetch :: IO (Result a)} deriving Functor
     \end{lstlisting}
     
-The \texttt{Fetch} data type is actually a monad (since it is wrapped around \texttt{IO}) and follows the continuation monad formulation. It is also worth noting that this idea is an instance of a free monad.
+The \texttt{Fetch} data type is actually a monad (since it is wrapped around \texttt{IO}) and follows the continuation monad formulation. It is also worth noting that this idea is an instance of a free monad \citep{Marlow:2014:NFA:2692915.2628144}.
 
-There's one thing missing from the implementation and that is a way of introducing concurrency. As we saw before, the probabilistic interpretation of the Applicative abstraction expresses statistical independence and thus is suitable for allowing to create concurrency within our data structure. When computing in \texttt{Fetch} is performed using the \texttt{($<$*$>$)} operator, all \texttt{($<$*$>$)} arguments may be explored to look for \texttt{Blocked} computing, which creates the potential that a computing may be blocked on several items at the same time. This is in contrast to the monadic bind operator, \texttt{($\bind$)}, which does not allow both arguments to be examined, since the right side can not be evaluated without the left side result.
-
-With this being said, the following instance was written:
+There is something missing from the implementation, which is a way of introducing concurrency. As seen before, the probabilistic interpretation of the Applicative abstraction expresses statistical independence and thus it is suitable to add concurrency to our data structure. The idea is that of performing \texttt{Fetch} computations using the \texttt{($<$*$>$)} operator. All \texttt{($<$*$>$)} arguments may be explored to look for \texttt{Blocked} computations, which allows a computation to be blocked on several items at the same time. This contrasts with the monadic bind operator, which does not allow its arguments to be examined, since one cannot be evaluated without the other. Bearing this in mind, the following instance is proposed:
 
     \begin{lstlisting}[language=Haskell, caption={Fetch Applicative instance},captionpos=b]
 instance Applicative Fetch where
@@ -1632,7 +1699,7 @@ instance Applicative Fetch where
       (Blocked bf f, Blocked bx x) -> Blocked (bf <> bx) (f <*> x) -- batching parallel requests
     \end{lstlisting}
     
-This static analysis feature can also be used with the speculative execution capabilities of the Selective Abstraction. This is a very interesting and novel addition to the functional probabilistic programming domain that, theoretically, allows for better performance in programs that branch on a given sample result.
+Speculative execution of the Selective abstraction can also be achieved by employing this static analysis feature. This is a novel addition to the functional probabilistic programming domain that, in theory, improves performance in programs that can branch on a given sample result.
 
     \begin{lstlisting}[language=Haskell, caption={Fetch Selective instance},captionpos=b]
 instance Selective Fetch where
@@ -1648,11 +1715,21 @@ instance Selective Fetch where
     
     \section{Summary}
     
+    This chapter presented a probabilistic interpretation of \glspl{saf} by examining the probabilistic semantics of Arrows and their relationship with \glspl{saf}. This is intended as a first step in the study of the practical usefulness of the Selective abstraction in the probabilistic setting. \gls{laop} aided the understanding of linear algebra and matrices through a typed theory that emphasises structure and compositionality.
+    
+    Putting theory into practice, a strongly typed matrix programming library was build on top of an existing one. This programming library uncovered a relationship between the \texttt{select} operator and the well-known McCarthy's conditional, reinforcing the idea that this operator allows for branching over probabilistic programs. Notwithstanding, the promised static analysis and speculative execution capabilities were not exposed by only reasoning at the type level and a typed, inductive structure of matrices was designed. Inspired by the biproducts of categories of matrices, this data structure captures the divide-and-conquer nature of matrices and opened the way to the implementation of a correct-by-constructions matrix programming library that is amenable to equational reasoning and algebraic manipulation. 
+    
+    A probabilistic interpretation of \glspl{saf} could work over this matrix programming library that relies on \gls{laop} and thus allows for formal reasoning and optimisations via algebraic manipulation. However, due to matrices implementing an exhaustive approach to describing probability distributions, the Selective abstraction can not capitalise on its capabilities. To overcome this, a shift to the sampling realm was made and an \gls{edsl} was designed to allow for the effective use of selective combinators. This change enables the benefits offered by the Selective abstraction but these are still hindered by the sequential nature of the IO Monad. To overcome this limitation a change of perspective is required, and by seeing sampling as a concurrency problem, a solution that is both practical and simple was achieved.
+    
     \chapter{Applications}\label{ch-applications}
+   
+    This chapter presents some examples of application of the approaches and solutions developed in the previous chapters. In particular, an example is used to show the difference between using the matrix library that was developed and the \gls{edsl} of the previous chapter. Performance evaluations of such solutions will also be presented.
     
         \section{LAoP Sprinkler example}
         
-        Probabilistic programming arises naturally from functional programming once we replace ``sharp" functions by probabilistic ones, represented by stochastic matrices, also known as Markov chains \cite{oliveira2012towards}. Take a look at this example from the \citet{wiki:BayesianNetwork}. Suppose the following predicates modelling the behaviour of a sprinkler are defined, where \texttt{S} (sprinkler on/off), \texttt{R} (raining or not) and \texttt{G} (grass wet or not) are Booleans:
+        Probabilistic programming arises naturally from functional programming once ``sharp" functions are replaced by probabilistic ones, which can be represented by stochastic matrices, also known as Markov chains \citep{oliveira2012towards}. As an example, let us take a look at the following example taken from the \citet{wiki:BayesianNetwork}. This example builds on what has already been presented in article \cite{Armando2020}. 
+        
+        Let the following predicates model the behaviour of a sprinkler be defined, where \texttt{S} (sprinkler on/off), \texttt{R} (raining or not) and \texttt{G} (grass wet or not) are Booleans:
         \begin{eqnarray*}
         \begin{array}{rcl}
         \start sprinkler :: R \to S
@@ -1663,12 +1740,12 @@ instance Selective Fetch where
         \more grass\ (s,r) = s\ ||\ r
         \end{array}
         \end{eqnarray*}
-        The second predicate tells that the grass will be wet if and only if either it is raining or the sprinkler is on. The first tells that the sprinkler is on \emph{iff} it is not raining. Composing these two predicates we see that rain completely determines the state of the grass:
+        The second predicate tells that the grass will be wet if and only if either it is raining or the sprinkler is on. The first tells that the sprinkler is on \emph{iff} it is not raining. Composing these two predicates it is possible to see that rain completely determines the state of the grass:
         \begin{eqnarray*}
         \start grass\ (sprinkler\ r,r) = not\ r\ ||\ r = True
         \end{eqnarray*}
         
-        Looking at the diagram below, where $(\kr)$ can be seen as equal to $(\&\&\&)$\footnote{From \texttt{Control.Arrow}, specialised to $(\rightarrow)$}, we see that the system has two possible states in \texttt{(G, (S, R))} --- either \texttt{(True, (True, False))} or \texttt{(True, (False, True))} --- the grass being wet in both. So it will melt because of being wet all the time.
+        Looking at the diagram below, where $(\kr)$ denotes function pairing \footnote{This can be seen as equal to $(\&\&\&)$ from \texttt{Control.Arrow}, specialised to $(\rightarrow)$.}, it is possible to observe that the system has two possible states in \texttt{(G, (S, R))} --- either \texttt{(True, (True, False))} or \texttt{(True, (False, True))} --- the grass being wet in both. So it will melt because of being wet all the time.
         
         \begin{figure}[h]%[09]{r}{7em}
         \centering
@@ -1687,16 +1764,21 @@ instance Selective Fetch where
         }
         \)
         \end{figure}
-        Clearly, this deterministic interpretation of the diagram does not correspond to reality, but its stochastic interpretation will do. For this, we just need to regard the arrows as denoting stochastic matrices and not pure functions, for instance\footnote{For easy reference we follow the Wikipedia example closely.}
+        
+        Clearly, this deterministic interpretation of the diagram does not correspond to reality, but its stochastic interpretation will do. For this, regarding the arrows as denoting stochastic matrices and not pure functions is needed, for instance\footnote{For easy reference, the Wikipedia example is followed closely.}.
         \begin{eqnarray*}
-        \start \longrarrow R {sprinkler} S = \matfour{0.60}{0.99}{0.40}{0.01}
+        \start \longrarrow R {sprinkler} S = %\matfour{0.60}{0.99}{0.40}{0.01}
+        \begin{bmatrix}
+            0.60    & 0.99 \\
+            0.40    & 0.01
+        \end{bmatrix}
         \more \rarrow{(S, R)} {grass} G =
         \begin{bmatrix}
             1.00    & 0.20    & 0.10    & 0.01 \\
             0    &    0.80    & 0.90    & 0.99
         \end{bmatrix}
         \end{eqnarray*}
-        This describes a probabilistic system \emph{reactive} to the rain. Once its distribution becomes known, eg.
+        This describes a probabilistic system \emph{reactive} to the rain. Once the distribution of this becomes known, eg.
         \begin{eqnarray*}
         \rarrow 1 {rain} R = \begin{bmatrix} 0.80 \\ 0.20 \end{bmatrix}
         \end{eqnarray*}
@@ -1716,17 +1798,16 @@ instance Selective Fetch where
         \end{array} \label{eq:state}
         \\\nonumber
         \end{eqnarray} \normalsize
-        which is calculated following the diagram. Consider the following matrices:
+        which is calculated following the diagram.
+        
+        To see how to encode this diagram in the \gls{laop} library, consider the following matrices
         \begin{lstlisting}[language=Haskell, caption={Example matrices}, captionpos=b]
 rain :: Matrix Prob () R
 sprinkler :: Matrix Prob R S
 grass :: Matrix Prob (S, R) G
         \end{lstlisting}
         
-        (where \texttt{type Prob = Double})
-        encoded in the \gls{laop} library, where we also free the types involved from the strict Boolean model, already visible in (\ref{eq:state}).\footnote{So instead of \texttt{G = Bool} we have \texttt{G = Dry | Wet} and so on.}
-        
-        The distribution of the overall state displayed above is given by the expression
+        \noindent where \texttt{type Prob = Double} and the types involved are freed from the strict Boolean model, already visible in (\ref{eq:state}).\footnote{That is to say, instead of \texttt{G = Bool}, \texttt{G = Dry | Wet} and so on.} The distribution of the overall state displayed above is given by the expression
         \begin{lstlisting}[language=Haskell, caption={State matrix}, captionpos=b]
 state = compose grass sprinkler rain
         \end{lstlisting}{}
@@ -1743,11 +1824,10 @@ tag :: (...) => Matrix e a b -> Matrix e a (b, a)
 tag f = kr f id
         \end{lstlisting}{}
         
-        Note the role of the $tag$ operation, which for functions amounts to \texttt{tag f x = (f x, x)}, that is, the output of $f$ is paired with its input. Combinator \texttt{compose} iterates this operation across compositions so as to get an account of all inputs and outputs, as is usual in Bayesian networks.\footnote{This generic combinator is inspired in the \emph{left tagging} relational operator of \cite{Bu01}.} 
+        Note the role of the $tag$ operation, which for functions amounts to \texttt{tag f x = (f x, x)}, that is, the output of $f$ is paired with its input. Combinator \texttt{compose} iterates this operation across compositions so as to get an account of all inputs and outputs, as is usual in Bayesian networks.\footnote{This generic combinator is inspired in the \emph{left tagging} relational operator of \citep{Bu01}.} 
         
-        Let \texttt{wet :: Matrix Prob () G}, \texttt{dry :: Matrix Prob () G}, \texttt{no :: Matrix Prob () R} (and so on) be the \emph{points} of the data types involved in the model. Also projections \texttt{fstM} and \texttt{sndM} are used to obtain the first and second components of the paired matrices, respectively.
-        Evaluating the overall probability of the grass being wet is given by
-        the scalar\footnote{Recall that scalars are matrices of type \ensuremath{\mathrm{()}\to
+        Let \texttt{wet :: Matrix Prob () G}, \texttt{dry :: Matrix Prob () G}, \texttt{no :: Matrix Prob () R} (and so on) be the \emph{points} of the data types involved in the model. Let also projections \texttt{fstM} and \texttt{sndM} be used to obtain the first and second components of the paired matrices, respectively. Then evaluating the overall probability of the grass being wet is given by
+        the scalar:\footnote{Recall that scalars are matrices of type \ensuremath{\mathrm{()}\to
         \mathrm{()}}.} 
         \begin{lstlisting}[language=Haskell, caption={Probability of grass being wet calculation}, captionpos=b]
 grassWet = tr wet . fstM . state -- = 44.84%
@@ -1755,9 +1835,7 @@ grassWet = tr wet . fstM . state -- = 44.84%
         
         \section{eDSL Sprinkler example}
         
-        The last section showed how it is possible to do probabilistic programming by using matrices and the \gls{laop} discipline. In this one, the same example will be shown but, this time, using the probabilistic programming \gls{edsl} designed in section \ref{prob-edsl}.
-        
-        Instead of matrices, now, one is only capable of using probabilistic functions of type \texttt{a $\to$ Dist b}. So, the functions equivalent to the \texttt{sprinkler}, \texttt{grass} and \texttt{rain} matrices are given below:
+        The last section showed how it is possible to do (typed) probabilistic programming by using matrices and the \gls{laop} discipline. In the current section the same example will be shown, but this time rendered in the probabilistic programming \gls{edsl} designed in section \ref{prob-edsl}. The main difference is that matrices give place to probabilistic functions of type \texttt{a $\to$ Dist b}. The functions equivalent to the \texttt{sprinkler}, \texttt{grass} and \texttt{rain} matrices are given below.
         
         \begin{lstlisting}[language=Haskell, caption={Example probabilistic functions}, captionpos=b]
 data R = No | Yes
@@ -1781,7 +1859,7 @@ rain :: Dist R
 rain = categorical [(No, 0.8), (Yes, 0.2)]
         \end{lstlisting}{}
         
-        In the last section we saw the importance of the \texttt{tag} and \texttt{compose} combinators. They allowed us to compose distribution matrices and calculate their joint probability easily. By using our \gls{edsl}, we are only allowed to use \glspl{saf} capabilities, which means we do not have the required monadic capacity to iterate the equivalent \texttt{tag} combinator, across compositions, in order to get distribution computation of the whole state. As we can see below we obtain a nested  \texttt{Dist} type which makes it awkward to deal with.
+        The last section emphasised the importance of the \texttt{tag} and \texttt{compose} combinators, which  allowed for composing distribution matrices and calculating their joint probability easily. By using our \gls{edsl}, only \glspl{saf} capabilities are allowed to be used, which means that the monadic capability to iterate the equivalent \texttt{tag} combinator is not available, across compositions, in order to compute the distribution of the whole state. As can be seen below, a nested \texttt{Dist} type is needed which makes it awkward to deal with.
         
         \begin{lstlisting}[language=Haskell, caption={\texttt{tag} combinator}, captionpos=b]
 class Functor f => Strong f where
@@ -1800,7 +1878,7 @@ stateS :: Dist (Dist (Dist (G, (S, R))))
 stateS = fmap (tag grass) . tag sprinkler <$> rain
         \end{lstlisting}{}
         
-        We can instead, take advantage of the fact that the data types used in our model are \texttt{Enum}, \texttt{Bounded}, \texttt{Eq}, i.e. countable, and thus use the (\textit{inneficient}) \texttt{bindS} function in order to compose the probabilistic functions and obtain the desired state distribution.
+        Alternatively, one can take advantage of the fact that the data types used in the model are \texttt{Enum}, \texttt{Bounded}, \texttt{Eq}, i.e.\ countable, giving room to use the \texttt{bindS} function in order to compose the probabilistic functions and obtain the desired state distribution.
         
         \begin{lstlisting}[language=Haskell, caption={State distribution}, captionpos=b]
 state :: Dist (G, (S, R))
@@ -1814,11 +1892,13 @@ Result:
 -}
         \end{lstlisting}{}
         
+        A comparison between the two probabilistic programming libraries designed so far was seen. Both advantages and disadvantages of each were made clear. Matrices implement and exhaustive approach to represent probabilistic functions and thus suffer from performance issues. However, they are able to model relatively complex problems and allow a guided, typed implementation, via \gls{laop}. The \gls{saf} \gls{edsl} has limitations regarding expressibility when compared with a monadic interface. However, it allows to tradeoff expressibility with performance if necessary (via \texttt{bindS}), as well as permits the leveraging of all \glspl{saf}' capabilities. Next section presents a more detailed comparison between these two approaches, with respect to performance.
+        
         \section{Benchmarks}
         
-        To check whether the results obtained so far bring any kind of efficiency benefits, we compared the performance of matrix multiplication algorithms presented in other Haskell libraries and the one proposed in this thesis; compared the performance of using matrices as distributions versus using lists (distribution monad); and compared the applicative versus selective exhaustive approach too see that, even though matrices can not take full advantage of speculative execution of \glspl{saf}, by understanding the fundamentals of the abstraction, it is possible to achieve a faster \texttt{select} operator.
-
-        Given this, Fig.~\ref{tab:testbed} shows the key features of the testbed environment.
+        This section proceeds to the performance evaluation of the solutions proposed so far. Matrix multiplication will be used for benchmarking  them against other Haskell libraries.
+        %and the one proposed in this thesis; 
+        In particular, the performance of distributions as matrices versus distributions as lists (distribution monad) will be compared. Moreover, the applicative versus selective exhaustive approach are also compared to conclude that, even though matrices can not take full advantage of the speculative execution of \glspl{saf}, by understanding the fundamentals of the abstraction it is possible to achieve a faster \texttt{select} operator. Fig.~\ref{tab:testbed} shows the key features of the testbed environment.
         % Please add the following required packages to your document preamble:
         \begin{figure}[H]%[10]{r}{23em}
         \centering\small
@@ -1845,59 +1925,40 @@ Result:
         \label{fig:bench}
     \end{figure}
     
-    As can be seen in the plot of Figure \ref{fig:bench}, the \emph{hmatrix} and \emph{matrix} libraries are those that perform better. By observing their internal structure, one realises that they are a suitable representation for BLAS/LAPACK computations \citep{anderson1999lapack}, that is, they have been designed to efficiently exploit caches on modern cache-based architectures. A matrix in the \emph{linear} library is defined as \texttt{Vector cols (Vector rows Double)} and does not take into account cache lengths or sizes, so it behaves much worse than the previous ones. Our structure does not take into account any low-level optimisations either, being unable to compete with those that do. Nevertheless, the implementation is \emph{performant for a cache-oblivious approach} and behaves better (almost one order of magnitude better) than other types of simpler definitions.
+    As can be seen in the plot of Figure \ref{fig:bench}, the \emph{hmatrix} and \emph{matrix} libraries are those that perform better. By observing their internal structure, one realises that they are a suitable representation for BLAS/LAPACK computations \citep{anderson1999lapack}, that is, they have been designed to efficiently exploit caches on modern cache-based architectures. A matrix in the \emph{linear} library is defined as \texttt{Vector cols (Vector rows Double)} and does not take into account cache lengths or sizes, so it behaves much worse than the previous ones. Our data structure does not take into account any low-level optimisations either, being unable to compete with those that do. Nevertheless, the implementation is \emph{performant for a cache-oblivious approach} and behaves better (almost one order of magnitude better) than other data types with simpler definitions.
         
-        \subsection{Distribution matrix vs distribution list monad}
+        \subsection{Distribution matrix versus distribution list monad}
         
-        The previous evaluation focused only on the performance of the matrix multiplication algorithm and compared with existing solutions to linear algebra however, in this section we will compare the use of matrices versus the use of lists as a representation of probability distributions, by comparing the performance of the \texttt{select} operator. Since both are exhaustive approaches to probabilistic programming, the comparisons will feature the applicative version of the \texttt{select} operator (where no computations are skipped) and see which solution performs best. Additionally, as we saw in section \ref{sec-eq-reason}, it is possible to have a more efficient version of the \texttt{select} operator, under the matrix representation, which we will call the selective version. This version is also going to be benchmarked and compared against its applicative alternative.
+        The previous evaluation focused only on the performance of the proposed matrix multiplication algorithm compared with existing solutions to linear algebra. In this section the use of matrices versus the use of lists as representations of probability distributions will be evaluated, by comparing the performance of the different versions of the \texttt{select} operator. Since both are exhaustive approaches to probabilistic programming, the comparisons will feature the strict applicative version of the \texttt{select} operator (where no computations are skipped) and the more efficient version, which will be called the non-strict version of select, that skips unnecessary computations, to see which solution performs best.
         
-        The Figure and Listings below show the results output by the Criterion framework. The benchmarks were realized in the same settings as the previous one and, all matrices and lists were randomly generated.
+        The figure below show the results output by the Criterion framework. The benchmarks have been carried out in the same settings as the previous ones, that is, all matrices and lists were randomly generated.
         
             \begin{figure}[H]%[9]{r}{18em}
             \centering
-             \includegraphics[width=\linewidth]{img/matrixVlist.png}
+             \includegraphics[width=\linewidth]{img/chart.pdf}
                \caption{Matrix vs List - \texttt{select} operator}
                \label{fig:bench2}
             \end{figure}
             
-        \begin{lstlisting}[caption={Results}, captionpos=b]
-benchmarking Matrix vs List/100+100/100x100/List - Applicative
-time                 2.464 s    (2.411 s .. 2.515 s)
-                     1.000 R^2   (1.000 R^2 .. 1.000 R^2)
-mean                 2.395 s    (2.336 s .. 2.425 s)
-std dev              56.98 ms   (2.896 ms .. 69.67 ms)
-variance introduced by outliers: 19% (moderately inflated)
-
-benchmarking Matrix vs List/100+100/100x100/Matrix Dist - Applicative v.
-time                 2.607 ms   (2.007 ms .. 3.459 ms)
-                     0.635 R^2   (0.538 R^2 .. 0.743 R^2)
-mean                 4.451 ms   (3.848 ms .. 5.086 ms)
-std dev              1.958 ms   (1.634 ms .. 2.399 ms)
-variance introduced by outliers: 98% (severely inflated)
-
-benchmarking Matrix vs List/100+100/100x100/Matrix Dist - Selective v.
-time                 1.259 ms   (1.217 ms .. 1.329 ms)
-                     0.962 R^2   (0.898 R^2 .. 0.995 R^2)
-mean                 1.277 ms   (1.234 ms .. 1.383 ms)
-std dev              210.0 micros   (124.3 micros .. 375.1 micros)
-variance introduced by outliers: 87% (severely inflated)
-        \end{lstlisting}{}
+        The first entry, which corresponds to the distribution monad presented by \cite{erwig_kollmansberger_2006} can be seen to perform worse than the others. The strict version of the \texttt{select} operator, in the matrix version, performs better even though no computation is skipped. The last entry, which refers to the non-strict version of the \texttt{select} operator, is also clearly better than its strict version.
         
-        The first entry corresponds to the distribution monad presented by \cite{erwig_kollmansberger_2006} and we can see that this solution is the one that performs worse. The applicative version of the \texttt{select} operator, in the matrix solution performs a lot better even though all computations are performed. The last entry refers to the selective version of the \texttt{select} operator and we can see that it outperforms the applicative version.
+        There are several attempts that build on the work of \cite{erwig_kollmansberger_2006}, in order to improve the performance of the exhaustive probability monad \citep{larsen2011memory, dylus2018probabilistic}. Allied with the \gls{laop} discipline, the typed, inductive matrix data structure offers a more performant, correct alternative at the cost of a minimum cognitive overhead.
         
     \subsection{Sequential vs Concurrent Selective eDSL}
-        In this section, the performance of each \gls{edsl} solution provided in the \ref{prob-edsl} and \ref{prob-conc} sections is evaluated. In order to do so, three probabilistic programs were used: one that threw two hypothetical $50000$ faced dice, returning both results; one that threw the same two dice but conditioned the result; and one similar to \texttt{diceThrow} in Listing \ref{lst:dicethrow} but using the same dice as the previous programs. As an example, see:
+        This section evaluates the performance of each \gls{edsl} solution provided in sections \ref{prob-edsl} and \ref{prob-conc}. In order to do so, three probabilistic programs were used: one that throws two hypothetical $50000$-faced dice, returning both results; one that throws the same two dice but conditioned the result; and one similar to \texttt{diceThrow} in Listing \ref{lst:dicethrow} but using the same dice as in the previous programs. 
         
         \begin{lstlisting}[language=Haskell, caption={Programs used in evaluation}, captionpos=b]
 bigDie :: Dist Int
 bigDie = uniform [0 .. 50000]
 
+-- Normal without conditioning
 pg1 :: Dist (Int, Int)
 pg1 =
   let c1 = bigDie
       c2 = bigDie
    in (,) <$> c1 <*> c2
 
+-- With conditioning
 pg2 :: Dist (Maybe (Int, Int))
 pg2 =
   let c1 = bigDie
@@ -1905,6 +1966,7 @@ pg2 =
       result = (,) <$> c1 <*> c2
    in condition (uncurry (>)) result
 
+-- Takes advantage of speculative and parallel execution
 pg3 :: Dist Int
 pg3 =
   condS
@@ -1914,44 +1976,53 @@ pg3 =
     ((,) <$> bigDie <*> bigDie) -- Parallel dice throw
         \end{lstlisting}{}
         
-    Each benchmark consists of performing forward sampling $2000$ times. One thing to remember is that $4$ general benchmarks have been made. The first two interpret \gls{edsl} in a sequential fashion, directly to \texttt{IO}, and first to the concurrency monad, and then to \texttt{IO}. In the other two, the programs are written directly to the concurrency monad. These were the results:
+    Each benchmark consists of performing forward sampling $10000$ times, leading to three sets of three benchmarks each. The first collection relates to \texttt{pg1}, the second to \texttt{pg2} and the third to \texttt{pg3}. For each collection, the first benchmark interprets the \gls{edsl} to \texttt{IO} and runs computations sequentially; the second first interprets to the concurrency monad and then \texttt{IO}, running sequentially as well; finally, the third is as the previous one but takes advantage of the concurrent runtime system of \gls{ghc}.
     
     \begin{figure}[H]
         \centering
-        \includegraphics[width=\linewidth]{img/no-delay.pdf}
-        \caption{Benchmarks results (No delay)}
+        \includegraphics[width=\linewidth]{img/BenchmarkResults.pdf}
+        \caption{Benchmarks results}
         \label{fig:no-delay}
     \end{figure}
     
-    As we can see from the graph, you can see that there are four distinct groups corresponding to the ones mentioned above. Absolute values are not that important, rather looking at them compared to each other will give us a much quicker and clearer interpretation of what's going on.
+   % From the graph, one can see that there are three distinct sets of benchmarks corresponding to the mentioned above, respectively.
     
-    The baseline results are the first three, and from a quick glance, we can see that the concurrent version is faster than the sequential one, but there are cases where the gains are not that high. This is due to the fact that sampling, even from a large random distribution such as \texttt{uniform 5000}, is very fast and thus there is not a large gap between sequential and concurrent versions.
+    By comparing the blue and red bars of the chart one sees a positive impact on performance, just by switching from pure \texttt{IO} to the concurrency monad. Although the speedup is not as much as doing the first switch, enabling \gls{ghc}'s concurrent runtime system also performs better. The normal variation shown seems to be the one that benefits the most from the optimisations. This fact might be due to the batching ability of independent sampling computations, allowed by the concurrency monad. Since \texttt{pg1} only takes advantage of applicative capabilities, it makes sense that batching is the optimisation with higher influence on the results.
     
-    In order to unleash the full power of our solution, we decided to implement a small amount of delay (at least $100$ microseconds) between sample requests in order to simulate a large sample from a hypothetical big data source. The findings have been as follows:
+    Both the conditioned and the speculative versions make use of selective combinators, such as \texttt{condition} and \texttt{condS}, and thus can take advantage of speculative execution as well. Although these last two benchmarks do not present speedups as significant as the normal version (hinting that batching does not have such an impact), changing to a concurrent runtime system seems to magnify the effect that both, batching and speculative execution, have in the overall performance of the probabilistic sampling.
     
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=\linewidth]{img/delay.pdf}
-        \caption{Benchmarks results (delay)}
-        \label{fig:delay}
-    \end{figure}
+    Looking at the benchmark, sampling from a random distribution such as \texttt{uniform 50000} can be seen as fast. Thus, even without a large sampling gap between the sequential and the concurrent versions, this solution would prove to be a scalable, easy approach to performing such computations in practice. For example, many big data and data mining applications depend on slow uniform data sampling from external sources that require heavy roundtrip times \citep{7917368, kim2019sampling, ZHOU2017350, 10.1145/3203217.3205863}.
     
-    So, because of the delay that was implemented, the sequential versions are slower in this case, but the performance gains between the sequential and concurrent versions were larger and more evident than in the previous results.
-
     \section{Summary}
-        
+    
+    This chapter described how probabilistic problems can be modelled in the various approaches proposed in the previous chapters. The sprinkler example illustrated the advantages and drawbacks of each of them, touching on the key points of view of the overall design.
+
+    The matrix library was benchmarked with respect to the matrix composition operation, chosen because it is one of the key operations in linear algebra. Given that matrices have an exhaustive approach to the representation of probability distributions, it made sense to compare the proposed solution with the probabilistic monad of \cite{erwig_kollmansberger_2006} and to quantify the impact that the previous study of the \gls{saf} abstraction had in the development of a more efficient implementation of the \texttt{select} operator. Last but not least, the probabilistic programming \gls{edsl} via selective combinators was evaluated. Various types of programs based on different features have been compared with different interpretations (\texttt{IO} or concurrency monad).
+
+    The results achieved can be regarded as satisfactory. On the one hand, the exhaustive matrix approach provides a good trade-off between cognitive overhead and efficiency, rewarding the additional effort needed with guarantees of correctness and assisted reasoning; on the other hand, the use of an \gls{edsl} solves the limitations imposed by the exhaustive approach, and allows for a more idiomatic and richer programming style, from the point of view of the ecosystem of the host language.
+    
 	% CHAPTER - Conclusion/Future Work --------------
 	\chapter{Conclusions and Future Work}\label{ch-conclusion}
-	    In this chapter we’ll summarise the primary contributions of the dissertation and demonstrate that they defend the thesis. We'll also discuss some possible future work directions.
+	    This last chapter summarises the main  contributions of the dissertation. Directions for future work are also discussed.
 	
 	    \section{Conclusions}
-	        In this master thesis, we searched for a way to use \glspl{saf} in functional probabilistic programming, in particular to explore how this abstraction could be applied in a more efficient manner than the monadic \texttt{bind}. In order to do that, it was important to understand what these functors' probabilistic meaning was and what they could bring to the table. It is also important to consider what existing solutions and methods exist, and their drawbacks. We centered on the general theory of \gls{laop} when searching for answers to the probabilistic sense, and studied the structure of stochastic matrices, where we found that \glspl{saf} is capable of conditioning random variables and branching a program in two different ways. We realised that, through this prism, \glspl{saf} generalises the already known McCarthy conditional and, theoretically, allows for parallel execution of conditional probability calculations by means of the divide-and-conquer block-matrix algebra law. A programming library of typed inductive block-matrices has been implemented in Haskell to demonstrate how the findings of the research can be applied in practice, and a number of examples and benchmarks have been made available, demonstrating that the theoretical gains are indeed valid. However, the use of matrices in probabilistic programming has its drawbacks, namely in relation to programs where the sample space has an explosion of potential states. Sampling of the probability distributions should be done in these cases. However, existing solutions rely heavily on the use of monads that are inherently sequential, leaving behind any possibility of parallel sampling wherever possible. In order to solve this problem, a small probabilistic programming \gls{edsl} has been developed using the free \gls{saf} construction. Using this method, we push the end-user to use selective combinators wherever possible, so that the compiler can be sure to take advantage of the capabilities of this abstraction. The crucial insight that made it possible was to realise that the problem of sampling could be reduced to a concurrent external data access problem. Knowing this, it was possible to implement a solution close to the Haxl system and use it in our \gls{edsl}. The findings were positive compared to the previous sequential version. In view of this, it can be inferred that, due to the nature of \glspl{saf}, it was possible to use static analysis and speculative execution to write the \texttt{select} operator more efficiently than the monadic \texttt{bind}.
+	        The work reported in this dissertation searched for ways to take advantages of \glspl{saf} in functional probabilistic programming. In particular, how this abstraction could be applied in a more efficient manner than the monadic \texttt{bind} was a central research question. First of all, it was important to understand the meaning of the probabilistic instances of such functors and what they could bring to the table, taking into account other existing solutions and methods.
+	        % exist, and their drawbacks. 
+	        We centered on the general theory of \gls{laop} when searching for answers to the probabilistic meaning, and studied the structure of stochastic matrices, finding out that \glspl{saf} are capable of conditioning random variables and branching a program in two different ways. Viewed through this prism, \glspl{saf} generalise the already known McCarthy conditional and, in theory, allow for parallel execution of conditional probability calculations, by means of the divide-and-conquer block-matrix algebra law. A programming library of typed inductive block-matrices has been implemented in Haskell to demonstrate how such research could be applied in practice, by giving a number of examples and benchmarks demonstrating that the theoretical gains are indeed valid. 
+	        
+	        Nevertheless, the use of matrices in probabilistic programming presents some drawbacks regarding programs whose sample space has an explosion of potential states. Sampling from the probability distributions is an alternative in such cases. It turns out that existing solutions rely heavily on the use of monads, which are inherently sequential and, as such, leave behind any possibility of parallel sampling wherever possible. In order to solve this problem, a small probabilistic programming \gls{edsl} was designed on top of the free \gls{saf} construction.
+	        
+	        In the proposed approach, the end-user is pushed to use selective combinators wherever possible, so that the compiler can be sure to take advantage of the capabilities of this abstraction. The crucial insight in this respect is to realise that the problem of sampling can be reduced to a concurrent external data access problem. Knowing this, it was possible to implement a solution close to that of the Haxl system and use it in the implemented \gls{edsl}. On performance grounds, the outcome was positive compared to the previous sequential version.
+	        
+	        Altogether, the final conclusion is that, thanks to the nature of \glspl{saf}, one can indeed take advantage of static analysis and speculative execution to write the \texttt{select} operator more efficiently than using, the more traditional, monadic \texttt{bind}.
 	        
 	    \section{Future work}
 	    
-	     The work presented in this dissertation highlights the themes of composition, abstraction and structure, thes are relevant concepts in functional programming. The majority of features developed during this thesis are focused on important core aspects of static, purely functional languages. Monads, definitely the key driver of innovation, are difficult to express faithfully without a strong type system and functional purity, but as we have seen, these features have enabled us to have a great deal of reasoning power and have helped us to study novel abstractions in a different (probabilistic) context.
+	     The work presented in this dissertation highlights the themes of composition, abstraction and structure, all relevant concepts in functional programming. The majority of features developed during this research are focused on important core aspects of statically typed, purely functional languages. Monads, definitely the key driver of innovation, are difficult to express faithfully without a strong type system and functional purity, but as we have seen, these features have enabled us to have a great deal of reasoning power and have helped us to study novel abstractions in a different (probabilistic) context.
 	    
-	     One of the most important avenues for future work would also be to make the various pieces of software that have been developed during this research production-ready. Such projects necessarily have a proof-of-concept feeling about them; they are meant to explore new fields and opportunities. Specifically, quadtrees \citep{samet1984quadtree} and their savings with respect to repetitive cells (pixels) are brought to mind by the block-oriented matrix type from the typed matrix programming library. A better matrix definition for sparsity could be more useful for sparse matrices with large zero blocks.  The probabilistic programming \gls{edsl} can also be extended in order to support more distribution primitives and sampling algorithms. An interesting future direction is also to investigate improving the proposed solution in the light of the new found concurrency relationship, as well as studying parallelization strategies to improve performance. 
+	     One of the most important avenues for future work would also be to make the various pieces of software that have been developed during this research production-ready. Such projects necessarily have a proof-of-concept feel about them; they are meant to explore new fields, design spaces and opportunities. Specifically, quadtrees \citep{samet1984quadtree} and their savings with respect to repetitive cells (pixels) are brought to mind by the block-oriented matrix type, from the typed matrix programming library. A better matrix definition for sparsity could be more useful for sparse matrices with large zero blocks. The probabilistic programming \gls{edsl} can also be extended in order to support more distribution primitives and sampling algorithms. An interesting future direction is also to investigate how to improve the proposed solution in the light of the new found concurrency relationship, as well as studying parallelization strategies to improve performance. 
+	     
+	     Still regarding the matrix programming library, a scientific paper was published in the Haskell 2020 Symposium \citep{Armando2020}. This paper attracted the attention of some scholars in the fields of computer science, mathematics and functional programming. In particular, two separate researchers, Conal Elliot and João Paixão, approached the authors showing interest in potential collaboration. These collaborations revolve around new possible future work directions, that also meet the researcher's objectives. In particular, Conal Elliot's work revolves around applying semantic elegance and rigor to library design and optimized implementation. To this end, he showed interest in investigating how by applying the denotational design technique to the structure of inductive matrices, we can understand the nature of linear algebra and find elegant, parallel, effective and correct algorithms. A concrete objective is to port something like the (inductive) matrix type to a purely functional programming language in a denotational design style. João Paixão is a professor of the Department of Computer Science at the Federal University of Rio de Janeiro and his work focuses on Linear Algebra and Numerical Methods Education, Graph Theory, String Diagrams and Graphic Linear Algebra. His work plan is to see if his Graphical Linear Algebra (GLA) language \citep{paixao2020calculational} is capable of expressing inductive matrices and take advantage of its correct-by-construction properties, in order to obtain easy and elegant proof of complex, classical linear algebra algorithms and axioms.
 	     
 	\bookmarksetup{startatroot} % Ends last part.
 	\addtocontents{toc}{\bigskip} % Making the table of contents look good.
@@ -1970,7 +2041,7 @@ pg3 =
 	% Add appendix chapters
 	\chapter{Type safe LAoP matrix wrapper library}\label{appendix-a}
 	
-    \begin{lstlisting}[language=Haskell, caption={Matrix.Internal},captionpos=b]
+    \begin{lstlisting}[language=Haskell, caption={Type safe matrix wrapper library},captionpos=b]
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE DataKinds #-}
@@ -2376,7 +2447,7 @@ asRow = tr . asColumn
     
 	\chapter{Type safe LAoP inductive matrix definition library}\label{appendix-b}
 	
-    \begin{lstlisting}[language=Haskell, caption={Matrix.Internal},captionpos=b]
+    \begin{lstlisting}[language=Haskell, caption={Type safe inductive matrix library},captionpos=b]
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -3162,7 +3233,7 @@ prettyPrint = putStrLn . pretty
     
 	\chapter{Selective probabilistic programming library}\label{appendix-c}
 	
-    \begin{lstlisting}[language=Haskell, caption={SelectiveProb.hs},captionpos=b]
+    \begin{lstlisting}[language=Haskell, caption={Selective probabilistic programming library},captionpos=b]
 {- |
 Copyright: (c) 2020 Armando Santos
 SPDX-License-Identifier: MIT
