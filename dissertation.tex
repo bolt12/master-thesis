@@ -47,6 +47,7 @@
 \def\kr{\mathbin{\hbox{\tiny${}^\triangledown$}}}
 \def\bind{\mathbin{{>\hskip-1ex>\hskip-.4ex=}}}
 \def\bindA{\mathbin{{>\hskip-1ex>\hskip-1ex>}}}
+\def\ap{\mathbin{{<\hskip-1ex*\hskip-1ex>}}}
 \let\kons=\underline
 \def\xsor{{\dot\vee}}
 %-----
@@ -80,7 +81,7 @@
 \makeglossaries
 
 % here are the acronym entries
-\newacronym{miei}{MIEI}{Integrated Master in Computer Engineering}
+\newacronym{miei}{MIEI}{Integrated Master's in Informatics Engineering}
 \newacronym{di}{DI}{Informatics Department}
 \newacronym{um}{UM}{University of Minho}
 \newacronym{fp}{FP}{Functional Programming}
@@ -153,7 +154,13 @@
 
 \ummetadata % add metadata to the document (author, publisher, ...)
 
-\begin{document}
+
+\AtBeginDocument{\usefont{\encodingdefault}{phv}{m}{n}}
+
+\begin{document} 
+
+%fontfamily{phv}\fontseries{mc}\selectfont
+
 	% Cover page ---------------------------------------
 	\umfrontcover	
 	\umtitlepage
@@ -182,9 +189,9 @@ This dissertation reports on academic work that can be used by third parties as 
 	\chapter*{Acknowledgements}
 	Throughout the writing of this dissertation I have received a great deal of support and assistance.
 
-    I would like to thank my co-supervisor, Andrey Mokhov, first and foremost, for welcoming me as his student and for proposing the subject of this master's thesis. Andrey's expertise was invaluable in the formulation of research questions and methodology. His insightful feedback pushed me to sharpen my thinking and brought my work to a higher level.
+    I would also like to express my sincere gratitude to my supervisor, Professor José N. Oliveira, first and foremost, for all his assistance and guidance. Without him, I wouldn't be able to tackle a lot of challenges that I've found along the way. I would like to thank him for his patient support and for all the opportunities I have been given to further my studies.
     
-    I would also like to express my sincere gratitude to my supervisor, Professor José N. Oliveira, for all his assistance and guidance. Without him, I wouldn't be able to tackle a lot of challenges that I've found along the way. I would like to thank him for his patient support and for all the opportunities I have been given to further my studies.
+    I would like to thank my co-supervisor, Andrey Mokhov, for welcoming me as his student and for proposing the subject of this master's thesis. Andrey's expertise was invaluable in the formulation of research questions and methodology. His insightful feedback pushed me to sharpen my thinking and brought my work to a higher level.
     
     While doing this work I held a Research Grant of the DaVinci Project funded by FEDER and by National Funds, so I wish to thank \grantsponsor{ GS100000001 }{ FCT (Portuguese Foundation for Science and Technology, I.P.) }{ http://dx.doi.org/10.13039/501100001871 } and all people involved in the project for the opportunity.
     
@@ -321,13 +328,13 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	All it takes to abstract this pattern is a way to factor out \ref{p-1} and \ref{p-2}.
 	             
 	            \begin{lstlisting}[language=Haskell, caption={Applicative laws},captionpos=b]
-	                class Functor f => Applicative f where
-	                    pure :: a -> f a
-	                    (<*>) :: f (a -> b) -> f a -> f b
-	                    -- pure id <*> u == u
-	                    -- pure f <*> pure x == pure (f x)
-	                    -- u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
-	                    -- u <*> pure y = pure ($ y) <*> u
+            class Functor f => Applicative f where
+                pure :: a -> f a
+                (<*>) :: f (a -> b) -> f a -> f b
+                -- pure id <*> u == u
+                -- pure f <*> pure x == pure (f x)
+                -- u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
+                -- u <*> pure y = pure ($ y) <*> u
 	            \end{lstlisting}{}
 	            
     It is important to note that in order to be an applicative, \texttt{f} first needs to be a functor. So, every applicative is a functor. This can be seen as going down one layer of abstraction in the hierarchy, by empowering a functor \texttt{f} with more capabilities if it respects the applicative laws (given in the listing above).
@@ -338,7 +345,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	            
 	Looking at the laws of applicative functors one sees that they pretty much define what the intended semantics regarding sequencing effects are. The last one, called the \emph{interchange law} \citep{mcbride2008applicative}, clearly says that when evaluating the application of an effectful function to a pure argument, the order in which one evaluates the function and its argument \emph{does not matter}. However, if both computations are effectful the order \emph{does matter}, but a computation cannot depend on values returned by prior computations, i.e.\ the result of the applicative action can depend on earlier values but the effects cannot. In other words, computations can run \emph{independently} from each other \citep{Cooper:2008:EFA:1485346.1485361, Marlow:2014:NFA:2692915.2628144, Marlow:2016:DHD:3241625.2976007, andrey2019selective}.
 	            
-	So, if \texttt{f a} represents a distribution then \texttt{pure} can be seen as the embedding of a given value \texttt{a} in the probabilistic context with 100\% chance, and \texttt{(\textless*\textgreater)} as the action responsible of combining two \emph{independent} distributions, calculating their joint probability. This said, the probability instance of applicative functors can be regarded as being able to express $P(A, B) = P(A)P(B)$, i.e.\ statistical independence \citep{jtobin}.
+	So, if \texttt{f a} represents a distribution then \texttt{pure} can be seen as the embedding of a given value \texttt{a} in the probabilistic context with 100\% chance, and \texttt{($\ap$)} as the action responsible of combining two \emph{independent} distributions, calculating their joint probability. This said, the probability instance of applicative functors can be regarded as being able to express $P(A, B) = P(A)P(B)$, i.e.\ statistical independence \citep{jtobin}.
 	    
 	    \subsection{Monads}
 	    
@@ -356,28 +363,28 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	            In programming, two alternative but equivalent definitions for monads come up. A functor can be seen as a type constructor and natural transformations as functions:
 	            
 	            \begin{lstlisting}[mathescape, language=Haskell, caption={Monad laws and definition in terms of \texttt{unit} and \texttt{join}},captionpos=b]
-	                class Applicative m => Monad m where
-	                    unit :: a -> m a
-	                    join :: m (m a) -> m a
-	                    -- join $\cdot$ join = join $\cdot$ fmap join
-	                    -- join $\cdot$ unit = id = join $\cdot$ fmap unit
-	                    -- fmap f $\cdot$ join = join $\cdot$ fmap (fmap f)
-	                    -- fmap f $\cdot$ unit = unit $\cdot$ f
+                class Applicative m => Monad m where
+                    unit :: a -> m a
+                    join :: m (m a) -> m a
+                    -- join $\cdot$ join = join $\cdot$ fmap join
+                    -- join $\cdot$ unit = id = join $\cdot$ fmap unit
+                    -- fmap f $\cdot$ join = join $\cdot$ fmap (fmap f)
+                    -- fmap f $\cdot$ unit = unit $\cdot$ f
 	            \end{lstlisting}{}
 	            
 	            \begin{lstlisting}[language=Haskell, caption={Monad laws and definition in terms of \texttt{unit} and \texttt{bind}},captionpos=b]
-	                class Applicative m => Monad m where
-	                    unit :: a -> m a
-	                    (>>=) :: m a -> (a -> m b) -> m b
-	                    -- unit a >>= f = unit (f a)
-	                    -- m >>= unit = m
-	                    -- (m >>= f) >>= g = m >>= (\x -> f x >>= g)
+                class Applicative m => Monad m where
+                    unit :: a -> m a
+                    (>>=) :: m a -> (a -> m b) -> m b
+                    -- unit a >>= f = unit (f a)
+                    -- m >>= unit = m
+                    -- (m >>= f) >>= g = m >>= (\x -> f x >>= g)
 	            \end{lstlisting}{}
 	            
 	            As can be seen, both definitions once again highlight the hierarchy of abstractions where every monad is an applicative, and consequently a functor. These two definitions are related by the following law:
 	            
 	            \begin{lstlisting}[language=Haskell, caption={Relation between \texttt{join} and \texttt{bind}},captionpos=b]
-	                    m >>= f = join (fmap f m) 
+                    m >>= f = join (fmap f m) 
 	            \end{lstlisting}{}
 	            
 	            If monads are so versatile what type of pattern do they abstract? Intuitively, monads abstract the idea of "taking some uninteresting object and turning it into something with more structure" \citep{DBLP:journals/corr/abs-1803-10195}. This idea can be explained by using some of several known metaphors:
@@ -405,10 +412,10 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
     This being said, Arrows, introduced by \cite{Hughes:2000:GMA:347238.347246} and inspired by the ubiquity of \gls{ct}, aim to abstract how to build and structure more generic combinator libraries by suggesting the following type-class:
     	        
                 \begin{lstlisting}[language=Haskell, caption={Arrow type-class},captionpos=b]
-                    class Arrow a where
-                        arr :: (b -> c) -> a b c
-                        (>>>) :: a b c -> a c d -> a b d
-                        first :: a b c -> a (b, d) (c, d)
+                class Arrow a where
+                    arr :: (b -> c) -> a b c
+                    (>>>) :: a b c -> a c d -> a b d
+                    first :: a b c -> a (b, d) (c, d)
     	        \end{lstlisting}{}
     	       
     As one can note, Arrows make the dependence on an input explicit and abstract the structure of a given output type. This is why it is said that Arrows generalise monads.
@@ -418,12 +425,12 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
     The astute reader will see how Arrows try to encode the notion of a category and indeed the associativity law of \texttt{($\bindA$)} is one of the laws of this type-class. Moreover, if one thinks about how, for any monad a function of type \texttt{a $\rightarrow$ m b} is a Kleisli arrow \citep{Awodey:2010:CT:2060081}, one can define the arrow combinators as follows:
     	        
                 \begin{lstlisting}[mathescape, language=Haskell, caption={Arrow Kleisli type-class instance},captionpos=b]
-                    newtype Kleisli m a b = K (a -> m b)
-                
-                    instance Arrow (Kleisli m) where
-                        arr f = K (\b -> return (f b))
-                        K f >>> K g = K (\b -> f b >>= g)
-                        first (K f) = K (\(b, d) -> f b >>= \c -> return (c, d))
+        newtype Kleisli m a b = K (a -> m b)
+    
+        instance Arrow (Kleisli m) where
+            arr f = K (\b -> return (f b))
+            K f >>> K g = K (\b -> f b >>= g)
+            first (K f) = K (\(b, d) -> f b >>= \c -> return (c, d))
                 \end{lstlisting}{}
                 
     This shows that Arrows in fact generalise monads. Nevertheless there is still one question that goes unanswered --- why generalise monads if they serve the same purpose of providing a common structure to generic programming libraries? \cite{Hughes:2000:GMA:347238.347246} saw in the example of \cite{swiestra&duponcheel} a limitation on the monadic interface and argues that the advantage of the Arrow interface is that it has a wider class of implementations. Thus, simpler libraries based on abstract data types that are not monads, can be given an arrow interface.
@@ -452,16 +459,16 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	This said, \cite{andrey2019selective} developed an interface (abstraction) aiming at getting the best of both worlds, the \gls{saf}:
 	            
 	\begin{lstlisting}[language=Haskell, label={lst:saf}, caption={Selective Applicative Functor laws},captionpos=b]
-	          class Applicative f => Selective f where
-	              -- also known as (<*?)
-	              select :: f (Either a b) -> f (a -> b) -> f b
-	              -- x <*? pure id = either id id <$> x
-	              -- pure x <*? (y *> z) = (pure x <*? y) *> (pure x <*? z)
-	              -- x <*? (y <*? z) = (f <$> x) <*? (g <$> y) <*? (h <$> z)
-                  -- where
-                  --     f x = Right <$> x
-                  --     g y = \a -> bimap (,a) ($ a) y
-                  --     h z = uncurry z
+      class Applicative f => Selective f where
+          -- also known as (<*?)
+          select :: f (Either a b) -> f (a -> b) -> f b
+          -- x <*? pure id = either id id <$> x
+          -- pure x <*? (y *> z) = (pure x <*? y) *> (pure x <*? z)
+          -- x <*? (y <*? z) = (f <$> x) <*? (g <$> y) <*? (h <$> z)
+          -- where
+          --     f x = Right <$> x
+          --     g y = \a -> bimap (,a) ($ a) y
+          --     h z = uncurry z
 	\end{lstlisting}{}
 	            
 	By construction, \glspl{saf} find themselves between Applicatives and Monads and only provide one operator, \texttt{select}. By parametricity \citep{Wadler:1989:TF:99370.99404}, it is possible to understand that this operator runs an effect \texttt{f (Either a b)} which returns either an \texttt{a} or a \texttt{b}. In the case of the return value being of type \texttt{a}, the second effect must be run, in order to apply the function \texttt{a $\rightarrow$ b} and obtain the \texttt{f b} value. In the case of the return value being of type \texttt{b}, then the second computation is \emph{skipped}.
@@ -474,7 +481,7 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 	            
 	From a theoretic point of view, \glspl{saf} can be seen as the composition of an Applicative functor \texttt{f} with the \texttt{Either} monad \citep{andrey2019selective}. Even though this formalisation is not studied by \cite{andrey2019selective}, one should address the relation between \glspl{saf} and Arrows.
 	%Taking advantage of the first sentence of this paragraph, we can infer that,
-	As every \gls{saf} is an instance of Applicative, every Applicative functor is also an instance of Selective. Moreover, as pointed by \cite{andrey2019selective} it is possible to implement a specialised version of the \texttt{bind ($>>$=)} operator for any \emph{enumerable} data type, i.e.\ the capacity of \emph{selecting} an infinite number of cases makes \glspl{saf} equivalent to Monads \citep{gist_2019}. It seems that, like Arrows, given the right conditions, \glspl{saf} are also able to "slide" between Applicatives and Monads. As a matter of fact, \cite{Hughes:2000:GMA:347238.347246} had already come up with an interface that extended Arrows with conditional capabilities, the \texttt{ArrowChoice} type-class.
+	As every \gls{saf} is an instance of Applicative, every Applicative functor is also an instance of Selective. Moreover, as pointed by \cite{andrey2019selective} it is possible to implement a specialised version of the \texttt{bind ($\bind$)} operator for any \emph{enumerable} data type, i.e.\ the capacity of \emph{selecting} an infinite number of cases makes \glspl{saf} equivalent to Monads \citep{gist_2019}. It seems that, like Arrows, given the right conditions, \glspl{saf} are also able to "slide" between Applicatives and Monads. As a matter of fact, \cite{Hughes:2000:GMA:347238.347246} had already come up with an interface that extended Arrows with conditional capabilities, the \texttt{ArrowChoice} type-class.
 	            
 	Given that there was already an abstraction capable of expressing the same as \glspl{saf}, why did these arise? Arrows are more general and powerful than \glspl{saf} and could be used to solve the static analysis and speculative execution examples presented by \cite{andrey2019selective}. In fact, the build system DUNE \citep{dune_2018} is an example of successful application of Arrows. However, adding the ability of performing static analysis or speculative execution in a code-base that is not written using the Arrow abstraction, becomes more complicated than only defining an instance for \gls{saf} in just a couple of lines. With this being said, \glspl{saf} are a "just good enough" solution for providing the ability of static analysis of conditional effects and speculative execution without relying in the more powerful and intrusive Arrow abstraction.
     
@@ -495,9 +502,9 @@ I further declare that I have fully acknowledged the Code of Ethical Conduct of 
 \hline
 \textbf{Abstraction} & \textbf{Operators} & \textbf{Probabilistic Equivalent} \\ \hline
 Functor & \texttt{fmap f A} & $P(A)$ \\ \hline
-Applicative & \begin{tabular}[c]{@{}c@{}}\texttt{pure A}\\ \\ \texttt{A <*> B}\end{tabular} & \begin{tabular}[c]{@{}c@{}}$A$\\ \\ $P(A)P(B)$\end{tabular} \\ \hline
-Monad & \begin{tabular}[c]{@{}c@{}}\texttt{return A}\\ \\ \texttt{A >>= B}\end{tabular} & \begin{tabular}[c]{@{}c@{}}$A$\\ \\ $P(B|A) = \frac{P(B \cap A)}{P(A)}$\end{tabular} \\ \hline
-Arrow & \begin{tabular}[c]{@{}c@{}}\texttt{arr f}\\ \\ \texttt{A >>> B}\end{tabular} & \begin{tabular}[c]{@{}c@{}}Stochastic Matrix \texttt{f}\\ \\ Stochastic Matrix Composition\end{tabular} \\ \hline
+Applicative & \begin{tabular}[c]{@{}c@{}}\texttt{pure A}\\ \\ \texttt{A $\ap$ B}\end{tabular} & \begin{tabular}[c]{@{}c@{}}$A$\\ \\ $P(A)P(B)$\end{tabular} \\ \hline
+Monad & \begin{tabular}[c]{@{}c@{}}\texttt{return A}\\ \\ \texttt{A $\bind$ B}\end{tabular} & \begin{tabular}[c]{@{}c@{}}$A$\\ \\ $P(B|A) = \frac{P(B \cap A)}{P(A)}$\end{tabular} \\ \hline
+Arrow & \begin{tabular}[c]{@{}c@{}}\texttt{arr f}\\ \\ \texttt{A $\bindA$ B}\end{tabular} & \begin{tabular}[c]{@{}c@{}}Stochastic Matrix \texttt{f}\\ \\ Stochastic Matrix Composition\end{tabular} \\ \hline
 Selective & \texttt{select A B} & - \\ \hline
 \end{tabular}%
 }
@@ -1018,10 +1025,10 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
 	    biproducts which enable block-oriented matrix manipulation. As an attempt to achieve a strongly typed data structure, a \gls{gadt} indexed by type level naturals is used:
 	    
         \begin{lstlisting}[language=Haskell, label={lst:nat-matrix}, caption={Inductive matrix definition},captionpos=b]
-        data Matrix e (c :: Nat) (r :: Nat) where
-            One  :: e -> Matrix e 1 1
-            Join :: Matrix e m p -> Matrix e n p -> Matrix e (m + n) p
-            Fork :: Matrix e p m -> Matrix e p n -> Matrix e p (m + n)
+    data Matrix e (c :: Nat) (r :: Nat) where
+        One  :: e -> Matrix e 1 1
+        Join :: Matrix e m p -> Matrix e n p -> Matrix e (m + n) p
+        Fork :: Matrix e p m -> Matrix e p n -> Matrix e p (m + n)
         \end{lstlisting}{}
         
         This inductive data type will correctly represent any type of matrix and infer its dimensions. However, since \gls{ghc} is not able to properly infer the correct types while pattern-matching, this data type poses some difficulties in implementing functions for construction and manipulation. It is easy to implement a simple example, such as matrix transposition, but others such as the entry-wise addition of two matrices, are impossible in practice, as two matrices of the same dimensions can be internally represented by a different combination of \texttt{Join}s and \texttt{Fork}s. One solution to this problem would be to find a way to ensure that all matrices were constructed according to a convention (either \texttt{Join} of \texttt{Fork}s or \texttt{Fork} of \texttt{Join}s), but even so the type system would still be unable to know that the matrices actually followed the convention.
@@ -1029,23 +1036,23 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
 	    In order to solve this problem and to try and get a feel of the probabilistic interpretation/intuition of \gls{saf}, a library has been developed. This library just offers a type-safe newtype wrap around an existing library's matrix data structure. The chosen library was \texttt{HMatrix} \citep{hmatrix} because it is one of the most common and widely used.
 	    
         \begin{lstlisting}[language=Haskell, label={lst:m-type-2}, caption={Type-safe wrapper around HMatrix},captionpos=b]
-        import qualified Numeric.LinearAlgebra.Data as HM
-        newtype Matrix e (c :: Nat) (r :: Nat) = M {unMatrix :: HM.Matrix e}
+import qualified Numeric.LinearAlgebra.Data as HM
+newtype Matrix e (c :: Nat) (r :: Nat) = M {unMatrix :: HM.Matrix e}
         \end{lstlisting}{}
         
-        With this type-safe wrapper, it is possible to implement several \gls{laop} combinators, but when using it one is at the mercy of the internal representation used by the host library, and the possibility of obtaining a structure that benefits from the properties of \glspl{saf} and \gls{laop} is lost\footnote{Note that \texttt{HMatrix} is quite efficient, but for the purposes of this thesis the benefits of using \glspl{saf} and \gls{laop} need to be observed as cleanly as possible}. Nevertheless this technique makes a potential response closer.
+        With this type-safe wrapper, it is possible to implement several \gls{laop} combinators, but when using it one is at the mercy of the internal representation used by the host library, and the possibility of obtaining a structure that benefits from the properties of \glspl{saf} and \gls{laop} is lost\footnote{Note that \texttt{HMatrix} is quite efficient, but for the purposes of this thesis the benefits of using \glspl{saf} and \gls{laop} need to be observed as clearly as possible}. Nevertheless this technique makes a potential response closer.
         
         As mentioned in the previous subsection, representing distributions as stochastic arrays, and these in turn as arrows, allows us to implement the Arrow instance in the data type shown in Listing \ref{lst:m-type-2}. As described in section \ref{sec-state-art}, probability distributions are capable of satisfying the Functor, Applicative, and Monad instances. However, due to the constraints required for all type-checking to be carried out, and the fact that the content type of the matrix is in a negative position, it is not possible to implement instances for spoken interfaces. However an equivalent version of the functions of each instance can be implemented as shown in the listing below:
         
         \begin{lstlisting}[language=Haskell, caption={Interface equivalent function implementations},captionpos=b]
-        -- | Monoidal/Applicative instance
-      khatri :: ( ... ) => Matrix e m p -> Matrix e m q -> Matrix e m (p * q)
+-- | Monoidal/Applicative instance
+khatri :: ( ... ) => Matrix e m p -> Matrix e m q -> Matrix e m (p * q)
 
-      -- | Monad instance
-      comp :: ( ... ) => Matrix e p m -> Matrix e n p -> Matrix e n m
+-- | Monad instance
+comp :: ( ... ) => Matrix e p m -> Matrix e n p -> Matrix e n m
 
-      -- | Arrow instance
-      fromF :: ( ... ) => (a -> b) -> Matrix e c r
+-- | Arrow instance
+fromF :: ( ... ) => (a -> b) -> Matrix e c r
         \end{lstlisting}{}
         
         The Applicative instance is defined in terms of the Khatri Rao product, taking advantage of the monoidal nature that characterises this abstraction. With respect to Monads, the matrix composition, as seen in the previous subsection, is the equivalent of \texttt{bind}. Finally, with respect to the Arrow abstraction, the fundamental operation is to transform (lift) a function into its matrix representation. It should be noted that all of these operators have associated constraints, which are deferred to appendix \ref{appendix-a} for space economy.
@@ -1054,29 +1061,29 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
         In this puzzle, a game show contestant is faced with three doors, one of which hides a prize. One of the doors is chosen by the player, and then the host opens another door that \emph{does not} have the reward behind it. The player then has the option of staying with the chosen door or switching to the other closed door. The following listing presents the Haskell code that models such a puzzle:
         
         \begin{lstlisting}[language=Haskell, caption={LAoP Monty Hall Problem},captionpos=b]
-    -- Monty Hall Problem
-    data Outcome = Win | Lose
-        deriving (Bounded, Enum, Eq, Show)
+-- Monty Hall Problem
+data Outcome = Win | Lose
+    deriving (Bounded, Enum, Eq, Show)
+
+switch :: Outcome -> Outcome
+switch Win = Lose
+switch Lose = Win
+
+firstChoice :: Dist Outcome
+firstChoice = choose (1/3)
+
+secondChoice :: Matrix Double 2 2
+secondChoice = fromF switch 
+
+main :: IO ()
+main = do 
+    print (p1 `comp` secondChoice `comp` firstChoice :: Matrix Double 1 1)
     
-    switch :: Outcome -> Outcome
-    switch Win = Lose
-    switch Lose = Win
-    
-    firstChoice :: Dist Outcome
-    firstChoice = choose (1/3)
-    
-    secondChoice :: Matrix Double 2 2
-    secondChoice = fromF switch 
-    
-    main :: IO ()
-    main = do 
-        print (p1 `comp` secondChoice `comp` firstChoice :: Matrix Double 1 1)
-        
-    {- 
-    Output:
-    (1><1)
-    [ 0.6666666666666666 ]
-    -}
+{- 
+Output:
+(1><1)
+[ 0.6666666666666666 ]
+-}
         \end{lstlisting}{}
         
     \section{Probabilistic Interpretation of Selective Functors}
@@ -1084,21 +1091,21 @@ n \arrow[u, "A"] & n \times m \arrow[u, "A \otimes B" description] & m \arrow[u,
         \glspl{saf} are said to provide the missing counterpart for \texttt{ArrowChoice} in the functor hierarchy, as shown by the following example \citep{andrey2019selective}:
         
         \begin{lstlisting}[language=Haskell, label={lst:safm}, caption={Selective ArrowMonad instance},captionpos=b]
-   instance ArrowChoice a => Selective (ArrowMonad a) where
-       select (ArrowMonad x) y = ArrowMonad $ x >>> (toArrow y ||| returnA)
-       
-   toArrow :: Arrow a => ArrowMonad a (i -> o) -> a i o
-   toArrow (ArrowMonad f) = arr (\x -> ((), x)) >>> first f >>> arr (uncurry ($))
+instance ArrowChoice a => Selective (ArrowMonad a) where
+   select (ArrowMonad x) y = ArrowMonad $ x >>> (toArrow y ||| returnA)
+   
+toArrow :: Arrow a => ArrowMonad a (i -> o) -> a i o
+toArrow (ArrowMonad f) = arr (\x -> ((), x)) >>> first f >>> arr (uncurry ($))
         \end{lstlisting}{}
 	    
 	    The relationship of Arrows with \glspl{saf} is highlighted in this case. Given the results seen in the previous section, an implementation similar to that shown in Listing \ref{lst:safm} can be used, and a selective instance for the \texttt{Matrix} data type (\ref{lst:m-type-2}) can be obtained similarly. However it is not possible to implement an official instance.\footnote{due to restrictions placed on the types of the matrix dimensions} Nonetheless, it is possible to write the operator \texttt{select} at the cost of operators identical to the ones used above:
 	    
         \begin{lstlisting}[language=Haskell, label={lst:safm2}, caption={LAoP Selective instance},captionpos=b]
-    (|||) :: Matrix e m p -> Matrix e n p -> Matrix e (m + n) p
-    (|||) = Join
-    
-    select :: ( ... ) => Matrix e n (m1 + m2) -> Matrix e m1 m2 -> Matrix e n m2
-    select m y = (y ||| id) `comp` m
+(|||) :: Matrix e m p -> Matrix e n p -> Matrix e (m + n) p
+(|||) = Join
+
+select :: ( ... ) => Matrix e n (m1 + m2) -> Matrix e m1 m2 -> Matrix e n m2
+select m y = (y ||| id) `comp` m
         \end{lstlisting}{}
         
         Note that the function \texttt{toArrow} is needed so that Listing \ref{lst:safm} type checks. In order to match the same signature, an equivalent \texttt{toMatrix} function would be necessary, but unfortunately an instance of \texttt{Enum (a $\rightarrow$ b)} would be needed too, and this is currently not feasible in Haskell. For this reason, the type signature of \texttt{select} needed adjustments.
@@ -1322,7 +1329,7 @@ class Selective m => Monad m where
         
         This section shows how to use equational reasoning and the laws of the linear algebra of programming to prove properties of functions on matrices and/or to obtain more efficient programs.
         
-        \begin{figure}[h]%[6]{r}{11em}
+        \begin{figure}[H]%[6]{r}{11em}
         \centering
         \begin{tikzcd}[column sep=small]
         &&
@@ -1381,11 +1388,11 @@ class Selective m => Monad m where
         \noindent Altogether one gets the following more efficient implementation:
         
         \begin{lstlisting}[language=Haskell, caption={Final result},captionpos=b]
-        select :: (...) => Matrix e c (Either a b) 
-               -> Matrix e a b -> Matrix e c b
-        select (Fork x z) y                   = y . x + z
-        select (Join (Fork x c) (Fork z d)) y = join (y . x + c) (y . z + d)
-        select m y                            = join y id . m
+select :: (...) => Matrix e c (Either a b) 
+       -> Matrix e a b -> Matrix e c b
+select (Fork x z) y                   = y . x + z
+select (Join (Fork x c) (Fork z d)) y = join (y . x + c) (y . z + d)
+select m y                            = join y id . m
         \end{lstlisting}{}
         
         Moving from functions to matrices has allowed us to express probability distribution more elegantly and algebraically than other representations \citep{erwig_kollmansberger_2006, kidd2007build}. It turns out that the designed data-type takes advantage of the minimum amount of structure required for a \gls{saf} to be equivalent to a monad in the developed programming library, due to the necessary constraints. This, coupled with \gls{saf}'s probabilistic interpretation, enables us to go one step further in finding out how \glspl{saf} offer a more efficient abstraction than monads by exploiting a parallel nature in computing discrete exhaustive probabilities. Although \glspl{saf} appear to lose the speculative execution capabilities in this probabilistic environment, due to the fact that any two computations will always be required and can not be skipped, by \gls{laop} laws a more efficient \texttt{select} operator was calculated that mimics the speculative execution of \glspl{saf}.
@@ -1636,25 +1643,25 @@ rejection predicate observed proposal model = loop where
     
     The work described thus far has dealt only with the syntactic side of probabilistic programming. That is to say, only the basic operations that the Free Selective Construction is able to perform were exploited in order to write probabilistic programs.
     
-    As previously stated, the sampling approach is used to try to take advantage of the capabilities of \glspl{saf}. Programming in an \gls{edsl} that enforces selective combinators only allows one to capitalise on all possible benefits. However, because the \texttt{IO} monad is inherently sequential, any independent computation loses the chance of a parallel/speculative effect execution.
+    As previously stated, the sampling approach is used to try to take advantage of the capabilities of \glspl{saf}. Programming in an \gls{edsl} that enforces selective combinators only allows the compiler to be sure to capitalise on all \glspl{saf} capabilities. However, because the \texttt{IO} monad is inherently sequential, any independent computation loses the chance of a parallel/speculative effect execution.
     
-    Section \ref{rel-work-edsl} addressed how \gls{fp} languages are a great vessel for probabilistic programming. Nevertheless, the sole use of the \texttt{IO} monad disables the ability to exploit parallelism when sampling two or more independent variables. As also stated in section \ref{rel-work-edsl}, some authors suggest solutions to some of the drawbacks of using only the IO monad \citep{Scibior:2015:PPP:2887747.2804317, gordon2014probabilistic, jtobin} but none of these seem to have been actually employed in concrete, real use cases, probably due to their impracticability.
+    Section \ref{rel-work-edsl} addressed how \gls{fp} languages are a great vessel for probabilistic programming. Nevertheless, the sole use of the \texttt{IO} monad disables the ability to exploit parallelism when sampling two or more independent variables. As also stated in section \ref{rel-work-edsl}, some authors suggest solutions to some of the drawbacks of using only the IO monad \citep{Scibior:2015:PPP:2887747.2804317, gordon2014probabilistic, jtobin} but none of these seem to have been actually employed in concrete, real use cases.
     
-    Against this background, this section aims to explore how to look at the problem of sampling in a simpler, more practical way, showing promising results.
+    Against this background, this section aims to explore how to look at the problem of sampling in a different way, showing promising results.
     
     \subsection{The Concurrency Monad}
     
     There are several references to concurrency monads in literature. \cite{Claessen1999FunctionalPA} was among the first in this regard by describing a monad transformer in Haskell that introduces a groundbreaking way of modelling concurrency. In essence, a concurrency monad can be seen as a way to introduce concurrency to a (functional) programming language without adding specialised primitives to the compiler. Instead, the concept of concurrency construct is shifted towards the programmer.
     
-    Although working on somewhat different models, the approaches of  \cite{Claessen1999FunctionalPA} and \cite{Scholz1995ACM} (among others) rely on the basic notion of interleaving processes via continuations. Continuations are capable of preserving the flowing essence of a process, allowing it to be stopped or resumed. Many concurrency monads are provided with a collection of primitive constructs, like \texttt{fork}, to make the concurrency explicit. Thus, a common trait of these programming models is that they are based on a concurrency-monad-like substratum; they behave like lightweight threads with cooperative scheduling.
+    Although working on somewhat different models, the approaches of  \cite{Claessen1999FunctionalPA} and \cite{Scholz1995ACM} (among others) rely on the basic notion of interleaving processes via continuations. Continuations are capable of preserving the flowing essence of a process, allowing it to be stopped or resumed. Many concurrency monads are provided with a collection of primitive constructs, like \texttt{fork}, to make the concurrency explicit. Thus, a common trait of these programming models is that they are based on a concurrency-monad-like substratum.
     
-    \cite{Marlow:2014:NFA:2692915.2628144} offer a different, alternative solution, where their approach is specially useful for programming over external data sources without explicitly using concurrency constructs. It is called Haxl and it assumes that external access to data is read-only. So, the order does not matter and it can be done in parallel. They present an extension of the concept of concurrency monads in which concurrency is implied in the Applicative abstraction. Unlike previous formulations, this one takes advantage of the fact that the arguments to \texttt{($<$*$>$)} are independent and can therefore be inspected. This new feature can also be interpreted as some form of static analysis, and allows multiple requests to be batched together. Recently, this solution as also been given speculative execution capabilities \citep{andrey2019selective}, which makes it very interesting to the scope of this dissertation.
+    \cite{Marlow:2014:NFA:2692915.2628144} offer a different, alternative solution, where their approach is specially useful for programming over external data sources without explicitly using concurrency constructs. It is called Haxl and it assumes that external access to data is read-only. So, the order of the requests does not matter and it can be done in parallel. They present an extension of the concept of concurrency monads in which concurrency is implied in the Applicative abstraction. Unlike previous formulations, this one takes advantage of the fact that the arguments to \texttt{($\ap$)} are independent and can therefore be inspected. This new feature can also be interpreted as some form of static analysis, and allows multiple requests to be batched together. Recently, this solution has also been given speculative execution capabilities \citep{andrey2019selective}, which makes it very interesting to the scope of this dissertation.
     
     \subsection{Sampling}
     
-    Sampling should be seen as a concurrency problem in order to extend the probabilistic programming \gls{edsl} with parallel and speculative execution capabilities without having to be explicit about it. Let us start by illustrating what ``seeing sampling as a concurrency problem'' means.
+    Sampling can be seen as a concurrency problem in order to extend the probabilistic programming \gls{edsl} with parallel and speculative execution capabilities without having to be explicit about it. Let us start by illustrating what ``seeing sampling as a concurrency problem'' means.
     
-    Effective access to multiple remote data sources requires concurrency, usually requiring the programmer to intervene and make the concurrency explicit. But wherever the business logic only needs reading data from external sources, the programmer does not need to worry about the order in which the data accesses occur. This is the scenario defined by \cite{Marlow:2014:NFA:2692915.2628144}. Sampling from a probability distribution is similar to collecting data from an external source thus a similar approach can be used to effectively conduct sampling. The source of randomness is the external data source to be read and because it is random, the order by which simultaneous (independent) samples are performed does not matter nor causes additional side effects. 
+    Effective access to multiple remote data sources requires concurrency, usually requiring the programmer to intervene and make the concurrency explicit. But wherever the business logic only needs reading data from external sources, the programmer does not need to worry about the order in which the data accesses occur. This is the scenario defined by \cite{Marlow:2014:NFA:2692915.2628144}. Sampling from a probability distribution is similar to collecting data from an external source, by seeing the distribution as the (random) data source, thus a similar approach can be used to effectively conduct sampling. The source of randomness is the external data source to be read and because it is random, the order by which simultaneous (independent) samples are performed does not matter.
     
     One can already see how these two models are alike. However, there is a small difference in the case of sampling and this is that it is not possible to repeat a data access request, because one would get a different result every time the random source is accessed. This fact does not allow one to build a caching system like the one in Haxl, since it would have a negative impact on the sampling quality itself. In view of this, it is concluded that sampling can be seen as a more general concurrency issue than the one solved by Haxl.
     
@@ -1680,11 +1687,21 @@ data Request a where
 data Result a = Done a | Blocked (Seq BlockedRequest) (Fetch a) deriving Functor
 
 newtype Fetch a = Fetch {unFetch :: IO (Result a)} deriving Functor
+
+instance Monad Fetch where
+  return = Fetch . return . Done
+
+  Fetch iox >>= f = Fetch $ do
+    rx <- iox
+    case rx of
+      Done x -> unFetch (f x) -- dynamic dependency on runtime value 'x'
+      Blocked bx x -> return (Blocked bx (x >>= f))
+
     \end{lstlisting}
     
-The \texttt{Fetch} data type is actually a monad (since it is wrapped around \texttt{IO}) and follows the continuation monad formulation. It is also worth noting that this idea is an instance of a free monad \citep{Marlow:2014:NFA:2692915.2628144}.
+As can be seen, the \texttt{Fetch} data type is a monad (since it is wrapped around \texttt{IO}) and follows the continuation monad formulation. It is also worth noting that this idea is an instance of a free monad \citep{Marlow:2014:NFA:2692915.2628144}.
 
-There is something missing from the implementation, which is a way of introducing concurrency. As seen before, the probabilistic interpretation of the Applicative abstraction expresses statistical independence and thus it is suitable to add concurrency to our data structure. The idea is that of performing \texttt{Fetch} computations using the \texttt{($<$*$>$)} operator. All \texttt{($<$*$>$)} arguments may be explored to look for \texttt{Blocked} computations, which allows a computation to be blocked on several items at the same time. This contrasts with the monadic bind operator, which does not allow its arguments to be examined, since one cannot be evaluated without the other. Bearing this in mind, the following instance is proposed:
+There is something missing from the implementation, which is a way of introducing concurrency. As seen before, the probabilistic interpretation of the Applicative abstraction expresses statistical independence and thus it is suitable to add concurrency to our data structure. The idea is that of performing \texttt{Fetch} computations using the \texttt{($\ap$)} operator. All \texttt{($\ap$)} arguments may be explored to look for \texttt{Blocked} computations, which allows a computation to be blocked on several items at the same time. This contrasts with the monadic bind operator, which only allows the first argument to be examined, since one cannot be evaluated without the other. Bearing this in mind, the following instance is shown:
 
     \begin{lstlisting}[language=Haskell, caption={Fetch Applicative instance},captionpos=b]
 instance Applicative Fetch where
@@ -1699,7 +1716,7 @@ instance Applicative Fetch where
       (Blocked bf f, Blocked bx x) -> Blocked (bf <> bx) (f <*> x) -- batching parallel requests
     \end{lstlisting}
     
-Speculative execution of the Selective abstraction can also be achieved by employing this static analysis feature. This is a novel addition to the functional probabilistic programming domain that, in theory, improves performance in programs that can branch on a given sample result.
+Speculative execution of the Selective abstraction can also be achieved by employing this static analysis feature. This is a novel addition to the functional probabilistic programming domain that, in theory, improves performance in programs that can branch on a given sample result \citep{andrey2019selective}.
 
     \begin{lstlisting}[language=Haskell, caption={Fetch Selective instance},captionpos=b]
 instance Selective Fetch where

@@ -384,7 +384,7 @@
 \gdef\@department{Informatics Department}
 \gdef\@school{School of Engineering}
 \gdef\@university{University of Minho}
-\gdef\@masterdegree{Integrated Masters in Computer Engineering}
+\gdef\@masterdegree{Integrated Master's in Informatics Engineering}
 
 % Authoring Macros
 \def\supervisor#1{\gdef\@supervisor{#1}}
@@ -404,12 +404,12 @@
 \def\optionalwithnewsgott##1{\ifnum\hide=1\relax\else\withnewsgott{##1}\fi}
 \def\withboldnewsgott##1{\fontfamily{phv}\fontseries{mc}\fontseries{b}\selectfont ##1}
 \def\optionalwithboldnewsgott##1{\ifnum\hide=1\relax\else\withboldnewsgott{##1}\fi}
-~\vskip-2cm\rule{4cm}{0pt}\begin{tabular}{l}
+~\vskip-4.1cm\rule{4cm}{0pt}\begin{tabular}{l}
 \UMEng[\umc]{\engc}
 \\\withboldnewsgott{\@university}\rule{0pt}{1cm}
 \\\withnewsgott{\@school}
 \\\withnewsgott{\@department}
-\\\rule{0pt}{4cm}
+\\\rule{0pt}{6cm}
 \\\withnewsgott{\Large\@author}
 \\\rule{0pt}{1em}
 \\\withboldnewsgott{\Large\@titleA}
@@ -436,7 +436,7 @@
 	\begin{titlepage}
 		\gdef\umc{grey}\gdef\engc{lightgray}\gdef\hide{0}
 	 	\@coverstyle{white}{grey}\printcover
-		\end{titlepage}
+	\end{titlepage}
 	\normalfont \rmfamily \cleardoublepage \pagenumbering{roman}
 }
 
@@ -490,6 +490,13 @@
 	\cleardoublepage
 	\originalbibliography{#1}
 }
+
+% test
+\fontfamily{phv}\fontseries{mc}\selectfont
+\renewcommand{\rmdefault}{phv}
+\renewcommand{\sfdefault}{phv}
+%\renewcommand{\ttdefault}{phv}
+%\usepackage{helvet}
 
 \makeatother
 
