@@ -1,4 +1,4 @@
-# Selective Functors &amp; Probabilities
+# Selective Functors &amp; Probabilistic Programming
 
 In functional programming, _selective applicative_ functors (SAF) are an abstraction between applicative functors and monads. 
 This abstraction requires all effects to be statically declared, but provides a way to select which effects to execute dynamically. 
